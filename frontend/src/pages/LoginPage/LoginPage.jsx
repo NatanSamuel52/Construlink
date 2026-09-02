@@ -1,14 +1,6 @@
 import { useState } from "react";
 import "./LoginPage.css";
 
-// TODO: quando o backend (Node.js) tiver a rota de autenticação pronta,
-// troque a função handleSubmit para chamar a API real, algo como:
-//
-// const res = await fetch("http://localhost:3001/api/auth/login", {
-//   method: "POST",
-//   headers: { "Content-Type": "application/json" },
-//   body: JSON.stringify({ email, senha }),
-// });
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
