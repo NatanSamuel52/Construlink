@@ -141,6 +141,4 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
-
-# Dependências do Node.js
-node_modules/
+.vs/
