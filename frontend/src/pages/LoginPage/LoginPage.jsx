@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { salvarSessao } from "../../utils/auth";
 import "./LoginPage.css";
 
 
-export default function LoginPage() {
+export default function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erros, setErros] = useState({});
@@ -34,6 +35,8 @@ export default function LoginPage() {
       // Mock temporário — substituir pela chamada real ao backend (SCRUM-158)
       await new Promise((resolve) => setTimeout(resolve, 800));
       console.log("Login simulado com sucesso:", { email });
+      salvarSessao(email);
+    if (onLoginSuccess) onLoginSuccess();
     } catch (err) {
       setErros({ geral: "Não foi possível entrar. Tente novamente." });
     } finally {
