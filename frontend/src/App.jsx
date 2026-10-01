@@ -1,6 +1,6 @@
 import { useState } from "react";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import PainelPage from "./pages/PainelPage/PainelPage";
+import LoginPage from "./pages/Home-Index/LoginPage";
+import PainelPage from "./pages/Resultaddos/PainelPage";
 import { obterSessao } from "./utils/auth";
 
 function App() {
