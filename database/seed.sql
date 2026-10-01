@@ -1,6 +1,5 @@
 -- SCRUM-362
--- Dados fictícios para testes de profissionais, serviços e trabalhos realizados.
--- Executar somente no banco de testes após aplicar schema.sql.
+-- Executar no banco construlink após aplicar schema.sql.
 
 BEGIN;
 
