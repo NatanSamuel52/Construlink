@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 
 const express = require('express');
 
@@ -236,4 +237,70 @@ router.get('/db-check', async (req, res) => {
 });
 
 // Exporta as rotas
+
+
+// Autenticação de usuário (Cliente ou Profissional) - SCRUM-268
+router.post('/login', async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+      return res.status(400).json({ mensagem: 'E-mail e senha são obrigatórios.' });
+    }
+
+    const emailFormatado = String(email).trim().toLowerCase();
+
+    const query = [
+      'SELECT',
+      '  u.id,',
+      '  u.nome,',
+      '  u.email,',
+      '  u.senha_hash,',
+      '  u.papel,',
+      '  u.foto_perfil_url,',
+      '  c.id AS cliente_id,',
+      '  p.id AS profissional_id',
+      'FROM usuario u',
+      'LEFT JOIN cliente c ON c.usuario_id = u.id',
+      'LEFT JOIN profissional p ON p.usuario_id = u.id',
+      'WHERE LOWER(u.email) = $1',
+      'LIMIT 1'
+    ].join(' ');
+
+    const resultado = await pool.query(query, [emailFormatado]);
+
+    if (resultado.rows.length === 0) {
+      return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
+    }
+
+    const usuario = resultado.rows[0];
+
+    const senhaValida = await bcrypt.compare(senha, usuario.senha_hash);
+    if (!senhaValida) {
+      return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
+    }
+
+    return res.status(200).json({
+      mensagem: 'Autenticado com sucesso.',
+      usuario: {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        papel: usuario.papel,
+        foto_perfil_url: usuario.foto_perfil_url,
+        cliente_id: usuario.cliente_id,
+        profissional_id: usuario.profissional_id
+      }
+    });
+  } catch (erro) {
+    console.error('Erro na autenticação:', erro);
+    return res.status(500).json({ mensagem: 'Erro interno ao realizar autenticação.' });
+  }
+});
+
+// Encerramento de sessão - SCRUM-268
+router.post('/logout', (req, res) => {
+  return res.status(200).json({ mensagem: 'Sessão encerrada com sucesso.' });
+});
+
 module.exports = router;
