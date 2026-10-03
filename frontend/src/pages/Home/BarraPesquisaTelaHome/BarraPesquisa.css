@@ -1,0 +1,268 @@
+/* ========================================
+   BARRA DE PESQUISA - HOME
+   ======================================== */
+
+.barra-pesquisa-home {
+    width: 100%;
+    min-height: 300px;
+    padding: 40px 5%;
+    box-sizing: border-box;
+
+    background-color: #0a1721;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    color: #ffffff;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+/* ========================================
+   TEXTOS
+   ======================================== */
+
+.texto-pesquisa h1 {
+    margin: 0 0 12px;
+
+    font-size: 38px;
+    line-height: 1.05;
+    font-weight: 700;
+
+    color: #ffffff;
+}
+
+.texto-pesquisa h1 span {
+    color: #1685f7;
+}
+
+.texto-pesquisa p {
+    margin: 0 0 24px;
+
+    max-width: 620px;
+
+    font-size: 15px;
+    line-height: 1.5;
+
+    color: #b9c9d5;
+}
+
+/* ========================================
+   ÁREA DE PESQUISA
+   ======================================== */
+
+.area-pesquisa {
+    display: flex;
+
+    width: 100%;
+    max-width: 590px;
+
+    margin-bottom: 12px;
+}
+
+.area-pesquisa input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 14px 16px;
+
+    border: none;
+    border-radius: 6px 0 0 6px;
+
+    background-color: #ffffff;
+    color: #1c2b36;
+
+    font-size: 14px;
+
+    box-sizing: border-box;
+}
+
+.area-pesquisa input::placeholder {
+    color: #718394;
+}
+
+.area-pesquisa input:focus {
+    outline: none;
+}
+
+.area-pesquisa button {
+    padding: 0 28px;
+
+    border: none;
+    border-radius: 0 6px 6px 0;
+
+    background-color: #1685f7;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+.area-pesquisa button:hover {
+    background-color: #0d73dc;
+}
+
+
+/* ========================================
+   LISTA DE SERVIÇOS
+   ======================================== */
+
+.lista-servicos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    width: 100%;
+}
+
+
+/* ========================================
+   CARD DE SERVIÇO
+   ======================================== */
+
+.card-servico {
+    width: 150px;
+    height: 68px;
+
+    padding: 8px 6px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    border: 1px solid rgba(120, 160, 190, 0.18);
+    border-radius: 6px;
+
+    background-color: rgba(20, 42, 57, 0.85);
+    color: #ffffff;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.icone-servico {
+    font-size: 21px;
+    line-height: 1;
+}
+
+.nome-servico {
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.card-servico:hover {
+    background-color: rgba(28, 63, 84, 0.95);
+
+    border-color: rgba(80, 170, 240, 0.45);
+
+    transform: translateY(-2px);
+}
+
+const iconesServicos = {
+    'Elétricas': '⚡',
+    'Hidráulicos': '💧',
+    'Pintura Residencial': '🖌️',
+    'Montagem de móveis': '🛠️',
+    'Alvenaria': '🧱'
+};
+
+/* ========================================
+   TABLET
+   ======================================== */
+
+@media (max-width: 768px) {
+
+    .barra-pesquisa-home {
+        min-height: auto;
+
+        padding: 35px 25px;
+    }
+
+    .texto-pesquisa h1 {
+        font-size: 32px;
+    }
+
+    .texto-pesquisa p {
+        font-size: 14px;
+    }
+
+    .area-pesquisa {
+        max-width: 100%;
+    }
+
+    .card-servico {
+        flex: 1 1 140px;
+    }
+}
+
+
+/* ========================================
+   CELULAR
+   ======================================== */
+
+@media (max-width: 480px) {
+
+    .barra-pesquisa-home {
+        padding: 30px 16px;
+    }
+
+    .texto-pesquisa h1 {
+        font-size: 27px;
+    }
+
+    .texto-pesquisa p {
+        font-size: 13px;
+    }
+
+    .area-pesquisa {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .area-pesquisa input {
+        width: 100%;
+
+        border-radius: 6px;
+    }
+
+    .area-pesquisa button {
+        width: 100%;
+        min-height: 44px;
+
+        border-radius: 6px;
+    }
+
+    .lista-servicos {
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 8px;
+    }
+
+    .card-servico {
+        width: 100%;
+        min-width: 0;
+        min-height: 60px;
+
+        padding: 12px 8px;
+    }
+}

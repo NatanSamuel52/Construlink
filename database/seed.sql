@@ -39,10 +39,11 @@ INSERT INTO servico (nome, descricao)
 SELECT dados.nome, dados.descricao
 FROM (
     VALUES
-        ('Pintura residencial', 'Serviço fictício de pintura de ambientes.'),
-        ('Instalação elétrica', 'Serviço fictício de instalação elétrica.'),
-        ('Reparos hidráulicos', 'Serviço fictício de reparos hidráulicos.'),
-        ('Montagem de móveis', 'Serviço fictício de montagem de móveis.')
+        ('Pintura Residencial', 'Serviço fictício de pintura de ambientes.'),
+        ('Elétricas', 'Serviço fictício de serviços elétricos.'),
+        ('Hidráulicos', 'Serviço fictício de serviços hidráulicos.'),
+        ('Montagem de móveis', 'Serviço fictício de montagem de móveis.'),
+        ('Alvenaria', 'Serviço de alvenaria.')
 ) AS dados(nome, descricao)
 WHERE NOT EXISTS (
     SELECT 1
@@ -55,10 +56,10 @@ INSERT INTO oferta_servico (profissional_id, servico_id)
 SELECT p.id, s.id
 FROM (
     VALUES
-        ('carlos.oliveira.teste@construlink.local', 'Pintura residencial'),
+        ('carlos.oliveira.teste@construlink.local', 'Pintura Residencial'),
         ('carlos.oliveira.teste@construlink.local', 'Montagem de móveis'),
-        ('mariana.costa.teste@construlink.local', 'Instalação elétrica'),
-        ('rafael.santos.teste@construlink.local', 'Reparos hidráulicos')
+        ('mariana.costa.teste@construlink.local', 'Elétricas'),
+        ('rafael.santos.teste@construlink.local', 'Hidráulicos')
 ) AS dados(email, servico_nome)
 JOIN usuario u ON u.email = dados.email
 JOIN profissional p ON p.usuario_id = u.id

@@ -37,9 +37,7 @@ A proposta do sistema não se limita a serviços de alvenaria ou construção. O
 - Reparos hidráulicos;
 - Pintura residencial;
 - Montagem de móveis;
-- Reformas;
-- Manutenção;
-- Serviços relacionados à construção;
+- Serviços relacionados à construção,alvenaria;
 - Outros serviços que possam ser oferecidos por profissionais cadastrados na plataforma.
 
 O projeto está sendo desenvolvido a partir de um protótipo inicial e está evoluindo para uma aplicação estruturada com **frontend, backend e banco de dados PostgreSQL**.
