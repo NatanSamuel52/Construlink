@@ -5,7 +5,9 @@ function Cabecalho() {
     return (
         <header className="cabecalho">
             <div className="logo">
-                <img src={logo} alt="Logo Construlink" />
+                <a href="#">
+                    <img src={logo} alt="Logo Construlink" />
+                </a>
             </div>
             <div className="area-navegacao">
                 <nav className="menu">
@@ -13,8 +15,7 @@ function Cabecalho() {
                     <a href="#">Serviços</a>
                     <a href="#">Sobre</a>
                     <a href="#">Como funciona</a>
-                    <a href="#">Ajuda</a>
-                    <a href="#">⌕</a>
+                    <a href="#">Ajuda ⌕</a>
                 </nav>
 
                 <button className="botao-entrar">
