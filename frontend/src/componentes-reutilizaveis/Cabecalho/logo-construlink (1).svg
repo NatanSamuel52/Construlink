@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="270" height="64" viewBox="0 0 270 64" role="img" aria-labelledby="title desc">
+  <title id="title">Construlink</title>
+  <desc id="desc">Logo Construlink com ícone de casa azul e o slogan Conectando quem constrói.</desc>
+
+  <!-- Ícone de casa -->
+  <path d="M7 28.5 29 8l22 20.5v25H37V39H21v14.5H7z"
+        fill="none" stroke="#1685F7" stroke-width="5.5" stroke-linejoin="round"/>
+  <path d="M17 53.5V34h24v19.5"
+        fill="none" stroke="#1685F7" stroke-width="5.5" stroke-linejoin="round"/>
+
+  <!-- Nome -->
+  <text x="63" y="34"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="28" font-weight="700" letter-spacing="-0.7"
+        fill="#FFFFFF">Constru<tspan fill="#1685F7">link</tspan></text>
+
+  <!-- Slogan -->
+  <text x="64" y="51"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="10.5" font-weight="400"
+        fill="#B9C9D5">Conectando quem constrói</text>
+</svg>

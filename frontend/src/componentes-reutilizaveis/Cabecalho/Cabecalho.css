@@ -1,0 +1,75 @@
+.cabecalho {
+    width: 100%;
+    height: 72px;
+
+    padding: 0 5%;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: #071722;
+    border-bottom: 1px solid rgba(120, 160, 190, 0.18);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 14px;
+}
+.menu a:hover {
+    color: #1685f7;
+}
+.area-navegacao {
+    display: flex;
+    align-items: center;
+    gap: 42px;
+}
+
+.area-botoes {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.botao-entrar,
+.botao-cadastrar {
+    height: 38px;
+    padding: 0 22px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.botao-entrar {
+    border: 1px solid rgba(120, 160, 190, 0.25);
+    background-color: #071722;
+    color: #ffffff;
+}
+
+.botao-cadastrar {
+    border: none;
+    background-color: #1685f7;
+    color: #ffffff;
+}
+
+.botao-cadastrar:hover {
+    background-color: #0d73dc;
+}

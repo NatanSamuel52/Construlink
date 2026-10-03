@@ -1,9 +1,8 @@
-import BarraPesquisaHome from "../src/pages/Home/BarraPesquisaTelaHome/BarraPesquisaHome";
-
+import Home from './pages/Home/Home';
 function App() {
   return (
     <>
-      <BarraPesquisaHome />
+      <Home />
     </>
   );
 }
