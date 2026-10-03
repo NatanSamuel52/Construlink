@@ -1,0 +1,57 @@
+.profissionais-home {
+    width: 100%;
+    padding: 60px 5%;
+    box-sizing: border-box;
+
+    background-color: #071722;
+}
+
+.titulo-profissionais {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.icone-profissionais {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    display: block;
+}
+
+.profissionais-home h2 {
+    margin: 0;
+
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.profissionais-home > p {
+    margin: 0 0 32px;
+
+    max-width: 650px;
+
+    color: #b9c9d5;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.lista-profissionais {
+    display: grid;
+    grid-template-columns: repeat(3, 280px);
+    gap: 24px;
+    justify-content: center;
+}
+@media (max-width: 950px) {
+    .lista-profissionais {
+        grid-template-columns: repeat(2, 280px);
+    }
+}
+@media (max-width: 650px) {
+    .lista-profissionais {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+}

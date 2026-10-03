@@ -15,7 +15,7 @@ function Cabecalho() {
                     <a href="#">Serviços</a>
                     <a href="#">Sobre</a>
                     <a href="#">Como funciona</a>
-                    <a href="#">Ajuda ⌕</a>
+                    <a href="#">Ajuda❔</a>
                 </nav>
 
                 <button className="botao-entrar">

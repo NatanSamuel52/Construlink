@@ -27,3 +27,29 @@ export async function buscarProfissionais(servico) {
 
     return dados;
 }
+
+export async function buscarTodosProfissionais() {
+    const resposta = await fetch(`${API_URL}/profissionais`);
+
+    if (!resposta.ok) {
+        throw new Error('Erro ao consultar profissionais');
+    }
+
+    const dados = await resposta.json();
+
+    return dados;
+}
+
+export async function buscarServicosDoProfissional(id) {
+    const resposta = await fetch(
+        `${API_URL}/profissionais/${id}/servicos`
+    );
+
+    if (!resposta.ok) {
+        throw new Error('Erro ao consultar serviços do profissional');
+    }
+
+    const dados = await resposta.json();
+
+    return dados;
+}
