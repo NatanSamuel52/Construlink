@@ -53,3 +53,15 @@ export async function buscarServicosDoProfissional(id) {
 
     return dados;
 }
+
+export async function buscarQuantidadeProfissionais() {
+    const resposta = await fetch(`${API_URL}/profissionais/quantidade`);
+    
+    if (!resposta.ok) {
+        throw new Error('Erro ao consultar quantidade de profissionais');
+    }
+
+    const dados = await resposta.json();
+
+    return dados;
+}
