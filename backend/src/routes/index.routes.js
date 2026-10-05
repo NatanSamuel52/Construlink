@@ -368,10 +368,17 @@ router.post('/cadastro', async (req, res) => {
     const novoUsuario = resultadoUsuario.rows[0];
 
     if (papelFormatado === 'cliente') {
-      await client.query(
-        'INSERT INTO cliente (usuario_id) VALUES ($1);',
+      const resultadoCliente = await client.query(
+        'INSERT INTO cliente (usuario_id) VALUES ($1) RETURNING id, usuario_id;',
         [novoUsuario.id]
       );
+
+      if (
+        resultadoCliente.rows.length !== 1 ||
+        String(resultadoCliente.rows[0].usuario_id) !== String(novoUsuario.id)
+      ) {
+        throw new Error('Não foi possível confirmar o vínculo do cliente com o usuário.');
+      }
     } else {
       await client.query(
         'INSERT INTO profissional (usuario_id, descricao) VALUES ($1, $2);',
