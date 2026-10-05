@@ -80,11 +80,29 @@ async function runTests() {
   // SCRUM-294: cadastro de profissional
   const emailProf = `prof.${Date.now()}@construlink.local`;
   const t7 = await requisicao('POST', '/api/cadastro', {
-    nome: 'Profissional Teste', email: emailProf, senha: '123456', papel: 'profissional'
+    nome: 'Profissional Teste',
+    email: emailProf,
+    senha: '123456',
+    papel: 'profissional',
+    descricao: 'Atuo com elétrica e manutenção residencial.'
   });
   if (t7.status !== 201) throw new Error('Falha: cadastro de profissional deveria retornar 201, recebeu ' + t7.status);
   if (t7.data.usuario?.papel !== 'profissional') throw new Error('Falha: papel profissional nao registrado');
   console.log('PASSOU: profissional cadastrado com sucesso (201)');
+
+  const loginProfissional = await requisicao('POST', '/api/login', {
+    email: emailProf, senha: '123456'
+  });
+  const profissionalId = loginProfissional.data.usuario?.profissional_id;
+  if (loginProfissional.status !== 200 || !profissionalId) {
+    throw new Error('Falha: profissional não ficou disponível após o cadastro');
+  }
+
+  const perfilProfissional = await requisicao('GET', `/api/profissionais/${profissionalId}`);
+  if (perfilProfissional.data?.descricao !== 'Atuo com elétrica e manutenção residencial.') {
+    throw new Error('Falha: descricao profissional nao foi persistida');
+  }
+  console.log('PASSOU: vínculo e descrição do profissional confirmados');
 
   console.log('Todos os testes de cadastro foram concluidos com sucesso!');
 }
