@@ -1,8 +1,9 @@
-import Cabecalho from '../../componentes-reutilizaveis/Cabecalho/Cabecalho.jsx';
 import BarraPesquisaHome from "./BarraPesquisaTelaHome/BarraPesquisaHome";
 import CardProfissionaisDisponiveis from "../../componentes-reutilizaveis/CardProfissionaisDisponiveis/CardProfissionaisDisponiveis.jsx";
-import './Home.css';
+import Cabecalho from '../../componentes-reutilizaveis/Cabecalho/Cabecalho.jsx';
 import ComoFunciona from '../../componentes-reutilizaveis/ComoFunciona/ComoFunciona.jsx';
+import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
+import './Home.css';
 function Home() {
   return (
     <>
@@ -10,6 +11,7 @@ function Home() {
       <BarraPesquisaHome />
       <CardProfissionaisDisponiveis />
       <ComoFunciona />
+      <Rodape />
     </>
   );
 }

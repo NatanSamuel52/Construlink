@@ -87,8 +87,7 @@ function ComoFunciona() {
                     <div>
                         <h3>Mais segurança<br />para você</h3>
                         <p>
-                            Profissionais reais e perfis
-                            verificados pela plataforma.
+                            Profissionais reais, perfis sérios e de confiança.
                         </p>
                     </div>
                 </div>

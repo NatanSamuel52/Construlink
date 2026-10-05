@@ -11,9 +11,8 @@ function Cabecalho() {
             </div>
             <div className="area-navegacao">
                 <nav className="menu">
-                    <a href="#">Início</a>
-                    <a href="#">Serviços</a>
-                    <a href="#">Sobre</a>
+                    <a href="#">Home</a>
+                    <a href="#">Sobre nós</a>
                     <a href="#">Como funciona</a>
                     <a href="#">Ajuda❔</a>
                 </nav>
