@@ -304,7 +304,7 @@ router.post('/cadastro', async (req, res) => {
   const client = await pool.connect();
 
   try {
-    const { nome, email, senha, papel } = req.body;
+    const { nome, email, senha, papel, descricao } = req.body;
 
     // Validação de campos obrigatórios - SCRUM-296
     if (!nome || !email || !senha || !papel) {
@@ -333,6 +333,14 @@ router.post('/cadastro', async (req, res) => {
       return res.status(400).json({ mensagem: 'Papel inválido. Use "cliente" ou "profissional".' });
     }
 
+    if (papelFormatado === 'profissional' && descricao != null && typeof descricao !== 'string') {
+      return res.status(400).json({ mensagem: 'A descrição profissional deve ser um texto.' });
+    }
+
+    const descricaoFormatada = typeof descricao === 'string'
+      ? descricao.trim() || null
+      : null;
+
     // Verificação de unicidade do e-mail - SCRUM-296
     const emailExistente = await client.query(
       'SELECT id FROM usuario WHERE LOWER(email) = $1 LIMIT 1;',
@@ -359,7 +367,6 @@ router.post('/cadastro', async (req, res) => {
 
     const novoUsuario = resultadoUsuario.rows[0];
 
-    // Inserção na tabela específica do papel - SCRUM-294/295
     if (papelFormatado === 'cliente') {
       await client.query(
         'INSERT INTO cliente (usuario_id) VALUES ($1);',
@@ -368,7 +375,7 @@ router.post('/cadastro', async (req, res) => {
     } else {
       await client.query(
         'INSERT INTO profissional (usuario_id, descricao) VALUES ($1, $2);',
-        [novoUsuario.id, null]
+        [novoUsuario.id, descricaoFormatada]
       );
     }
 

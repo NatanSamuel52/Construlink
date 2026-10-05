@@ -6,6 +6,7 @@ export default function Cadastro({ onNavegar, onCadastroSucesso }) {
   const [papel, setPapel] = useState('');
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [descricao, setDescricao] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [erros, setErros] = useState({});
@@ -69,6 +70,7 @@ export default function Cadastro({ onNavegar, onCadastroSucesso }) {
           email: email.trim(),
           senha,
           papel,
+          descricao: papel === 'profissional' ? descricao.trim() : undefined,
         }),
       });
 
@@ -168,6 +170,23 @@ export default function Cadastro({ onNavegar, onCadastroSucesso }) {
             </div>
             {erros.papel && <span className="cadastro-papel__erro">{erros.papel}</span>}
           </div>
+
+          {papel === 'profissional' && (
+            <div className="cadastro-campo">
+              <label htmlFor="cadastro-descricao" className="cadastro-campo__label">
+                Descrição profissional
+              </label>
+              <textarea
+                id="cadastro-descricao"
+                className="cadastro-campo__input"
+                placeholder="Conte um pouco sobre sua experiência e os serviços que oferece"
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                disabled={carregando}
+                rows={4}
+              />
+            </div>
+          )}
 
           {/* Campo Nome */}
           <div className="cadastro-campo">
