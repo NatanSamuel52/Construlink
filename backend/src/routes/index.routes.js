@@ -380,10 +380,17 @@ router.post('/cadastro', async (req, res) => {
         throw new Error('Não foi possível confirmar o vínculo do cliente com o usuário.');
       }
     } else {
-      await client.query(
-        'INSERT INTO profissional (usuario_id, descricao) VALUES ($1, $2);',
+      const resultadoProfissional = await client.query(
+        'INSERT INTO profissional (usuario_id, descricao) VALUES ($1, $2) RETURNING id, usuario_id;',
         [novoUsuario.id, descricaoFormatada]
       );
+
+      if (
+        resultadoProfissional.rows.length !== 1 ||
+        String(resultadoProfissional.rows[0].usuario_id) !== String(novoUsuario.id)
+      ) {
+        throw new Error('Não foi possível confirmar o vínculo do profissional com o usuário.');
+      }
     }
 
     await client.query('COMMIT');
