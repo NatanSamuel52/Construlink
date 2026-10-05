@@ -1,7 +1,3 @@
-/* ========================================
-   BARRA DE PESQUISA - HOME
-   ======================================== */
-
 .barra-pesquisa-home {
     width: 100%;
     min-height: 300px;
@@ -50,64 +46,15 @@
     color: #b9c9d5;
 }
 
+
 /* ========================================
-   ÁREA DE PESQUISA
+   ÁREA DA PESQUISA
    ======================================== */
 
 .area-pesquisa {
-    display: flex;
-
     width: 100%;
     max-width: 590px;
-
     margin-bottom: 12px;
-}
-
-.area-pesquisa input {
-    flex: 1;
-
-    min-width: 0;
-
-    padding: 14px 16px;
-
-    border: none;
-    border-radius: 6px 0 0 6px;
-
-    background-color: #ffffff;
-    color: #1c2b36;
-
-    font-size: 14px;
-
-    box-sizing: border-box;
-}
-
-.area-pesquisa input::placeholder {
-    color: #718394;
-}
-
-.area-pesquisa input:focus {
-    outline: none;
-}
-
-.area-pesquisa button {
-    padding: 0 28px;
-
-    border: none;
-    border-radius: 0 6px 6px 0;
-
-    background-color: #1685f7;
-    color: #ffffff;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: background-color 0.2s ease;
-}
-
-.area-pesquisa button:hover {
-    background-color: #0d73dc;
 }
 
 
@@ -125,7 +72,7 @@
 
 
 /* ========================================
-   CARD DE SERVIÇO
+   CARDS DE SERVIÇO
    ======================================== */
 
 .card-servico {
@@ -176,13 +123,6 @@
     transform: translateY(-2px);
 }
 
-const iconesServicos = {
-    'Elétricas': '⚡',
-    'Hidráulicos': '💧',
-    'Pintura Residencial': '🖌️',
-    'Montagem de móveis': '🛠️',
-    'Alvenaria': '🧱'
-};
 
 /* ========================================
    TABLET
@@ -192,7 +132,6 @@ const iconesServicos = {
 
     .barra-pesquisa-home {
         min-height: auto;
-
         padding: 35px 25px;
     }
 
@@ -233,28 +172,12 @@ const iconesServicos = {
     }
 
     .area-pesquisa {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .area-pesquisa input {
-        width: 100%;
-
-        border-radius: 6px;
-    }
-
-    .area-pesquisa button {
-        width: 100%;
-        min-height: 44px;
-
-        border-radius: 6px;
+        max-width: 100%;
     }
 
     .lista-servicos {
         display: grid;
-
         grid-template-columns: repeat(2, 1fr);
-
         gap: 8px;
     }
 
@@ -262,7 +185,6 @@ const iconesServicos = {
         width: 100%;
         min-width: 0;
         min-height: 60px;
-
         padding: 12px 8px;
     }
 }

@@ -1,0 +1,152 @@
+.card-profissional-resultado {
+    width: 100%;
+    min-height: 170px;
+    padding: 10px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    background-color: #0B1C27;
+    border: 1px solid #243B4A;
+    border-radius: 9px;
+}
+
+.foto-profissional-resultado {
+    width: 102px;
+    height: 102px;
+    flex-shrink: 0;
+}
+
+.foto-profissional-resultado img,
+.foto-placeholder-resultado {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.foto-placeholder-resultado {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #172B38;
+    color: #B9C9D5;
+    font-size: 13px;
+    text-align: center;
+}
+
+.conteudo-profissional-resultado h3 {
+    margin: 0 0 4px;
+
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.conteudo-profissional-resultado h3 {
+    margin: 0 0 8px;
+
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.descricao-profissional-resultado {
+    margin: 0 0 7px;
+
+    color: #B9C9D5;
+    font-size: 13px;
+    line-height: 1.35;
+}
+.servicos-profissional-resultado {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.titulo-servicos {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.servico-resultado {
+    padding: 5px 9px;
+
+    border-radius: 5px;
+
+    background-color: #123450;
+    color: #2A9BFF;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.acao-profissional-resultado {
+    width: 165px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.acao-profissional-resultado button {
+    width: 100%;
+    padding: 12px 15px;
+
+    border: 1px solid #1685F7;
+    border-radius: 7px;
+
+    background-color: transparent;
+    color: #00BFFF;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.acao-profissional-resultado button:hover {
+    background-color: #0d73dc;
+}
+
+@media (max-width: 700px) {
+
+    .card-profissional-resultado {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .conteudo-profissional-resultado {
+        flex: 1 1 calc(100% - 170px);
+    }
+
+    .acao-profissional-resultado {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .acao-profissional-resultado button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .card-profissional-resultado {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .foto-profissional-resultado {
+        width: 100%;
+        height: 180px;
+    }
+
+    .conteudo-profissional-resultado {
+        width: 100%;
+    }
+}

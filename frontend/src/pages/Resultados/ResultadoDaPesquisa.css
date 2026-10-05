@@ -1,0 +1,90 @@
+.pagina-resultados {
+    width: 100%;
+    min-height: 600px;
+    background-color: #071722;
+    color: #ffffff;
+}
+
+.cabecalho-resultados {
+    width: 100%;
+    min-height: 235px;
+    padding: 40px 5% 30px;
+    box-sizing: border-box;
+
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    color: #ffffff;
+}
+
+.cabecalho-resultados h1 {
+    margin: 0 0 12px;
+    font-size: 38px;
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+.cabecalho-resultados h1 span {
+    color: #1685F7;
+}
+
+.cabecalho-resultados p {
+    margin: 0 0 20px;
+    color: #B9C9D5;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.cabecalho-resultados .servico-pesquisado {
+    margin-top: 14px;
+    margin-bottom: 0;
+}
+
+.servico-pesquisado strong {
+    color: #1685F7;
+}
+
+.lista-resultados {
+    width: 100%;
+    padding: 30px 5%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+
+    .cabecalho-resultados {
+        padding: 35px 25px 25px;
+    }
+
+    .cabecalho-resultados h1 {
+        font-size: 32px;
+    }
+
+    .cabecalho-resultados p {
+        font-size: 15px;
+    }
+
+    .lista-resultados {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .cabecalho-resultados {
+        padding: 30px 16px 25px;
+    }
+
+    .cabecalho-resultados h1 {
+        font-size: 27px;
+    }
+
+    .cabecalho-resultados p {
+        font-size: 14px;
+    }
+
+    .lista-resultados {
+        padding: 20px 16px;
+    }
+}
