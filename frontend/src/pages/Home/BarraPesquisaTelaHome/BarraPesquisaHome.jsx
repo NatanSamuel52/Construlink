@@ -1,172 +1,188 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { buscarServicos, buscarProfissionais } from '../../../servicos/api';
+
+import { buscarServicos } from '../../../servicos/api';
+
 import fundoHome from '../BarraPesquisaTelaHome/fundoHome.png';
-import BarraPesquisa from '../../../componentes-reutilizaveis/BarraPesquisa/BarraPesquisa.jsx';
+
+import BarraPesquisa
+    from '../../../componentes-reutilizaveis/BarraPesquisa/BarraPesquisa.jsx';
+
 import './BarraPesquisaHome.css';
 
 function BarraPesquisaHome() {
 
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const [servicos, setServicos] = useState([]);
-  const [erro, setErro] = useState(false);
-  const [erroPesquisa, setErroPesquisa] = useState(false);
-  const [servicoSelecionado, setServicoSelecionado] = useState(null);
+    const [servicos, setServicos] = useState([]);
 
-  const iconesServicos = {
-    'Elétricas': '⚡',
-    'Hidráulicos': '💧',
-    'Pintura Residencial': '🖌️',
-    'Montagem de móveis': '🛠️',
-    'Alvenaria': '🧱'
-  };
+    const [erro, setErro] = useState(false);
 
+    const [erroPesquisa, setErroPesquisa] = useState(false);
 
+    const iconesServicos = {
+        'Elétricas': '⚡',
+        'Hidráulicos': '💧',
+        'Pintura Residencial': '🖌️',
+        'Montagem de móveis': '🛠️',
+        'Alvenaria': '🧱'
+    };
 
- function realizarBusca(valorInput) {
+    function realizarBusca(valorInput) {
 
-  const termo = valorInput
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+        const termo = valorInput
+            .trim()
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
 
-  if (!termo) {
-    return;
-  }
+        if (!termo) {
+            return;
+        }
 
-  const servicoEncontrado = servicos.find((servico) => {
+        const servicoEncontrado = servicos.find((servico) => {
 
-    const nomeServico = servico.nome
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+            const nomeServico = servico.nome
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+            return (
+                nomeServico === termo ||
+                nomeServico === `${termo}s` ||
+                `${nomeServico}s` === termo
+            );
+
+        });
+
+        if (!servicoEncontrado) {
+
+            setErroPesquisa(true);
+
+            return;
+        }
+
+        setErroPesquisa(false);
+
+        navigate(
+            `/resultados?servico=${encodeURIComponent(
+                servicoEncontrado.nome
+            )}`
+        );
+    }
+
+    function selecionarServico(servico) {
+
+        navigate(
+            `/resultados?servico=${encodeURIComponent(
+                servico.nome
+            )}`
+        );
+    }
+
+    useEffect(() => {
+
+        buscarServicos()
+            .then((dados) => {
+
+                setServicos(dados);
+
+            })
+            .catch(() => {
+
+                setErro(true);
+
+            });
+
+    }, []);
 
     return (
-      nomeServico === termo ||
-      nomeServico === `${termo}s` ||
-      `${nomeServico}s` === termo
-    );
-
-  });
-
-  if (!servicoEncontrado) {
-    setErroPesquisa(true);
-    return;
-  }
-
-  setErroPesquisa(false);
-
-  navigate(
-    `/resultados?servico=${encodeURIComponent(servicoEncontrado.nome)}`
-  );
-}
-
-  useEffect(() => {
-
-    buscarServicos()
-      .then((dados) => {
-        setServicos(dados);
-      })
-      .catch(() => {
-        setErro(true);
-      });
-
-  }, []);
-
-  return (
-    <>
-      <section
-        className="barra-pesquisa-home"
-        style={{ backgroundImage: `url(${fundoHome})` }}
-      >
-
-        <div className="texto-pesquisa">
-
-          <h1>
-            Encontre quem faz
-            <br />
-            <span>sua reforma</span>
-          </h1>
-
-          <p>
-            Pesquise e encontre profissionais qualificados
-            <br />
-            para o seu projeto. Mais praticidade e confiança do início ao fim.
-          </p>
-
-        </div>
-
-        <div className="area-pesquisa">
-
-          <BarraPesquisa onBuscar={realizarBusca} />
-
-          {erroPesquisa && (
-            <p className="mensagem-erro">
-              Serviço não encontrado. Escolha um serviço disponível.
-            </p>
-          )}
-
-        </div>
-
-        {erro ? (
-          <p className="mensagem-erro">
-            Não foi possível carregar os serviços.
-          </p>
-
-        ) : servicos.length === 0 ? (
-          <p className="mensagem-erro">
-            Nenhum serviço disponível.
-          </p>
-
-        ) : (
-
-          <div className="lista-servicos">
-
-            {servicos.map(servico => (
-
-              <button
-                key={servico.id}
-                className="card-servico"
-                onClick={() => {
-
-                  setServicoSelecionado(servico);
-
-                  buscarProfissionais(servico.nome)
-                    .then(dados => {
-                      console.log('Profissionais encontrados:', dados);
-                    })
-                    .catch(erro => {
-                      console.error(
-                        'Erro ao buscar profissionais:',
-                        erro
-                      );
-                    });
-
+        <>
+            <section
+                className="barra-pesquisa-home"
+                style={{
+                    backgroundImage: `url(${fundoHome})`
                 }}
-              >
+            >
 
-                <span className="icone-servico">
-                  {iconesServicos[servico.nome]}
-                </span>
+                <div className="texto-pesquisa">
 
-                <span className="nome-servico">
-                  {servico.nome}
-                </span>
+                    <h1>
+                        Encontre quem faz
+                        <br />
+                        <span>sua reforma</span>
+                    </h1>
 
-              </button>
+                    <p>
+                        Pesquise e encontre profissionais qualificados
+                        <br />
+                        para o seu projeto. Mais praticidade e confiança
+                        do início ao fim.
+                    </p>
 
-            ))}
+                </div>
 
-          </div>
+                <div className="area-pesquisa">
 
-        )}
+                    <BarraPesquisa
+                        onBuscar={realizarBusca}
+                    />
 
-      </section>
-    </>
-  );
+                    {erroPesquisa && (
+                        <p className="mensagem-erro">
+                            Serviço não encontrado.
+                            Escolha um serviço disponível.
+                        </p>
+                    )}
+
+                </div>
+
+                {erro ? (
+
+                    <p className="mensagem-erro">
+                        Não foi possível carregar os serviços.
+                    </p>
+
+                ) : servicos.length === 0 ? (
+
+                    <p className="mensagem-erro">
+                        Nenhum serviço disponível.
+                    </p>
+
+                ) : (
+
+                    <div className="lista-servicos">
+
+                        {servicos.map((servico) => (
+
+                            <button
+                                key={servico.id}
+                                className="card-servico"
+                                onClick={() =>
+                                    selecionarServico(servico)
+                                }
+                            >
+
+                                <span className="icone-servico">
+                                    {iconesServicos[servico.nome]}
+                                </span>
+
+                                <span className="nome-servico">
+                                    {servico.nome}
+                                </span>
+
+                            </button>
+
+                        ))}
+
+                    </div>
+
+                )}
+
+            </section>
+        </>
+    );
 }
 
 export default BarraPesquisaHome;
