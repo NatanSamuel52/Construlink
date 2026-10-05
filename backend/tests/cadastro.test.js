@@ -70,6 +70,18 @@ async function runTests() {
   if (t5.data.usuario?.senha_hash) throw new Error('Falha: senha_hash exposta ao frontend');
   console.log('PASSOU: cliente cadastrado com sucesso (201), senha nao exposta');
 
+  const loginCliente = await requisicao('POST', '/api/login', {
+    email: emailTeste, senha: '123456'
+  });
+  if (
+    loginCliente.status !== 200 ||
+    !loginCliente.data.usuario?.cliente_id ||
+    loginCliente.data.usuario?.profissional_id !== null
+  ) {
+    throw new Error('Falha: cliente nao foi relacionado exclusivamente ao usuario criado');
+  }
+  console.log('PASSOU: vínculo do cliente confirmado pelo login');
+
   // SCRUM-296: email duplicado
   const t6 = await requisicao('POST', '/api/cadastro', {
     nome: 'Outro Nome', email: emailTeste, senha: '654321', papel: 'cliente'
