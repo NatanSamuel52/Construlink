@@ -89,6 +89,26 @@ async function runTests() {
   if (t6.status !== 409) throw new Error('Falha: email duplicado deveria retornar 409, recebeu ' + t6.status);
   console.log('PASSOU: e-mail duplicado rejeitado com 409');
 
+  const emailFalha = `falha.${Date.now()}@construlink.local`;
+  const cadastroFalho = await requisicao('POST', '/api/cadastro', {
+    nome: 'Cadastro Incompleto',
+    email: emailFalha,
+    senha: '123456',
+    papel: 'profissional',
+    descricao: '\u0000'
+  });
+  if (cadastroFalho.status !== 500) {
+    throw new Error('Falha: erro ao criar o perfil deveria abortar o cadastro');
+  }
+
+  const loginCadastroFalho = await requisicao('POST', '/api/login', {
+    email: emailFalha, senha: '123456'
+  });
+  if (loginCadastroFalho.status !== 401) {
+    throw new Error('Falha: cadastro com erro deixou usuario ou vínculo parcial persistido');
+  }
+  console.log('PASSOU: falha na criação do perfil desfez a transação');
+
   // SCRUM-294: cadastro de profissional
   const emailProf = `prof.${Date.now()}@construlink.local`;
   const t7 = await requisicao('POST', '/api/cadastro', {
