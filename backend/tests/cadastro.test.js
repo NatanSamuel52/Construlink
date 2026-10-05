@@ -106,7 +106,11 @@ async function runTests() {
     email: emailProf, senha: '123456'
   });
   const profissionalId = loginProfissional.data.usuario?.profissional_id;
-  if (loginProfissional.status !== 200 || !profissionalId) {
+  if (
+    loginProfissional.status !== 200 ||
+    !profissionalId ||
+    loginProfissional.data.usuario?.cliente_id !== null
+  ) {
     throw new Error('Falha: profissional não ficou disponível após o cadastro');
   }
 
