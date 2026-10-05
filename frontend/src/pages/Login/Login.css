@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.login-tela {
+  min-height: calc(100vh - 65px);
+  background: #0c0d10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.login-conteudo {
+  width: 100%;
+  max-width: 25rem;
+}
+
+.login-card {
+  background: #16181d;
+  border: 1px solid #24262e;
+  border-radius: 16px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+.login-card__cabecalho {
+  margin-bottom: 1.75rem;
+}
+
+.login-card__titulo {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #f2f3f5;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.login-card__subtitulo {
+  font-size: 0.85rem;
+  color: #9aa0aa;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.login-alerta {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  font-size: 0.82rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-alerta__icone {
+  font-size: 0.95rem;
+}
+
+.login-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.login-campo__label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #c4c8d0;
+}
+
+.login-campo__input {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  color: #f2f3f5;
+  background: #101216;
+  border: 1px solid #2a2d35;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  transition: all 0.15s ease;
+}
+
+.login-campo__input::placeholder {
+  color: #5c6270;
+}
+
+.login-campo__input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.login-campo__input--erro {
+  border-color: #ef4444;
+}
+
+.login-campo__input--erro:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.login-campo__mensagem-erro {
+  font-size: 0.76rem;
+  color: #f87171;
+  font-weight: 500;
+}
+
+.login-btn-enviar {
+  width: 100%;
+  background: #3b82f6;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.login-btn-enviar:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.login-btn-enviar:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-rodape-card {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.82rem;
+  color: #9aa0aa;
+}
+
+.login-link-cadastro {
+  background: transparent;
+  border: none;
+  color: #3b82f6;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.82rem;
+}
+
+.login-link-cadastro:hover {
+  text-decoration: underline;
+  color: #60a5fa;
+}
+
+.login-teste-atalhos {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #24262e;
+}
+
+.login-teste-atalhos__titulo {
+  display: block;
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.login-teste-atalhos__botoes {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.login-teste-btn {
+  flex: 1;
+  background: #11141a;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.login-teste-btn:hover {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #3b82f6;
+}

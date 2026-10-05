@@ -8,11 +8,11 @@ BEGIN;
 INSERT INTO usuario (nome, email, senha_hash, papel, foto_perfil_url)
 VALUES
     ('Carlos Oliveira', 'carlos.oliveira.teste@construlink.local',
-     'HASH_FICTICIO_NAO_VALIDO_PARA_LOGIN', 'profissional', NULL),
+     '$2b$10$8gneou8J7tBAXzHMqQBTMOwQiT12CAgMjbwDcPb4HvSGQRey2tWra', 'profissional', NULL),
     ('Mariana Costa', 'mariana.costa.teste@construlink.local',
-     'HASH_FICTICIO_NAO_VALIDO_PARA_LOGIN', 'profissional', NULL),
+     '$2b$10$8gneou8J7tBAXzHMqQBTMOwQiT12CAgMjbwDcPb4HvSGQRey2tWra', 'profissional', NULL),
     ('Rafael Santos', 'rafael.santos.teste@construlink.local',
-     'HASH_FICTICIO_NAO_VALIDO_PARA_LOGIN', 'profissional', NULL)
+     '$2b$10$8gneou8J7tBAXzHMqQBTMOwQiT12CAgMjbwDcPb4HvSGQRey2tWra', 'profissional', NULL)
 ON CONFLICT (email) DO NOTHING;
 
 -- PROFISSIONAIS
@@ -32,6 +32,25 @@ WHERE NOT EXISTS (
     SELECT 1
     FROM profissional p
     WHERE p.usuario_id = u.id
+);
+
+
+-- USUÁRIOS CLIENTES
+INSERT INTO usuario (nome, email, senha_hash, papel, foto_perfil_url)
+VALUES
+    ('Ana Silva', 'ana.silva.teste@construlink.local',
+     '$2b$10$8gneou8J7tBAXzHMqQBTMOwQiT12CAgMjbwDcPb4HvSGQRey2tWra', 'cliente', NULL)
+ON CONFLICT (email) DO NOTHING;
+
+-- CLIENTES
+INSERT INTO cliente (usuario_id)
+SELECT u.id
+FROM usuario u
+WHERE u.email = 'ana.silva.teste@construlink.local'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM cliente c
+    WHERE c.usuario_id = u.id
 );
 
 -- SERVIÇOS
