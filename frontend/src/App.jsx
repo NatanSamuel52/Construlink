@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Cabecalho from './componentes-reutilizaveis/Cabecalho/Cabecalho';
 import Login from './pages/Login/Login';
+import Cadastro from './pages/Cadastro/Cadastro';
 import { obterSessao, limparSessao } from './utils/auth';
 import './App.css';
 
@@ -114,6 +115,14 @@ export default function App() {
               </div>
             </div>
           </section>
+        )}
+
+        
+        {tela === 'cadastro' && (
+          <Cadastro
+            onNavegar={navegarPara}
+            onCadastroSucesso={() => navegarPara('login')}
+          />
         )}
 
         {tela === 'login' && (

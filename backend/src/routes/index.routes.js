@@ -298,6 +298,101 @@ router.post('/login', async (req, res) => {
   }
 });
 
+
+// Cadastro de novo usuário (Cliente ou Profissional) - SCRUM-293/295/296
+router.post('/cadastro', async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const { nome, email, senha, papel } = req.body;
+
+    // Validação de campos obrigatórios - SCRUM-296
+    if (!nome || !email || !senha || !papel) {
+      return res.status(400).json({
+        mensagem: 'Nome, e-mail, senha e papel são obrigatórios.'
+      });
+    }
+
+    const nomeFormatado = String(nome).trim();
+    const emailFormatado = String(email).trim().toLowerCase();
+    const papelFormatado = String(papel).trim().toLowerCase();
+
+    if (nomeFormatado.length < 2) {
+      return res.status(400).json({ mensagem: 'O nome deve ter pelo menos 2 caracteres.' });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado)) {
+      return res.status(400).json({ mensagem: 'Formato de e-mail inválido.' });
+    }
+
+    if (String(senha).length < 6) {
+      return res.status(400).json({ mensagem: 'A senha deve ter no mínimo 6 caracteres.' });
+    }
+
+    if (!['cliente', 'profissional'].includes(papelFormatado)) {
+      return res.status(400).json({ mensagem: 'Papel inválido. Use "cliente" ou "profissional".' });
+    }
+
+    // Verificação de unicidade do e-mail - SCRUM-296
+    const emailExistente = await client.query(
+      'SELECT id FROM usuario WHERE LOWER(email) = $1 LIMIT 1;',
+      [emailFormatado]
+    );
+
+    if (emailExistente.rows.length > 0) {
+      return res.status(409).json({ mensagem: 'E-mail já cadastrado.' });
+    }
+
+    // Início da transação para garantir que não fiquem registros incompletos
+    await client.query('BEGIN');
+
+    // Hash da senha - SCRUM-295
+    const senhaHash = await bcrypt.hash(String(senha), 10);
+
+    // Inserção do usuário - SCRUM-295
+    const resultadoUsuario = await client.query(
+      `INSERT INTO usuario (nome, email, senha_hash, papel)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, nome, email, papel, criado_em, foto_perfil_url;`,
+      [nomeFormatado, emailFormatado, senhaHash, papelFormatado]
+    );
+
+    const novoUsuario = resultadoUsuario.rows[0];
+
+    // Inserção na tabela específica do papel - SCRUM-294/295
+    if (papelFormatado === 'cliente') {
+      await client.query(
+        'INSERT INTO cliente (usuario_id) VALUES ($1);',
+        [novoUsuario.id]
+      );
+    } else {
+      await client.query(
+        'INSERT INTO profissional (usuario_id, descricao) VALUES ($1, $2);',
+        [novoUsuario.id, null]
+      );
+    }
+
+    await client.query('COMMIT');
+
+    return res.status(201).json({
+      mensagem: 'Cadastro realizado com sucesso.',
+      usuario: {
+        id: novoUsuario.id,
+        nome: novoUsuario.nome,
+        email: novoUsuario.email,
+        papel: novoUsuario.papel,
+        foto_perfil_url: novoUsuario.foto_perfil_url
+      }
+    });
+  } catch (erro) {
+    await client.query('ROLLBACK');
+    console.error('Erro no cadastro:', erro);
+    return res.status(500).json({ mensagem: 'Erro interno ao realizar cadastro.' });
+  } finally {
+    client.release();
+  }
+});
+
 // Encerramento de sessão - SCRUM-268
 router.post('/logout', (req, res) => {
   return res.status(200).json({ mensagem: 'Sessão encerrada com sucesso.' });
