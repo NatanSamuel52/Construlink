@@ -152,6 +152,11 @@
   box-sizing: border-box;
 }
 
+textarea.cadastro-campo__input {
+  resize: vertical;
+  min-height: 6rem;
+}
+
 .cadastro-campo__input::placeholder {
   color: #5c6270;
 }
