@@ -16,7 +16,7 @@
   padding: 0.9rem 1.5rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .cabecalho__marca {
@@ -36,7 +36,9 @@
 .cabecalho__nav {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.5rem;
+  margin-left: auto;
+  margin-right: 2rem;
 }
 
 .cabecalho__link {

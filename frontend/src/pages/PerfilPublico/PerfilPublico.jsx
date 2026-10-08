@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import Cabecalho from '../../componentes-reutilizaveis/Cabecalho/Cabecalho.jsx';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 
 import './PerfilPublico.css';
@@ -71,8 +70,6 @@ function PerfilPublico() {
     if (!profissional) {
         return (
             <>
-                <Cabecalho />
-
                 <main className="perfil-publico">
 
                     <p>
@@ -88,8 +85,6 @@ function PerfilPublico() {
 
     return (
         <>
-            <Cabecalho />
-
             <main className="perfil-publico">
 
                 <button

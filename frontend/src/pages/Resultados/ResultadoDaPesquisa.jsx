@@ -1,21 +1,14 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import {
-    buscarProfissionais,
-    buscarServicosDoProfissional
-} from '../../servicos/api';
-
-import Cabecalho from '../../componentes-reutilizaveis/Cabecalho/Cabecalho.jsx';
+import { buscarProfissionais,buscarServicosDoProfissional} from '../../servicos/api';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 import BarraPesquisa from '../../componentes-reutilizaveis/BarraPesquisa/BarraPesquisa.jsx';
-
 import fundoResultados from '../Home/BarraPesquisaTelaHome/fundoHome.png';
-
 import CardProfissionalResultado
     from '../../componentes-reutilizaveis/CardProfissionalResultado/CardProfissionalResultado.jsx';
-
 import './ResultadoDaPesquisa.css';
+
 
 function ResultadoDaPesquisa() {
 
@@ -94,8 +87,6 @@ function ResultadoDaPesquisa() {
 
     return (
         <>
-            <Cabecalho />
-
             <main className="pagina-resultados">
 
                 <section

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { obterSessao, limparSessao } from '../../utils/auth';
 import './Cabecalho.css';
+import logo from './logo-construlink.svg';
 
 export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
   const usuario = usuarioAtivo || obterSessao();
@@ -9,6 +10,7 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
   function confirmarSaida() {
     limparSessao();
     setModalSair(false);
+
     if (onLogout) {
       onLogout();
     }
@@ -17,43 +19,75 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
   return (
     <header className="cabecalho">
       <div className="cabecalho__container">
-        <div className="cabecalho__marca" onClick={() => onNavegar && onNavegar('home')} role="button" tabIndex={0}>
-          <span className="cabecalho__logo">Contrulink</span>
+
+        <div
+          className="cabecalho__marca"
+          onClick={() => onNavegar && onNavegar('home')}
+          role="button"
+          tabIndex={0}
+        >
+          <img
+            src={logo}
+            alt="Logo Construlink"
+            className="cabecalho__logo-imagem"
+          />
         </div>
 
         <nav className="cabecalho__nav">
+
           <button
             type="button"
-            className="cabecalho__link"
+            className="cabecalho__link cabecalho__link--ativo"
             onClick={() => onNavegar && onNavegar('home')}
           >
             Início
           </button>
+
           <button
             type="button"
             className="cabecalho__link"
-            onClick={() => onNavegar && onNavegar('resultados')}
           >
-            Serviços
+            Sobre
           </button>
+
+          <button
+            type="button"
+            className="cabecalho__link"
+          >
+            Como funciona❔
+          </button>
+
         </nav>
 
         <div className="cabecalho__acoes">
+
           {usuario ? (
             <div className="cabecalho__usuario">
+
               <div className="cabecalho__avatar">
                 {usuario.foto_perfil_url ? (
-                  <img src={usuario.foto_perfil_url} alt={usuario.nome} className="cabecalho__avatar-img" />
+                  <img
+                    src={usuario.foto_perfil_url}
+                    alt={usuario.nome}
+                    className="cabecalho__avatar-img"
+                  />
                 ) : (
                   <span className="cabecalho__avatar-letra">
-                    {usuario.nome ? usuario.nome.charAt(0).toUpperCase() : 'U'}
+                    {usuario.nome
+                      ? usuario.nome.charAt(0).toUpperCase()
+                      : 'U'}
                   </span>
                 )}
               </div>
 
               <div className="cabecalho__info">
-                <span className="cabecalho__nome">{usuario.nome || usuario.email}</span>
-                <span className="cabecalho__papel">{usuario.papel || 'Usuário'}</span>
+                <span className="cabecalho__nome">
+                  {usuario.nome || usuario.email}
+                </span>
+
+                <span className="cabecalho__papel">
+                  {usuario.papel || 'Usuário'}
+                </span>
               </div>
 
               <button
@@ -64,9 +98,11 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
               >
                 Sair
               </button>
+
             </div>
           ) : (
             <div className="cabecalho__botoes-auth">
+
               <button
                 type="button"
                 className="cabecalho__btn-entrar"
@@ -74,6 +110,7 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
               >
                 Entrar
               </button>
+
               <button
                 type="button"
                 className="cabecalho__btn-cadastrar"
@@ -81,19 +118,31 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
               >
                 Cadastrar
               </button>
+
             </div>
           )}
+
         </div>
       </div>
 
       {modalSair && (
-        <div className="cabecalho-modal__overlay" role="dialog" aria-modal="true">
+        <div
+          className="cabecalho-modal__overlay"
+          role="dialog"
+          aria-modal="true"
+        >
           <div className="cabecalho-modal">
-            <h3 className="cabecalho-modal__titulo">Encerrar Sessão</h3>
+
+            <h3 className="cabecalho-modal__titulo">
+              Encerrar Sessão
+            </h3>
+
             <p className="cabecalho-modal__mensagem">
-              Tem certeza de que deseja sair da sua conta no Contrulink?
+              Tem certeza de que deseja sair da sua conta no Construlink?
             </p>
+
             <div className="cabecalho-modal__acoes">
+
               <button
                 type="button"
                 className="cabecalho-modal__btn-cancelar"
@@ -101,6 +150,7 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
               >
                 Cancelar
               </button>
+
               <button
                 type="button"
                 className="cabecalho-modal__btn-confirmar"
@@ -108,7 +158,9 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
               >
                 Sim, sair
               </button>
+
             </div>
+
           </div>
         </div>
       )}
