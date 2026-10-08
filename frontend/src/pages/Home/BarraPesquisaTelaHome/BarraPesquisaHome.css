@@ -1,0 +1,70 @@
+.barra-pesquisa {
+    display: flex;
+    width: 100%;
+    max-width: 590px;
+}
+
+.barra-pesquisa input {
+    flex: 1;
+    min-width: 0;
+
+    padding: 14px 16px;
+
+    border: none;
+    border-radius: 6px 0 0 6px;
+
+    background-color: #ffffff;
+    color: #1c2b36;
+
+    font-size: 14px;
+
+    box-sizing: border-box;
+}
+
+.barra-pesquisa input::placeholder {
+    color: #718394;
+}
+
+.barra-pesquisa input:focus {
+    outline: none;
+}
+
+.barra-pesquisa button {
+    padding: 0 28px;
+
+    border: none;
+    border-radius: 0 6px 6px 0;
+
+    background-color: #1685f7;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+.barra-pesquisa button:hover {
+    background-color: #0d73dc;
+}
+
+@media (max-width: 480px) {
+
+    .barra-pesquisa {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .barra-pesquisa input {
+        width: 100%;
+        border-radius: 6px;
+    }
+
+    .barra-pesquisa button {
+        width: 100%;
+        min-height: 44px;
+        border-radius: 6px;
+    }
+}

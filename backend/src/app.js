@@ -14,6 +14,9 @@ app.use(cors());
 // Permite receber e interpretar dados JSON
 app.use(express.json());
 
+// Permite requisições de outras origens
+app.use(cors());
+
 // Registra as rotas da API
 app.use('/api', indexRoutes);
 

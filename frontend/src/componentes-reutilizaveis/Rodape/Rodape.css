@@ -1,0 +1,168 @@
+/* ========================================
+   RODAPÉ
+   ======================================== */
+
+.rodape {
+    width: 100%;
+    min-height: 160px;
+    margin-top: 50px;
+    padding: 30px 5%;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+
+    background-color: #071722;
+    border-top: 1px solid #243B4A;
+}
+
+
+/* ========================================
+   IDENTIDADE
+   ======================================== */
+
+.rodape-identidade {
+    flex-shrink: 0;
+}
+
+.rodape-identidade img {
+    width: 180px;
+    display: block;
+}
+
+.rodape-identidade p {
+    margin: 8px 0 0;
+
+    color: #B9C9D5;
+    font-size: 15px;
+}
+
+
+/* ========================================
+   NAVEGAÇÃO
+   ======================================== */
+
+.rodape-navegacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+
+    flex-wrap: wrap;
+}
+
+.rodape-navegacao a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 18px;
+
+    white-space: nowrap;
+}
+
+.rodape-navegacao a:hover {
+    color: #1685F7;
+}
+
+
+/* ========================================
+   MENSAGEM
+   ======================================== */
+
+.rodape-mensagem {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.rodape-mensagem p {
+    margin: 0;
+
+    color: #B9C9D5;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+
+/* ========================================
+   TABLET
+   ======================================== */
+
+@media (max-width: 900px) {
+
+    .rodape {
+        padding: 30px 25px;
+
+        flex-wrap: wrap;
+    }
+
+    .rodape-navegacao {
+        gap: 18px;
+    }
+
+    .rodape-navegacao a {
+        font-size: 16px;
+    }
+
+    .rodape-mensagem {
+        text-align: left;
+    }
+}
+
+
+/* ========================================
+   CELULAR
+   ======================================== */
+
+@media (max-width: 600px) {
+
+    .rodape {
+        min-height: auto;
+        margin-top: 40px;
+        padding: 30px 20px;
+
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        text-align: center;
+        gap: 25px;
+    }
+
+    .rodape-identidade {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .rodape-identidade img {
+        width: 160px;
+    }
+
+    .rodape-identidade p {
+        font-size: 14px;
+    }
+
+    .rodape-navegacao {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        gap: 14px;
+    }
+
+    .rodape-navegacao a {
+        font-size: 16px;
+    }
+
+    .rodape-mensagem {
+        text-align: center;
+        max-width: 280px;
+    }
+
+    .rodape-mensagem p {
+        font-size: 14px;
+    }
+}

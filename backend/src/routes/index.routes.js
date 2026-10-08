@@ -81,7 +81,13 @@ router.get('/servicos', async (req, res) => {
     });
   }
 });
+router.get('/profissionais/quantidade', async(req, res) =>{
+   const resultado = await pool.query('SELECT COUNT(id) FROM profissional;');
+   const quantidade = Number(resultado.rows[0].count);
+   res.json({ quantidade });
+}
 
+);
 // Lista os trabalhos realizados por um profissional
 router.get('/profissionais/:id/trabalhos', async (req, res) => {
   const { id } = req.params;
@@ -235,6 +241,7 @@ router.get('/db-check', async (req, res) => {
     });
   }
 });
+
 
 // Exporta as rotas
 
