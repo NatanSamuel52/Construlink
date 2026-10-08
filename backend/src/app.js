@@ -8,6 +8,9 @@ const indexRoutes = require('./routes/index.routes');
 // Cria a aplicação Express
 const app = express();
 
+// Habilita CORS para requisições do frontend
+app.use(cors());
+
 // Permite receber e interpretar dados JSON
 app.use(express.json());
 

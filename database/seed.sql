@@ -151,7 +151,24 @@ WHERE NOT EXISTS (
 );
 
 
--- ============================================================
+-- USUÁRIOS CLIENTES
+INSERT INTO usuario (nome, email, senha_hash, papel, foto_perfil_url)
+VALUES
+    ('Ana Silva', 'ana.silva.teste@construlink.local',
+     '$2b$10$8gneou8J7tBAXzHMqQBTMOwQiT12CAgMjbwDcPb4HvSGQRey2tWra', 'cliente', NULL)
+ON CONFLICT (email) DO NOTHING;
+
+-- CLIENTES
+INSERT INTO cliente (usuario_id)
+SELECT u.id
+FROM usuario u
+WHERE u.email = 'ana.silva.teste@construlink.local'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM cliente c
+    WHERE c.usuario_id = u.id
+);
+
 -- SERVIÇOS
 -- ============================================================
 
