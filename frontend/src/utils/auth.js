@@ -1,12 +1,16 @@
 const CHAVE_SESSAO = 'contrulink_sessao';
 
-// Salva os dados do usuário autenticado no armazenamento local
-export function salvarSessao(usuario) {
+// Salva os dados do usuário e o token da autenticação
+export function salvarSessao(usuario, token = null) {
   const dados = typeof usuario === 'string' ? { email: usuario } : usuario;
-  localStorage.setItem(CHAVE_SESSAO, JSON.stringify(dados));
+
+  localStorage.setItem(
+    CHAVE_SESSAO,
+    JSON.stringify({ ...dados, token: token ?? dados.token ?? null }),
+  );
 }
 
-// Retorna os dados do usuário autenticado ou null
+// Retorna os dados da sessão ou null
 export function obterSessao() {
   try {
     const dados = localStorage.getItem(CHAVE_SESSAO);

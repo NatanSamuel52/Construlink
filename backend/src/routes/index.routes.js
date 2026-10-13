@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
-
+const jwt = require('jsonwebtoken');
 const express = require('express');
+const autenticar = require('../middlewares/autenticacao');
 
 // Importa o pool de conexão com o PostgreSQL
 const pool = require('../config/database');
@@ -49,14 +50,14 @@ router.get('/profissionais', async (req, res) => {
           )
         ORDER BY u.nome;
       `,
-      [filtro]
+      [filtro],
     );
 
     res.json(resultado.rows);
   } catch (erro) {
     console.error('Erro ao buscar profissionais:', erro.message);
     res.status(500).json({
-      mensagem: 'Erro ao consultar profissionais.'
+      mensagem: 'Erro ao consultar profissionais.',
     });
   }
 });
@@ -77,36 +78,34 @@ router.get('/servicos', async (req, res) => {
   } catch (erro) {
     console.error('Erro ao buscar serviços:', erro.message);
     res.status(500).json({
-      mensagem: 'Erro ao consultar serviços.'
+      mensagem: 'Erro ao consultar serviços.',
     });
   }
 });
-router.get('/profissionais/quantidade', async(req, res) =>{
-   const resultado = await pool.query('SELECT COUNT(id) FROM profissional;');
-   const quantidade = Number(resultado.rows[0].count);
-   res.json({ quantidade });
-}
-
-);
+router.get('/profissionais/quantidade', async (req, res) => {
+  const resultado = await pool.query('SELECT COUNT(id) FROM profissional;');
+  const quantidade = Number(resultado.rows[0].count);
+  res.json({ quantidade });
+});
 // Lista os trabalhos realizados por um profissional
 router.get('/profissionais/:id/trabalhos', async (req, res) => {
   const { id } = req.params;
 
   if (!/^\d+$/.test(id)) {
     return res.status(400).json({
-      mensagem: 'O ID do profissional deve ser numérico.'
+      mensagem: 'O ID do profissional deve ser numérico.',
     });
   }
 
   try {
     const profissional = await pool.query(
       'SELECT id FROM profissional WHERE id = $1;',
-      [id]
+      [id],
     );
 
     if (profissional.rows.length === 0) {
       return res.status(404).json({
-        mensagem: 'Profissional não encontrado.'
+        mensagem: 'Profissional não encontrado.',
       });
     }
 
@@ -121,14 +120,14 @@ router.get('/profissionais/:id/trabalhos', async (req, res) => {
         WHERE profissional_id = $1
         ORDER BY id;
       `,
-      [id]
+      [id],
     );
 
     res.json(resultado.rows);
   } catch (erro) {
     console.error('Erro ao buscar trabalhos do profissional:', erro.message);
     res.status(500).json({
-      mensagem: 'Erro ao consultar trabalhos do profissional.'
+      mensagem: 'Erro ao consultar trabalhos do profissional.',
     });
   }
 });
@@ -139,19 +138,19 @@ router.get('/profissionais/:id/servicos', async (req, res) => {
 
   if (!/^\d+$/.test(id)) {
     return res.status(400).json({
-      mensagem: 'O ID do profissional deve ser numérico.'
+      mensagem: 'O ID do profissional deve ser numérico.',
     });
   }
 
   try {
     const profissional = await pool.query(
       'SELECT id FROM profissional WHERE id = $1;',
-      [id]
+      [id],
     );
 
     if (profissional.rows.length === 0) {
       return res.status(404).json({
-        mensagem: 'Profissional não encontrado.'
+        mensagem: 'Profissional não encontrado.',
       });
     }
 
@@ -166,14 +165,14 @@ router.get('/profissionais/:id/servicos', async (req, res) => {
         WHERE os.profissional_id = $1
         ORDER BY s.nome;
       `,
-      [id]
+      [id],
     );
 
     res.json(resultado.rows);
   } catch (erro) {
     console.error('Erro ao buscar serviços do profissional:', erro.message);
     res.status(500).json({
-      mensagem: 'Erro ao consultar serviços do profissional.'
+      mensagem: 'Erro ao consultar serviços do profissional.',
     });
   }
 });
@@ -184,7 +183,7 @@ router.get('/profissionais/:id', async (req, res) => {
 
   if (!/^\d+$/.test(id)) {
     return res.status(400).json({
-      mensagem: 'O ID do profissional deve ser numérico.'
+      mensagem: 'O ID do profissional deve ser numérico.',
     });
   }
 
@@ -200,12 +199,12 @@ router.get('/profissionais/:id', async (req, res) => {
         INNER JOIN usuario u ON u.id = p.usuario_id
         WHERE p.id = $1;
       `,
-      [id]
+      [id],
     );
 
     if (resultado.rows.length === 0) {
       return res.status(404).json({
-        mensagem: 'Profissional não encontrado.'
+        mensagem: 'Profissional não encontrado.',
       });
     }
 
@@ -213,15 +212,151 @@ router.get('/profissionais/:id', async (req, res) => {
   } catch (erro) {
     console.error('Erro ao consultar perfil:', erro.message);
     res.status(500).json({
-      mensagem: 'Erro ao consultar perfil do profissional.'
+      mensagem: 'Erro ao consultar perfil do profissional.',
     });
+  }
+});
+
+// Consulta o perfil do profissional autenticado - SCRUM-275
+router.get('/meu-perfil-profissional', autenticar, async (req, res) => {
+  if (req.usuario.papel !== 'profissional') {
+    return res.status(403).json({
+      mensagem: 'Acesso permitido somente a profissionais.',
+    });
+  }
+
+  try {
+    const resultado = await pool.query(
+      `
+        SELECT
+          p.id AS profissional_id,
+          u.id AS usuario_id,
+          u.nome,
+          u.email,
+          u.foto_perfil_url,
+          p.descricao
+        FROM profissional p
+        INNER JOIN usuario u ON u.id = p.usuario_id
+        WHERE u.id = $1;
+      `,
+      [req.usuario.id],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Perfil profissional não encontrado.',
+      });
+    }
+
+    return res.status(200).json(resultado.rows[0]);
+  } catch (erro) {
+    console.error('Erro ao consultar perfil autenticado:', erro.message);
+    return res.status(500).json({
+      mensagem: 'Erro ao consultar o perfil profissional.',
+    });
+  }
+});
+
+router.put('/meu-perfil-profissional', autenticar, async (req, res) => {
+  if (req.usuario.papel !== 'profissional') {
+    return res.status(403).json({
+      mensagem: 'Acesso permitido somente a profissionais.',
+    });
+  }
+
+  const camposObrigatorios = ['nome', 'foto_perfil_url', 'descricao'];
+  const corpoValido =
+    req.body && typeof req.body === 'object' && !Array.isArray(req.body);
+
+  if (
+    !corpoValido ||
+    !camposObrigatorios.every((campo) =>
+      Object.prototype.hasOwnProperty.call(req.body, campo),
+    ) ||
+    typeof req.body.nome !== 'string' ||
+    req.body.nome.trim().length < 2 ||
+    Array.from(req.body.nome.trim()).length > 150 ||
+    (req.body.foto_perfil_url !== null &&
+      typeof req.body.foto_perfil_url !== 'string') ||
+    (req.body.descricao !== null && typeof req.body.descricao !== 'string')
+  ) {
+    return res.status(400).json({
+      mensagem: 'Dados inválidos para atualizar o perfil profissional.',
+    });
+  }
+
+  let client;
+  let transacaoIniciada = false;
+
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+    transacaoIniciada = true;
+
+    const perfil = await client.query(
+      'SELECT id FROM profissional WHERE usuario_id = $1 FOR UPDATE;',
+      [req.usuario.id],
+    );
+
+    if (perfil.rows.length === 0) {
+      await client.query('ROLLBACK');
+      transacaoIniciada = false;
+      return res.status(404).json({
+        mensagem: 'Perfil profissional não encontrado.',
+      });
+    }
+
+    await client.query(
+      'UPDATE usuario SET nome = $1, foto_perfil_url = $2 WHERE id = $3;',
+      [req.body.nome.trim(), req.body.foto_perfil_url, req.usuario.id],
+    );
+    await client.query(
+      'UPDATE profissional SET descricao = $1 WHERE usuario_id = $2;',
+      [req.body.descricao, req.usuario.id],
+    );
+
+    const resultado = await client.query(
+      `
+        SELECT
+          p.id AS profissional_id,
+          u.id AS usuario_id,
+          u.nome,
+          u.foto_perfil_url,
+          p.descricao
+        FROM profissional p
+        INNER JOIN usuario u ON u.id = p.usuario_id
+        WHERE u.id = $1;
+      `,
+      [req.usuario.id],
+    );
+
+    await client.query('COMMIT');
+    transacaoIniciada = false;
+    return res.status(200).json(resultado.rows[0]);
+  } catch (erro) {
+    if (client && transacaoIniciada) {
+      try {
+        await client.query('ROLLBACK');
+      } catch (erroRollback) {
+        console.error('Erro ao reverter atualização do perfil:', erroRollback.message);
+      }
+    }
+
+    console.error('Erro ao atualizar perfil profissional:', erro.message);
+    return res.status(500).json({
+      mensagem: 'Erro ao atualizar o perfil profissional.',
+    });
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 });
 
 // Rota inicial da API
 router.get('/', (req, res) => {
   res.json({
-    mensagem: 'API do Construlink funcionando!'
+    mensagem: 'API do Construlink funcionando!',
   });
 });
 
@@ -231,20 +366,18 @@ router.get('/db-check', async (req, res) => {
     await pool.query('SELECT NOW()');
 
     res.json({
-      mensagem: 'Conexão com o PostgreSQL funcionando!'
+      mensagem: 'Conexão com o PostgreSQL funcionando!',
     });
   } catch (error) {
     console.error('Erro ao conectar com o PostgreSQL:', error.message);
 
     res.status(500).json({
-      mensagem: 'Não foi possível conectar ao banco de dados.'
+      mensagem: 'Não foi possível conectar ao banco de dados.',
     });
   }
 });
 
-
 // Exporta as rotas
-
 
 // Autenticação de usuário (Cliente ou Profissional) - SCRUM-268
 router.post('/login', async (req, res) => {
@@ -252,7 +385,9 @@ router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
 
     if (!email || !senha) {
-      return res.status(400).json({ mensagem: 'E-mail e senha são obrigatórios.' });
+      return res
+        .status(400)
+        .json({ mensagem: 'E-mail e senha são obrigatórios.' });
     }
 
     const emailFormatado = String(email).trim().toLowerCase();
@@ -271,7 +406,7 @@ router.post('/login', async (req, res) => {
       'LEFT JOIN cliente c ON c.usuario_id = u.id',
       'LEFT JOIN profissional p ON p.usuario_id = u.id',
       'WHERE LOWER(u.email) = $1',
-      'LIMIT 1'
+      'LIMIT 1',
     ].join(' ');
 
     const resultado = await pool.query(query, [emailFormatado]);
@@ -287,8 +422,18 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
     }
 
+    const token = jwt.sign(
+      {
+        sub: String(usuario.id),
+        papel: usuario.papel,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' },
+    );
+
     return res.status(200).json({
       mensagem: 'Autenticado com sucesso.',
+      token,
       usuario: {
         id: usuario.id,
         nome: usuario.nome,
@@ -296,15 +441,16 @@ router.post('/login', async (req, res) => {
         papel: usuario.papel,
         foto_perfil_url: usuario.foto_perfil_url,
         cliente_id: usuario.cliente_id,
-        profissional_id: usuario.profissional_id
-      }
+        profissional_id: usuario.profissional_id,
+      },
     });
   } catch (erro) {
     console.error('Erro na autenticação:', erro);
-    return res.status(500).json({ mensagem: 'Erro interno ao realizar autenticação.' });
+    return res
+      .status(500)
+      .json({ mensagem: 'Erro interno ao realizar autenticação.' });
   }
 });
-
 
 // Cadastro de novo usuário (Cliente ou Profissional) - SCRUM-293/295/296
 router.post('/cadastro', async (req, res) => {
@@ -316,7 +462,7 @@ router.post('/cadastro', async (req, res) => {
     // Validação de campos obrigatórios - SCRUM-296
     if (!nome || !email || !senha || !papel) {
       return res.status(400).json({
-        mensagem: 'Nome, e-mail, senha e papel são obrigatórios.'
+        mensagem: 'Nome, e-mail, senha e papel são obrigatórios.',
       });
     }
 
@@ -325,7 +471,9 @@ router.post('/cadastro', async (req, res) => {
     const papelFormatado = String(papel).trim().toLowerCase();
 
     if (nomeFormatado.length < 2) {
-      return res.status(400).json({ mensagem: 'O nome deve ter pelo menos 2 caracteres.' });
+      return res
+        .status(400)
+        .json({ mensagem: 'O nome deve ter pelo menos 2 caracteres.' });
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado)) {
@@ -333,25 +481,34 @@ router.post('/cadastro', async (req, res) => {
     }
 
     if (String(senha).length < 6) {
-      return res.status(400).json({ mensagem: 'A senha deve ter no mínimo 6 caracteres.' });
+      return res
+        .status(400)
+        .json({ mensagem: 'A senha deve ter no mínimo 6 caracteres.' });
     }
 
     if (!['cliente', 'profissional'].includes(papelFormatado)) {
-      return res.status(400).json({ mensagem: 'Papel inválido. Use "cliente" ou "profissional".' });
+      return res
+        .status(400)
+        .json({ mensagem: 'Papel inválido. Use "cliente" ou "profissional".' });
     }
 
-    if (papelFormatado === 'profissional' && descricao != null && typeof descricao !== 'string') {
-      return res.status(400).json({ mensagem: 'A descrição profissional deve ser um texto.' });
+    if (
+      papelFormatado === 'profissional' &&
+      descricao != null &&
+      typeof descricao !== 'string'
+    ) {
+      return res
+        .status(400)
+        .json({ mensagem: 'A descrição profissional deve ser um texto.' });
     }
 
-    const descricaoFormatada = typeof descricao === 'string'
-      ? descricao.trim() || null
-      : null;
+    const descricaoFormatada =
+      typeof descricao === 'string' ? descricao.trim() || null : null;
 
     // Verificação de unicidade do e-mail - SCRUM-296
     const emailExistente = await client.query(
       'SELECT id FROM usuario WHERE LOWER(email) = $1 LIMIT 1;',
-      [emailFormatado]
+      [emailFormatado],
     );
 
     if (emailExistente.rows.length > 0) {
@@ -369,7 +526,7 @@ router.post('/cadastro', async (req, res) => {
       `INSERT INTO usuario (nome, email, senha_hash, papel)
        VALUES ($1, $2, $3, $4)
        RETURNING id, nome, email, papel, criado_em, foto_perfil_url;`,
-      [nomeFormatado, emailFormatado, senhaHash, papelFormatado]
+      [nomeFormatado, emailFormatado, senhaHash, papelFormatado],
     );
 
     const novoUsuario = resultadoUsuario.rows[0];
@@ -377,26 +534,31 @@ router.post('/cadastro', async (req, res) => {
     if (papelFormatado === 'cliente') {
       const resultadoCliente = await client.query(
         'INSERT INTO cliente (usuario_id) VALUES ($1) RETURNING id, usuario_id;',
-        [novoUsuario.id]
+        [novoUsuario.id],
       );
 
       if (
         resultadoCliente.rows.length !== 1 ||
         String(resultadoCliente.rows[0].usuario_id) !== String(novoUsuario.id)
       ) {
-        throw new Error('Não foi possível confirmar o vínculo do cliente com o usuário.');
+        throw new Error(
+          'Não foi possível confirmar o vínculo do cliente com o usuário.',
+        );
       }
     } else {
       const resultadoProfissional = await client.query(
         'INSERT INTO profissional (usuario_id, descricao) VALUES ($1, $2) RETURNING id, usuario_id;',
-        [novoUsuario.id, descricaoFormatada]
+        [novoUsuario.id, descricaoFormatada],
       );
 
       if (
         resultadoProfissional.rows.length !== 1 ||
-        String(resultadoProfissional.rows[0].usuario_id) !== String(novoUsuario.id)
+        String(resultadoProfissional.rows[0].usuario_id) !==
+          String(novoUsuario.id)
       ) {
-        throw new Error('Não foi possível confirmar o vínculo do profissional com o usuário.');
+        throw new Error(
+          'Não foi possível confirmar o vínculo do profissional com o usuário.',
+        );
       }
     }
 
@@ -409,13 +571,15 @@ router.post('/cadastro', async (req, res) => {
         nome: novoUsuario.nome,
         email: novoUsuario.email,
         papel: novoUsuario.papel,
-        foto_perfil_url: novoUsuario.foto_perfil_url
-      }
+        foto_perfil_url: novoUsuario.foto_perfil_url,
+      },
     });
   } catch (erro) {
     await client.query('ROLLBACK');
     console.error('Erro no cadastro:', erro);
-    return res.status(500).json({ mensagem: 'Erro interno ao realizar cadastro.' });
+    return res
+      .status(500)
+      .json({ mensagem: 'Erro interno ao realizar cadastro.' });
   } finally {
     client.release();
   }
