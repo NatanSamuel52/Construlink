@@ -54,7 +54,7 @@ export default function Login({ onLoginSucesso, onNavegar }) {
       }
 
       // Autenticação com sucesso
-      salvarSessao(dados.usuario);
+      salvarSessao(dados.usuario, dados.token);
 
       if (onLoginSucesso) {
         onLoginSucesso(dados.usuario);

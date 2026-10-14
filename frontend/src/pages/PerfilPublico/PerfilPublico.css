@@ -392,3 +392,84 @@
         padding: 20px;
     }
 }
+
+/* SCRUM-272: exibição dos trabalhos realizados */
+
+.perfil-publico .lista-trabalhos:has(.grade-trabalhos) {
+    display: block;
+    padding: 0;
+}
+
+.perfil-publico .grade-trabalhos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.perfil-publico .card-trabalho {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #243B4A;
+    border-radius: 8px;
+    background-color: #071722;
+}
+
+.perfil-publico .card-trabalho > img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background-color: #172B38;
+}
+
+.perfil-publico .conteudo-trabalho {
+    padding: 16px;
+}
+
+.perfil-publico .conteudo-trabalho h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 17px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.perfil-publico .conteudo-trabalho p {
+    margin: 0;
+    color: #B9C9D5;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.perfil-publico .lista-trabalhos:has(.mensagem-sem-trabalhos) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfil-publico .mensagem-sem-trabalhos {
+    margin: 0;
+    padding: 35px 20px;
+    color: #B9C9D5;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.perfil-publico .mensagem-sem-trabalhos[role="alert"] {
+    color: #FCA5A5;
+}
+
+@media (max-width: 600px) {
+    .perfil-publico .grade-trabalhos {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+        padding: 12px;
+    }
+
+    .perfil-publico .conteudo-trabalho {
+        padding: 14px;
+    }
+}
