@@ -2,6 +2,8 @@
 const express = require('express');
 const cors = require('cors');
 
+const path = require('path');
+
 // Importa as rotas da API
 const indexRoutes = require('./routes/index.routes');
 
@@ -14,8 +16,7 @@ app.use(cors());
 // Permite receber e interpretar dados JSON
 app.use(express.json());
 
-// Permite requisições de outras origens
-app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Registra as rotas da API
 app.use('/api', indexRoutes);

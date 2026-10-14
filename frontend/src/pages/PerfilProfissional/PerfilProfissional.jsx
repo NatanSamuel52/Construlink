@@ -652,7 +652,10 @@ export default function PerfilProfissional() {
                 <p>Adicione e gerencie os trabalhos que você já realizou.</p>
               </div>
 
-              <button type='button' disabled>
+              <button
+                type='button'
+                onClick={() => navigate('/cadastro-trabalho')}
+              >
                 + Cadastrar trabalho
               </button>
             </div>
