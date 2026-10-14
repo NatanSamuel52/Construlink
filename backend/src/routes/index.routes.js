@@ -177,6 +177,60 @@ router.get('/profissionais/:id/servicos', async (req, res) => {
   }
 });
 
+// Remove um serviço do próprio perfil profissional - SCRUM-276
+router.delete('/ofertas-servico/:servicoId', autenticar, async (req, res) => {
+  if (req.usuario.papel !== 'profissional') {
+    return res.status(403).json({
+      mensagem: 'Acesso permitido somente a profissionais.',
+    });
+  }
+
+  const { servicoId } = req.params;
+
+  if (!/^[1-9]\d*$/.test(servicoId)) {
+    return res.status(400).json({
+      mensagem: 'Informe um ID de serviço válido.',
+    });
+  }
+
+  try {
+    const perfil = await pool.query(
+      'SELECT id FROM profissional WHERE usuario_id = $1;',
+      [req.usuario.id],
+    );
+
+    if (perfil.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Perfil profissional não encontrado.',
+      });
+    }
+
+    const resultado = await pool.query(
+      `DELETE FROM oferta_servico
+       WHERE profissional_id = $1 AND servico_id = $2
+       RETURNING id;`,
+      [perfil.rows[0].id, servicoId],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Este serviço não está associado ao seu perfil.',
+      });
+    }
+
+    return res.status(200).json({
+      mensagem: 'Serviço removido do seu perfil com sucesso.',
+    });
+  } catch (erro) {
+    console.error('Erro ao remover serviço do perfil:', erro.message);
+
+    return res.status(500).json({
+      mensagem: 'Erro ao remover serviço do perfil.',
+    });
+  }
+});
+
+
 // Consulta o perfil de um profissional pelo ID
 router.get('/profissionais/:id', async (req, res) => {
   const { id } = req.params;
@@ -338,7 +392,10 @@ router.put('/meu-perfil-profissional', autenticar, async (req, res) => {
       try {
         await client.query('ROLLBACK');
       } catch (erroRollback) {
-        console.error('Erro ao reverter atualização do perfil:', erroRollback.message);
+        console.error(
+          'Erro ao reverter atualização do perfil:',
+          erroRollback.message,
+        );
       }
     }
 
@@ -588,6 +645,89 @@ router.post('/cadastro', async (req, res) => {
 // Encerramento de sessão - SCRUM-268
 router.post('/logout', (req, res) => {
   return res.status(200).json({ mensagem: 'Sessão encerrada com sucesso.' });
+});
+
+/** Cadastro de oferta de serviço - SCRUM-276 */
+router.post('/ofertas-servico', autenticar, async (req, res) => {
+  if (req.usuario.papel !== 'profissional') {
+    return res.status(403).json({
+      mensagem: 'Acesso permitido somente a profissionais.',
+    });
+  }
+
+  const { servico_id } = req.body;
+
+  if (
+    servico_id === undefined ||
+    servico_id === null ||
+    !/^[1-9]\d*$/.test(String(servico_id))
+  ) {
+    return res.status(400).json({
+      mensagem: 'Informe um ID de serviço válido.',
+    });
+  }
+
+  try {
+    const perfil = await pool.query(
+      'SELECT id FROM profissional WHERE usuario_id = $1;',
+      [req.usuario.id],
+    );
+
+    if (perfil.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Perfil profissional não encontrado.',
+      });
+    }
+
+    const profissionalId = perfil.rows[0].id;
+
+    const servico = await pool.query('SELECT id FROM servico WHERE id = $1;', [
+      servico_id,
+    ]);
+
+    if (servico.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Serviço não encontrado.',
+      });
+    }
+
+    const ofertaExistente = await pool.query(
+      `SELECT id
+       FROM oferta_servico
+       WHERE profissional_id = $1 AND servico_id = $2;`,
+      [profissionalId, servico_id],
+    );
+
+    if (ofertaExistente.rows.length > 0) {
+      return res.status(409).json({
+        mensagem: 'Este serviço já está associado ao seu perfil.',
+      });
+    }
+
+    const resultado = await pool.query(
+      `INSERT INTO oferta_servico (profissional_id, servico_id)
+       VALUES ($1, $2)
+       RETURNING id, profissional_id, servico_id;`,
+      [profissionalId, servico_id],
+    );
+
+    return res.status(201).json({
+      mensagem: 'Serviço associado ao perfil com sucesso.',
+      oferta: resultado.rows[0],
+    });
+  } catch (erro) {
+    if (erro.code === '23505') {
+      return res.status(409).json({
+        mensagem: 'Este serviço já está associado ao seu perfil.',
+      });
+    }
+
+    console.error('Erro ao cadastrar oferta de serviço:', erro.message);
+
+    return res.status(500).json({
+      mensagem: 'Erro ao cadastrar oferta de serviço.',
+    });
+  }
 });
 
 module.exports = router;
