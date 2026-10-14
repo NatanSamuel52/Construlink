@@ -1,0 +1,167 @@
+.cadastro-trabalho {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f7f8fa;
+}
+
+.cadastro-trabalho__conteudo {
+  width: min(100% - 32px, 760px);
+  margin: 40px auto;
+  flex: 1;
+}
+
+.cadastro-trabalho__voltar {
+  border: none;
+  background: transparent;
+  color: #334155;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 20px;
+}
+
+.cadastro-trabalho h1 {
+  margin: 0 0 10px;
+  color: #172033;
+  font-size: clamp(24px, 4vw, 32px);
+}
+
+.cadastro-trabalho__introducao {
+  margin: 0 0 28px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.cadastro-trabalho__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgb(15 23 42 / 5%);
+}
+
+.cadastro-trabalho__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cadastro-trabalho__campo label {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cadastro-trabalho__campo input[type='text'],
+.cadastro-trabalho__campo input[type='file'],
+.cadastro-trabalho__campo textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #fff;
+  color: #1e293b;
+  font: inherit;
+}
+
+.cadastro-trabalho__campo textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.cadastro-trabalho__campo input:focus,
+.cadastro-trabalho__campo textarea:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+  border-color: #2563eb;
+}
+
+.cadastro-trabalho__campo small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.cadastro-trabalho__aviso {
+  margin: 0;
+  padding: 14px;
+  border-radius: 7px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.cadastro-trabalho__erro {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.cadastro-trabalho__acoes {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.cadastro-trabalho__cancelar,
+.cadastro-trabalho__salvar {
+  min-height: 44px;
+  padding: 11px 20px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cadastro-trabalho__cancelar {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+}
+
+.cadastro-trabalho__salvar {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.cadastro-trabalho__cancelar:hover {
+  background: #f1f5f9;
+}
+
+.cadastro-trabalho__salvar:hover {
+  background: #1d4ed8;
+}
+
+.cadastro-trabalho__cancelar:focus-visible,
+.cadastro-trabalho__salvar:focus-visible,
+.cadastro-trabalho__voltar:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .cadastro-trabalho__conteudo {
+    margin: 24px auto;
+  }
+
+  .cadastro-trabalho__formulario {
+    padding: 20px 16px;
+  }
+
+  .cadastro-trabalho__acoes {
+    flex-direction: column-reverse;
+  }
+
+  .cadastro-trabalho__cancelar,
+  .cadastro-trabalho__salvar {
+    width: 100%;
+  }
+}

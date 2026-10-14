@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
@@ -12,8 +11,11 @@ import PerfilPublico from './pages/PerfilPublico/PerfilPublico.jsx';
 import PerfilProfissional from './pages/PerfilProfissional/PerfilProfissional.jsx';
 
 import { obterSessao, limparSessao } from './utils/auth';
+import CadastroTrabalho from './pages/CadastroTrabalho/CadastroTrabalho.jsx';
 
 import './App.css';
+
+
 
 function Painel({ usuario, onLogout, onNavegar }) {
   return (
@@ -78,11 +80,7 @@ function Painel({ usuario, onLogout, onNavegar }) {
             Voltar para Início
           </button>
 
-          <button
-            type='button'
-            className='app-btn-perigo'
-            onClick={onLogout}
-          >
+          <button type='button' className='app-btn-perigo' onClick={onLogout}>
             Encerrar Sessão (Sair)
           </button>
         </div>
@@ -190,21 +188,29 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
 
-          <Route
-            path='/resultados'
-            element={<ResultadoDaPesquisa />}
-          />
+          <Route path='/resultados' element={<ResultadoDaPesquisa />} />
 
-          <Route
-            path='/perfil-profissional/:id'
-            element={<PerfilPublico />}
-          />
+          <Route path='/perfil-profissional/:id' element={<PerfilPublico />} />
 
           <Route
             path='/meu-perfil-profissional'
             element={
               usuario?.papel === 'profissional' ? (
                 <PerfilProfissional />
+              ) : (
+                <Login
+                  onLoginSucesso={handleLoginSucesso}
+                  onNavegar={navegarPara}
+                />
+              )
+            }
+          />
+
+          <Route
+            path='/cadastro-trabalho'
+            element={
+              usuario?.papel === 'profissional' ? (
+                <CadastroTrabalho />
               ) : (
                 <Login
                   onLoginSucesso={handleLoginSucesso}
