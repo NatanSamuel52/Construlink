@@ -213,6 +213,8 @@
 .perfil-autenticado__servico {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   min-height: 62px;
   padding: 14px;
   border: 1px solid var(--perfil-borda);
@@ -221,6 +223,23 @@
   color: var(--perfil-texto);
   font-weight: 600;
   overflow-wrap: anywhere;
+}
+
+.perfil-autenticado__botao-remover-servico {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  background: transparent;
+  color: #f87171;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.perfil-autenticado__botao-remover-servico:hover {
+  background: #ef4444;
+  color: #fff;
 }
 
 .perfil-autenticado__lista-trabalhos {
@@ -388,7 +407,8 @@
 }
 
 .perfil-autenticado__campo input,
-.perfil-autenticado__campo textarea {
+.perfil-autenticado__campo textarea,
+.perfil-autenticado__campo select {
   width: 100%;
   box-sizing: border-box;
   padding: 12px;
@@ -405,7 +425,8 @@
 }
 
 .perfil-autenticado__campo input:focus,
-.perfil-autenticado__campo textarea:focus {
+.perfil-autenticado__campo textarea:focus,
+.perfil-autenticado__campo select:focus {
   outline: 2px solid var(--perfil-azul);
   outline-offset: 2px;
 }
@@ -444,4 +465,112 @@
 
 .perfil-autenticado__mensagem--erro {
   color: #ff9292;
+}
+
+/* Janela de confirmação de remoção de serviço */
+.perfil-autenticado__modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.perfil-autenticado__modal {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  border: 1px solid #4b8df8;
+  border-radius: 14px;
+  background: var(--perfil-cartao);
+  color: var(--perfil-texto);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  animation: perfil-modal-entrada 0.2s ease-out;
+}
+
+.perfil-autenticado__modal-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.perfil-autenticado__modal h2 {
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+}
+
+.perfil-autenticado__modal p {
+  line-height: 1.6;
+}
+
+.perfil-autenticado__modal-aviso {
+  color: var(--perfil-texto-secundario, #9ca3af);
+  font-size: 0.9rem;
+}
+
+.perfil-autenticado__modal-acoes {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.perfil-autenticado__modal-acoes button {
+  flex: 1;
+  min-height: 44px;
+}
+
+.perfil-autenticado__botao-remover {
+  padding: 10px 16px;
+  border: 1px solid #dc2626;
+  border-radius: 7px;
+  background: #dc2626;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.perfil-autenticado__botao-remover:hover {
+  background: #b91c1c;
+}
+
+.perfil-autenticado__modal-acoes button:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 3px;
+}
+
+@keyframes perfil-modal-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 420px) {
+  .perfil-autenticado__modal {
+    padding: 22px;
+  }
+
+  .perfil-autenticado__modal-acoes {
+    flex-direction: column-reverse;
+  }
 }

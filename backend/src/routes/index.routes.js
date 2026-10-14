@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const express = require('express');
 const autenticar = require('../middlewares/autenticacao');
-
+const uploadTrabalho = require('../config/upload');
 // Importa o pool de conexão com o PostgreSQL
 const pool = require('../config/database');
 
@@ -177,6 +177,59 @@ router.get('/profissionais/:id/servicos', async (req, res) => {
   }
 });
 
+// Remove um serviço do próprio perfil profissional - SCRUM-276
+router.delete('/ofertas-servico/:servicoId', autenticar, async (req, res) => {
+  if (req.usuario.papel !== 'profissional') {
+    return res.status(403).json({
+      mensagem: 'Acesso permitido somente a profissionais.',
+    });
+  }
+
+  const { servicoId } = req.params;
+
+  if (!/^[1-9]\d*$/.test(servicoId)) {
+    return res.status(400).json({
+      mensagem: 'Informe um ID de serviço válido.',
+    });
+  }
+
+  try {
+    const perfil = await pool.query(
+      'SELECT id FROM profissional WHERE usuario_id = $1;',
+      [req.usuario.id],
+    );
+
+    if (perfil.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Perfil profissional não encontrado.',
+      });
+    }
+
+    const resultado = await pool.query(
+      `DELETE FROM oferta_servico
+       WHERE profissional_id = $1 AND servico_id = $2
+       RETURNING id;`,
+      [perfil.rows[0].id, servicoId],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Este serviço não está associado ao seu perfil.',
+      });
+    }
+
+    return res.status(200).json({
+      mensagem: 'Serviço removido do seu perfil com sucesso.',
+    });
+  } catch (erro) {
+    console.error('Erro ao remover serviço do perfil:', erro.message);
+
+    return res.status(500).json({
+      mensagem: 'Erro ao remover serviço do perfil.',
+    });
+  }
+});
+
 // Consulta o perfil de um profissional pelo ID
 router.get('/profissionais/:id', async (req, res) => {
   const { id } = req.params;
@@ -257,6 +310,7 @@ router.get('/meu-perfil-profissional', autenticar, async (req, res) => {
   }
 });
 
+// Atualiza o perfil profissional autenticado
 router.put('/meu-perfil-profissional', autenticar, async (req, res) => {
   if (req.usuario.papel !== 'profissional') {
     return res.status(403).json({
@@ -264,26 +318,81 @@ router.put('/meu-perfil-profissional', autenticar, async (req, res) => {
     });
   }
 
-  const camposObrigatorios = ['nome', 'foto_perfil_url', 'descricao'];
   const corpoValido =
-    req.body && typeof req.body === 'object' && !Array.isArray(req.body);
+    req.body !== null &&
+    typeof req.body === 'object' &&
+    !Array.isArray(req.body);
 
-  if (
-    !corpoValido ||
-    !camposObrigatorios.every((campo) =>
-      Object.prototype.hasOwnProperty.call(req.body, campo),
-    ) ||
-    typeof req.body.nome !== 'string' ||
-    req.body.nome.trim().length < 2 ||
-    Array.from(req.body.nome.trim()).length > 150 ||
-    (req.body.foto_perfil_url !== null &&
-      typeof req.body.foto_perfil_url !== 'string') ||
-    (req.body.descricao !== null && typeof req.body.descricao !== 'string')
-  ) {
+  if (!corpoValido) {
     return res.status(400).json({
-      mensagem: 'Dados inválidos para atualizar o perfil profissional.',
+      mensagem: 'O corpo da requisição deve ser um objeto válido.',
     });
   }
+
+  const camposPermitidos = ['nome', 'foto_perfil_url', 'descricao'];
+  const camposRecebidos = Object.keys(req.body);
+
+  if (
+    camposRecebidos.length === 0 ||
+    camposRecebidos.some((campo) => !camposPermitidos.includes(campo))
+  ) {
+    return res.status(400).json({
+      mensagem: 'Informe campos válidos para atualizar o perfil profissional.',
+    });
+  }
+
+  const nomeInformado = Object.prototype.hasOwnProperty.call(
+    req.body,
+    'nome',
+  );
+  const fotoInformada = Object.prototype.hasOwnProperty.call(
+    req.body,
+    'foto_perfil_url',
+  );
+  const descricaoInformada = Object.prototype.hasOwnProperty.call(
+    req.body,
+    'descricao',
+  );
+
+  let nome;
+  if (nomeInformado) {
+    if (typeof req.body.nome !== 'string') {
+      return res.status(400).json({
+        mensagem: 'O nome deve ser um texto entre 2 e 150 caracteres.',
+      });
+    }
+
+    nome = req.body.nome.trim();
+    const tamanhoNome = Array.from(nome).length;
+
+    if (tamanhoNome < 2 || tamanhoNome > 150) {
+      return res.status(400).json({
+        mensagem: 'O nome deve ter entre 2 e 150 caracteres.',
+      });
+    }
+  }
+
+  if (
+    (fotoInformada &&
+      req.body.foto_perfil_url !== null &&
+      typeof req.body.foto_perfil_url !== 'string') ||
+    (descricaoInformada &&
+      req.body.descricao !== null &&
+      typeof req.body.descricao !== 'string')
+  ) {
+    return res.status(400).json({
+      mensagem: 'A foto e a descrição devem ser textos ou nulas.',
+    });
+  }
+
+  const fotoPerfilUrl =
+    typeof req.body.foto_perfil_url === 'string'
+      ? req.body.foto_perfil_url.trim() || null
+      : req.body.foto_perfil_url;
+  const descricao =
+    typeof req.body.descricao === 'string'
+      ? req.body.descricao.trim() || null
+      : req.body.descricao;
 
   let client;
   let transacaoIniciada = false;
@@ -301,19 +410,55 @@ router.put('/meu-perfil-profissional', autenticar, async (req, res) => {
     if (perfil.rows.length === 0) {
       await client.query('ROLLBACK');
       transacaoIniciada = false;
+
       return res.status(404).json({
         mensagem: 'Perfil profissional não encontrado.',
       });
     }
 
-    await client.query(
-      'UPDATE usuario SET nome = $1, foto_perfil_url = $2 WHERE id = $3;',
-      [req.body.nome.trim(), req.body.foto_perfil_url, req.usuario.id],
-    );
-    await client.query(
-      'UPDATE profissional SET descricao = $1 WHERE usuario_id = $2;',
-      [req.body.descricao, req.usuario.id],
-    );
+    const profissionalId = perfil.rows[0].id;
+    const camposUsuario = [];
+    const valoresUsuario = [];
+
+    if (nomeInformado) {
+      valoresUsuario.push(nome);
+      camposUsuario.push(`nome = $${valoresUsuario.length}`);
+    }
+
+    if (fotoInformada) {
+      valoresUsuario.push(fotoPerfilUrl);
+      camposUsuario.push(`foto_perfil_url = $${valoresUsuario.length}`);
+    }
+
+    if (camposUsuario.length > 0) {
+      valoresUsuario.push(req.usuario.id);
+
+      const usuarioAtualizado = await client.query(
+        `UPDATE usuario
+         SET ${camposUsuario.join(', ')}
+         WHERE id = $${valoresUsuario.length}
+         RETURNING id;`,
+        valoresUsuario,
+      );
+
+      if (usuarioAtualizado.rowCount !== 1) {
+        throw new Error('Não foi possível atualizar os dados do usuário.');
+      }
+    }
+
+    if (descricaoInformada) {
+      const profissionalAtualizado = await client.query(
+        `UPDATE profissional
+         SET descricao = $1
+         WHERE id = $2 AND usuario_id = $3
+         RETURNING id;`,
+        [descricao, profissionalId, req.usuario.id],
+      );
+
+      if (profissionalAtualizado.rowCount !== 1) {
+        throw new Error('Não foi possível atualizar o perfil profissional.');
+      }
+    }
 
     const resultado = await client.query(
       `
@@ -321,24 +466,30 @@ router.put('/meu-perfil-profissional', autenticar, async (req, res) => {
           p.id AS profissional_id,
           u.id AS usuario_id,
           u.nome,
+          u.email,
           u.foto_perfil_url,
           p.descricao
         FROM profissional p
         INNER JOIN usuario u ON u.id = p.usuario_id
-        WHERE u.id = $1;
+        WHERE p.id = $1 AND u.id = $2;
       `,
-      [req.usuario.id],
+      [profissionalId, req.usuario.id],
     );
+
+    if (resultado.rows.length !== 1) {
+      throw new Error('Não foi possível consultar o perfil atualizado.');
+    }
 
     await client.query('COMMIT');
     transacaoIniciada = false;
+
     return res.status(200).json(resultado.rows[0]);
   } catch (erro) {
     if (client && transacaoIniciada) {
       try {
         await client.query('ROLLBACK');
       } catch (erroRollback) {
-        console.error('Erro ao reverter atualização do perfil:', erroRollback.message);
+        console.error('Erro ao reverter atualização do perfil:', erroRollback);
       }
     }
 
@@ -588,6 +739,183 @@ router.post('/cadastro', async (req, res) => {
 // Encerramento de sessão - SCRUM-268
 router.post('/logout', (req, res) => {
   return res.status(200).json({ mensagem: 'Sessão encerrada com sucesso.' });
+});
+
+// Cadastra um trabalho realizado pelo profissional autenticado
+router.post(
+  '/trabalhos',
+  autenticar,
+  (req, res, next) => {
+    if (req.usuario.papel !== 'profissional') {
+      return res.status(403).json({
+        mensagem: 'Acesso permitido somente a profissionais.',
+      });
+    }
+
+    uploadTrabalho.single('foto')(req, res, (erro) => {
+      if (erro) {
+        const mensagem =
+          erro.code === 'LIMIT_FILE_SIZE'
+            ? 'A imagem deve ter no máximo 5 MB.'
+            : erro.message || 'Erro ao enviar a imagem.';
+
+        return res.status(400).json({ mensagem });
+      }
+
+      next();
+    });
+  },
+  async (req, res) => {
+    let caminhoFoto;
+
+    try {
+      const titulo = String(req.body.titulo || '').trim();
+      const descricao = String(req.body.descricao || '').trim();
+
+      if (!titulo || titulo.length > 150) {
+        return res.status(400).json({
+          mensagem: 'Informe um título com até 150 caracteres.',
+        });
+      }
+
+      if (!descricao || descricao.length > 500) {
+        return res.status(400).json({
+          mensagem: 'Informe uma descrição com até 500 caracteres.',
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          mensagem: 'A foto do trabalho é obrigatória.',
+        });
+      }
+
+      caminhoFoto = req.file.path;
+
+      const perfil = await pool.query(
+        'SELECT id FROM profissional WHERE usuario_id = $1;',
+        [req.usuario.id],
+      );
+
+      if (perfil.rows.length === 0) {
+        const fs = require('fs/promises');
+        await fs.unlink(caminhoFoto);
+        return res.status(404).json({
+          mensagem: 'Perfil profissional não encontrado.',
+        });
+      }
+
+      const profissionalId = perfil.rows[0].id;
+      const fotoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+
+      const resultado = await pool.query(
+        `INSERT INTO trabalho_realizado
+        (profissional_id, titulo, foto_url, descricao)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, profissional_id, titulo, foto_url, descricao;`,
+        [profissionalId, titulo, fotoUrl, descricao],
+      );
+
+      return res.status(201).json({
+        mensagem: 'Trabalho cadastrado com sucesso.',
+        trabalho: resultado.rows[0],
+      });
+    } catch (erro) {
+      if (caminhoFoto) {
+        const fs = require('fs/promises');
+        await fs.unlink(caminhoFoto).catch(() => {});
+      }
+
+      console.error('Erro ao cadastrar trabalho:', erro.message);
+
+      return res.status(500).json({
+        mensagem: 'Erro ao cadastrar trabalho.',
+      });
+    }
+  },
+);
+
+/** Cadastro de oferta de serviço - SCRUM-276 */
+router.post('/ofertas-servico', autenticar, async (req, res) => {
+  if (req.usuario.papel !== 'profissional') {
+    return res.status(403).json({
+      mensagem: 'Acesso permitido somente a profissionais.',
+    });
+  }
+
+  const { servico_id } = req.body;
+
+  if (
+    servico_id === undefined ||
+    servico_id === null ||
+    !/^[1-9]\d*$/.test(String(servico_id))
+  ) {
+    return res.status(400).json({
+      mensagem: 'Informe um ID de serviço válido.',
+    });
+  }
+
+  try {
+    const perfil = await pool.query(
+      'SELECT id FROM profissional WHERE usuario_id = $1;',
+      [req.usuario.id],
+    );
+
+    if (perfil.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Perfil profissional não encontrado.',
+      });
+    }
+
+    const profissionalId = perfil.rows[0].id;
+
+    const servico = await pool.query('SELECT id FROM servico WHERE id = $1;', [
+      servico_id,
+    ]);
+
+    if (servico.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Serviço não encontrado.',
+      });
+    }
+
+    const ofertaExistente = await pool.query(
+      `SELECT id
+       FROM oferta_servico
+       WHERE profissional_id = $1 AND servico_id = $2;`,
+      [profissionalId, servico_id],
+    );
+
+    if (ofertaExistente.rows.length > 0) {
+      return res.status(409).json({
+        mensagem: 'Este serviço já está associado ao seu perfil.',
+      });
+    }
+
+    const resultado = await pool.query(
+      `INSERT INTO oferta_servico (profissional_id, servico_id)
+       VALUES ($1, $2)
+       RETURNING id, profissional_id, servico_id;`,
+      [profissionalId, servico_id],
+    );
+
+    return res.status(201).json({
+      mensagem: 'Serviço associado ao perfil com sucesso.',
+      oferta: resultado.rows[0],
+    });
+  } catch (erro) {
+    if (erro.code === '23505') {
+      return res.status(409).json({
+        mensagem: 'Este serviço já está associado ao seu perfil.',
+      });
+    }
+
+    console.error('Erro ao cadastrar oferta de serviço:', erro.message);
+
+    return res.status(500).json({
+      mensagem: 'Erro ao cadastrar oferta de serviço.',
+    });
+  }
 });
 
 module.exports = router;
