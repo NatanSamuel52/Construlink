@@ -1,5 +1,6 @@
 // Cadastro.jsx - SCRUM-293/294/295/296
 import { useState } from 'react';
+import { API_URL } from '../../config/api';
 import './Cadastro.css';
 
 export default function Cadastro({ onNavegar, onCadastroSucesso }) {
@@ -62,7 +63,7 @@ export default function Cadastro({ onNavegar, onCadastroSucesso }) {
     setCarregando(true);
 
     try {
-      const resposta = await fetch('http://localhost:3000/api/cadastro', {
+      const resposta = await fetch(`${API_URL}/cadastro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

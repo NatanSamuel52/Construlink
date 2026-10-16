@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
+import { API_URL } from '../../config/api';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 
 import './PerfilPublico.css';
@@ -27,10 +27,9 @@ function PerfilPublico() {
       setTrabalhos([]);
 
       try {
-        const respostaPerfil = await fetch(
-          `http://localhost:3000/api/profissionais/${id}`,
-          { signal: controlador.signal },
-        );
+        const respostaPerfil = await fetch(`${API_URL}/profissionais/${id}`, {
+          signal: controlador.signal,
+        });
 
         if (!respostaPerfil.ok) {
           throw new Error('Não foi possível consultar o profissional.');
@@ -39,7 +38,7 @@ function PerfilPublico() {
         const dadosPerfil = await respostaPerfil.json();
 
         const respostaServicos = await fetch(
-          `http://localhost:3000/api/profissionais/${id}/servicos`,
+          `${API_URL}/profissionais/${id}/servicos`,
           { signal: controlador.signal },
         );
 
@@ -54,7 +53,7 @@ function PerfilPublico() {
 
         try {
           const respostaTrabalhos = await fetch(
-            `http://localhost:3000/api/profissionais/${id}/trabalhos`,
+            `${API_URL}/profissionais/${id}/trabalhos`,
             { signal: controlador.signal },
           );
 

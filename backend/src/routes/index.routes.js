@@ -806,7 +806,7 @@ router.post(
       }
 
       const profissionalId = perfil.rows[0].id;
-      const fotoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+      const fotoUrl = `${process.env.PUBLIC_API_URL}/uploads/${req.file.filename}`;
 
       const resultado = await pool.query(
         `INSERT INTO trabalho_realizado

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { obterSessao } from '../../utils/auth.js';
+import { API_URL } from '../../config/api';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 import './CadastroTrabalho.css';
-
-const API_URL = 'http://localhost:3000/api';
 
 export default function CadastroTrabalho() {
   const navigate = useNavigate();
