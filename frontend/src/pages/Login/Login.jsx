@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { salvarSessao } from '../../utils/auth';
+import { API_URL } from '../../config/api';
 import './Login.css';
 
 export default function Login({ onLoginSucesso, onNavegar }) {
@@ -38,7 +39,7 @@ export default function Login({ onLoginSucesso, onNavegar }) {
     setErros({});
 
     try {
-      const resposta = await fetch('http://localhost:3000/api/login', {
+      const resposta = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

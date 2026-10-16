@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
-
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
-
 import { obterSessao } from '../../utils/auth';
+import { API_URL } from '../../config/api';
 
 import {
   buscarMeuPerfilProfissional,
@@ -14,8 +12,6 @@ import {
 } from '../../servicos/api';
 
 import './PerfilProfissional.css';
-
-const API_URL = 'http://localhost:3000/api';
 
 export default function PerfilProfissional() {
   const navigate = useNavigate();
