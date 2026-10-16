@@ -1,0 +1,331 @@
+.pagina-como-funciona {
+  width: min(1120px, 90%);
+  margin: 0 auto;
+  padding: 4rem 0;
+  color: #f2f3f5;
+}
+
+.como-funciona-hero {
+  max-width: 780px;
+  margin: 0 auto 4rem;
+  text-align: center;
+}
+
+.como-funciona-etiqueta,
+.como-funciona-final-detalhe {
+  color: #60a5fa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.como-funciona-etiqueta {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #294875;
+  border-radius: 999px;
+  background: #121f33;
+  margin-bottom: 1.5rem;
+}
+
+.como-funciona-hero h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.2rem, 5vw, 3.7rem);
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+
+.como-funciona-hero h1 span {
+  color: #60a5fa;
+}
+
+.como-funciona-hero p {
+  max-width: 640px;
+  margin: 0 auto;
+  color: #9aa0aa;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.fluxo-como-funciona {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.fluxo-etapa {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  padding: 1.75rem;
+  border: 1px solid #292d38;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #191c24, #111318);
+  animation: destacar-etapa 6s ease-in-out infinite;
+  transition: border-color 0.3s ease;
+}
+
+.fluxo-etapa--busca {
+  animation-delay: 0s;
+}
+
+.fluxo-etapa--perfil {
+  animation-delay: 2s;
+}
+
+.fluxo-etapa--trabalhos {
+  animation-delay: 4s;
+}
+
+.fluxo-etapa-icone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 2rem;
+  border: 1px solid #294875;
+  border-radius: 17px;
+  background: #14233a;
+  color: #60a5fa;
+}
+
+.fluxo-etapa-icone span {
+  position: absolute;
+  right: -9px;
+  bottom: -9px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #191c24;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.fluxo-etapa-legenda {
+  color: #60a5fa;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.fluxo-etapa h2 {
+  margin: 0.75rem 0;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.fluxo-etapa p {
+  margin: 0;
+  color: #9aa0aa;
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.fluxo-etapa-seta {
+  position: absolute;
+  top: 46px;
+  right: -26px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  border: 1px solid #294875;
+  border-radius: 50%;
+  background: #0c0d10;
+  color: #60a5fa;
+}
+
+.fluxo-caminho {
+  position: absolute;
+  top: 55px;
+  right: 16%;
+  left: 16%;
+  height: 2px;
+  overflow: hidden;
+  background: #252c39;
+}
+
+.fluxo-caminho-progresso {
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+  animation: percorrer-fluxo 3s linear infinite;
+}
+
+.como-funciona-final {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 3rem;
+  padding: 2.5rem;
+  border: 1px solid #263b59;
+  border-radius: 20px;
+  background: linear-gradient(120deg, #142238, #11151e);
+}
+
+.como-funciona-final > div {
+  max-width: 720px;
+}
+
+.como-funciona-final h2 {
+  margin: 0.75rem 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.como-funciona-final p {
+  margin: 0;
+  color: #b0b8c6;
+  line-height: 1.8;
+}
+
+.como-funciona-final-icone {
+  flex-shrink: 0;
+  width: 76px;
+  height: 76px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #1b3455;
+  color: #60a5fa;
+}
+
+@keyframes destacar-etapa {
+  0%,
+  27%,
+  100% {
+    border-color: #292d38;
+    box-shadow: 0 0 0 transparent;
+    transform: translateY(0);
+  }
+
+  8%,
+  19% {
+    border-color: #3b82f6;
+    box-shadow: 0 0 28px rgba(59, 130, 246, 0.14);
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes percorrer-fluxo {
+  from {
+    transform: translateX(-110%);
+  }
+
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fluxo-etapa,
+  .fluxo-caminho-progresso {
+    animation: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .pagina-como-funciona {
+    padding: 3rem 0;
+  }
+
+  .como-funciona-hero {
+    margin-bottom: 2.5rem;
+  }
+
+  .fluxo-como-funciona {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .fluxo-caminho {
+    top: 45px;
+    bottom: 45px;
+    left: 33px;
+    width: 2px;
+    height: auto;
+  }
+
+  .fluxo-caminho-progresso {
+    width: 100%;
+    height: 35%;
+    animation-name: percorrer-fluxo-vertical;
+  }
+
+  .fluxo-etapa {
+    padding: 1.5rem;
+  }
+
+  .fluxo-etapa-icone {
+    margin-bottom: 1.5rem;
+  }
+
+  .fluxo-etapa-seta {
+    display: none;
+  }
+
+  .como-funciona-final {
+    padding: 1.75rem;
+  }
+
+  .como-funciona-final-icone {
+    width: 54px;
+    height: 54px;
+    padding: 12px;
+  }
+}
+
+@keyframes percorrer-fluxo-vertical {
+  from {
+    transform: translateY(-110%);
+  }
+
+  to {
+    transform: translateY(300%);
+  }
+}
+
+@media (max-width: 480px) {
+  .como-funciona-final {
+    align-items: flex-start;
+  }
+
+  .como-funciona-final-icone {
+    display: none;
+  }
+}
+
+.como-funciona-final-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  background: #3b82f6;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.como-funciona-final-botao:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.como-funciona-final-botao:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 4px;
+}

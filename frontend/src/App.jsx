@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import SobreNos from './pages/SobreNos/SobreNos.jsx';
 import Cabecalho from './componentes-reutilizaveis/Cabecalho/Cabecalho';
 import Login from './pages/Login/Login';
 import Cadastro from './pages/Cadastro/Cadastro';
-
+import ComoFunciona from './pages/ComoFunciona/ComoFunciona.jsx';
 import Home from './pages/Home/Home.jsx';
 import ResultadoDaPesquisa from './pages/Resultados/ResultadoDaPesquisa.jsx';
 import PerfilPublico from './pages/PerfilPublico/PerfilPublico.jsx';
@@ -14,8 +14,6 @@ import { obterSessao, limparSessao } from './utils/auth';
 import CadastroTrabalho from './pages/CadastroTrabalho/CadastroTrabalho.jsx';
 
 import './App.css';
-
-
 
 function Painel({ usuario, onLogout, onNavegar }) {
   return (
@@ -91,13 +89,53 @@ function Painel({ usuario, onLogout, onNavegar }) {
 
 function App() {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [usuario, setUsuario] = useState(obterSessao());
   const [alertaProtegido, setAlertaProtegido] = useState(null);
 
   useEffect(() => {
     setUsuario(obterSessao());
   }, []);
+
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'auto',
+      });
+      return;
+    }
+
+    const destinos = {
+      '#rodape-construlink': 'rodape-construlink',
+      '#profissionais-disponiveis': 'profissionais-disponiveis',
+    };
+
+    const idDestino = destinos[location.hash];
+
+    if (!idDestino) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'auto',
+      });
+      return;
+    }
+
+    const temporizador = setTimeout(() => {
+      const elemento = document.getElementById(idDestino);
+
+      elemento?.scrollIntoView({
+        behavior: 'auto',
+        block: 'start',
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(temporizador);
+    };
+  }, [location.pathname, location.hash, location.key]);
 
   function handleLoginSucesso(dadosUsuario) {
     const sessao = obterSessao() || dadosUsuario;
@@ -134,6 +172,16 @@ function App() {
 
     if (destino === 'home') {
       navigate('/');
+      return;
+    }
+
+    if (destino === 'como-funciona') {
+      navigate('/como-funciona');
+      return;
+    }
+
+    if (destino === 'sobre') {
+      navigate('/sobre');
       return;
     }
 
@@ -187,7 +235,8 @@ function App() {
 
         <Routes>
           <Route path='/' element={<Home />} />
-
+          <Route path='/como-funciona' element={<ComoFunciona />} />
+          <Route path='/sobre' element={<SobreNos />} />
           <Route path='/resultados' element={<ResultadoDaPesquisa />} />
 
           <Route path='/perfil-profissional/:id' element={<PerfilPublico />} />
@@ -236,6 +285,7 @@ function App() {
               <Cadastro
                 onNavegar={navegarPara}
                 onCadastroSucesso={() => navegarPara('login')}
+                papelInicial={location.state?.papelInicial || ''}
               />
             }
           />
