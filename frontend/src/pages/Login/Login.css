@@ -2,7 +2,7 @@
 
 .login-tela {
   min-height: calc(100vh - 65px);
-  background: #0c0d10;
+  background: #071722;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,42 +154,3 @@
   color: #60a5fa;
 }
 
-.login-teste-atalhos {
-  margin-top: 1.75rem;
-  padding-top: 1.25rem;
-  border-top: 1px dashed #24262e;
-}
-
-.login-teste-atalhos__titulo {
-  display: block;
-  font-size: 0.72rem;
-  color: #64748b;
-  margin-bottom: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 600;
-}
-
-.login-teste-atalhos__botoes {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.login-teste-btn {
-  flex: 1;
-  background: #11141a;
-  border: 1px solid #1e293b;
-  color: #94a3b8;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.login-teste-btn:hover {
-  background: #1e293b;
-  color: #e2e8f0;
-  border-color: #3b82f6;
-}
