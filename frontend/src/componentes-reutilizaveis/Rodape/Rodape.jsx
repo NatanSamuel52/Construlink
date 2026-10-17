@@ -30,7 +30,7 @@ function Rodape() {
             navigate('/sobre');
           }}
         >
-          Sobre nós
+          Sobre Nós
         </a>
 
         <a
