@@ -55,6 +55,7 @@ export default function PerfilProfissional() {
 
     descricao: '',
   });
+  const [arquivoFoto, setArquivoFoto] = useState(null);
 
   function atualizarCampo(campo, valor) {
     setDadosFormulario((dadosAtuais) => ({
@@ -209,6 +210,7 @@ export default function PerfilProfissional() {
   }
 
   function abrirEdicao() {
+    setArquivoFoto(null);
     setDadosFormulario({
       nome: perfil.nome || '',
 
@@ -225,6 +227,7 @@ export default function PerfilProfissional() {
   }
 
   function cancelarEdicao() {
+    setArquivoFoto(null);
     setEditando(false);
 
     setMensagemFormulario('');
@@ -266,14 +269,12 @@ export default function PerfilProfissional() {
     try {
       const perfilAtualizado = await atualizarMeuPerfilProfissional(
         sessao.token,
-
         {
           nome,
-
           foto_perfil_url: dadosFormulario.foto_perfil_url.trim() || null,
-
           descricao: dadosFormulario.descricao.trim() || null,
         },
+        arquivoFoto,
       );
 
       setPerfil((perfilAnterior) => ({
@@ -470,25 +471,27 @@ export default function PerfilProfissional() {
                 </div>
 
                 <div className='perfil-autenticado__campo'>
-                  <label htmlFor='perfil-foto'>URL da foto de perfil</label>
+                  <label htmlFor='perfil-foto'>Foto de perfil</label>
 
                   <input
                     id='perfil-foto'
-                    type='url'
-                    placeholder='https://exemplo.com/foto.jpg'
-                    value={dadosFormulario.foto_perfil_url}
+                    type='file'
+                    accept='image/png,image/jpeg,image/webp'
                     onChange={(evento) =>
-                      atualizarCampo('foto_perfil_url', evento.target.value)
+                      setArquivoFoto(evento.target.files?.[0] || null)
                     }
                     disabled={salvando}
                   />
+
+                  <small>
+                    Selecione uma imagem PNG, JPG ou WEBP de até 5 MB.
+                  </small>
                 </div>
 
                 <div className='perfil-autenticado__campo'>
                   <label htmlFor='perfil-descricao'>
                     Descrição profissional
                   </label>
-
                   <textarea
                     id='perfil-descricao'
                     value={dadosFormulario.descricao}
