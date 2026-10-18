@@ -220,8 +220,19 @@ function PerfilPublico() {
 
           <div className='sobre-conteudo'>
             <div className='informacoes-sobre'>
-              <div className='item-sobre'>
-                <span className='icone-sobre'>👤</span>
+              <div className='item-sobre item-sobre-nome'>
+                {profissional.foto_perfil_url ? (
+                  <img
+                    className='foto-sobre-profissional'
+                    src={profissional.foto_perfil_url}
+                    alt={`Foto de ${profissional.nome}`}
+                    onError={(evento) => {
+                      evento.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span className='icone-sobre'>👤</span>
+                )}
 
                 <div>
                   <strong>Nome</strong>
