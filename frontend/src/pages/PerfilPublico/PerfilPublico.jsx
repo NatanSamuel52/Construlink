@@ -5,6 +5,14 @@ import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 
 import './PerfilPublico.css';
 
+const iconesServicos = {
+  Elétricas: '⚡',
+  Hidráulicos: '💧',
+  'Pintura Residencial': '🖌️',
+  'Montagem de móveis': '🛠️',
+  Alvenaria: '🧱',
+};
+
 function PerfilPublico() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -160,7 +168,7 @@ function PerfilPublico() {
                 {servicos.length > 0 ? (
                   servicos.map((servico) => (
                     <span key={servico.id} className='servico-perfil'>
-                      {servico.nome}
+                      {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
                     </span>
                   ))
                 ) : (
@@ -203,6 +211,15 @@ function PerfilPublico() {
                     <div className='conteudo-trabalho'>
                       <h3>{trabalho.titulo}</h3>
                       <p>{trabalho.descricao}</p>
+
+                      {trabalho.criado_em && (
+                        <p className='data-trabalho'>
+                          Data:{' '}
+                          {new Date(trabalho.criado_em).toLocaleDateString(
+                            'pt-BR',
+                          )}
+                        </p>
+                      )}
                     </div>
                   </article>
                 ))}
@@ -220,8 +237,19 @@ function PerfilPublico() {
 
           <div className='sobre-conteudo'>
             <div className='informacoes-sobre'>
-              <div className='item-sobre'>
-                <span className='icone-sobre'>👤</span>
+              <div className='item-sobre item-sobre-nome'>
+                {profissional.foto_perfil_url ? (
+                  <img
+                    className='foto-sobre-profissional'
+                    src={profissional.foto_perfil_url}
+                    alt={`Foto de ${profissional.nome}`}
+                    onError={(evento) => {
+                      evento.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span className='icone-sobre'>👤</span>
+                )}
 
                 <div>
                   <strong>Nome</strong>
