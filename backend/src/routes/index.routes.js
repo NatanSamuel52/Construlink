@@ -527,6 +527,267 @@ router.put(
   },
 );
 
+// Rotas da SCRUM-384: editar e excluir trabalhos realizados
+const fsTrabalhos = require('fs/promises');
+const pathTrabalhos = require('path');
+
+// Retorna o caminho somente para fotos locais reconhecidas do Construlink.
+function obterCaminhoFotoLocal(fotoUrl) {
+  if (!fotoUrl) return null;
+
+  try {
+    const baseUrl = new URL(
+      process.env.PUBLIC_API_URL || 'http://localhost:3000',
+    );
+    const urlFoto = new URL(fotoUrl);
+
+    if (
+      urlFoto.origin !== baseUrl.origin ||
+      !urlFoto.pathname.startsWith('/uploads/')
+    ) {
+      return null;
+    }
+
+    const nomeArquivo = pathTrabalhos.basename(urlFoto.pathname);
+
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$/i.test(
+        nomeArquivo,
+      )
+    ) {
+      return null;
+    }
+
+    return pathTrabalhos.resolve(
+      __dirname,
+      '../../uploads',
+      nomeArquivo,
+    );
+  } catch {
+    return null;
+  }
+}
+
+// A falha ao remover uma foto antiga não deve desfazer uma operação
+// que já foi confirmada no banco.
+async function removerFotoLocal(fotoUrl) {
+  const caminho = obterCaminhoFotoLocal(fotoUrl);
+
+  if (!caminho) return;
+
+  try {
+    await fsTrabalhos.unlink(caminho);
+  } catch (erro) {
+    if (erro.code !== 'ENOENT') {
+      console.error('Não foi possível remover a foto local:', erro.message);
+    }
+  }
+}
+
+// Edita um trabalho pertencente ao profissional autenticado.
+router.put(
+  '/trabalhos/:id',
+  autenticar,
+  (req, res, next) => {
+    if (req.usuario.papel !== 'profissional') {
+      return res.status(403).json({
+        mensagem: 'Acesso permitido somente a profissionais.',
+      });
+    }
+
+    if (!/^[1-9]\d*$/.test(req.params.id)) {
+      return res.status(400).json({
+        mensagem: 'O ID do trabalho deve ser um número positivo.',
+      });
+    }
+
+    uploadTrabalho.single('foto')(req, res, (erro) => {
+      if (erro) {
+        const mensagem =
+          erro.code === 'LIMIT_FILE_SIZE'
+            ? 'A imagem deve ter no máximo 5 MB.'
+            : erro.message || 'Erro ao enviar a imagem.';
+
+        return res.status(400).json({ mensagem });
+      }
+
+      next();
+    });
+  },
+  async (req, res) => {
+    let client;
+    let transacaoIniciada = false;
+
+    async function limparNovaFoto() {
+      if (req.file?.path) {
+        await fsTrabalhos.unlink(req.file.path).catch(() => {});
+      }
+    }
+
+    try {
+      const titulo =
+        typeof req.body.titulo === 'string' ? req.body.titulo.trim() : '';
+      const descricao =
+        typeof req.body.descricao === 'string'
+          ? req.body.descricao.trim()
+          : '';
+
+      if (!titulo || titulo.length > 150) {
+        await limparNovaFoto();
+        return res.status(400).json({
+          mensagem: 'Informe um título com até 150 caracteres.',
+        });
+      }
+
+      if (!descricao || descricao.length > 500) {
+        await limparNovaFoto();
+        return res.status(400).json({
+          mensagem: 'Informe uma descrição com até 500 caracteres.',
+        });
+      }
+
+      client = await pool.connect();
+      await client.query('BEGIN');
+      transacaoIniciada = true;
+
+      const existente = await client.query(
+        `
+          SELECT t.id, t.foto_url
+          FROM trabalho_realizado t
+          INNER JOIN profissional p ON p.id = t.profissional_id
+          WHERE t.id = $1 AND p.usuario_id = $2
+          FOR UPDATE OF t;
+        `,
+        [req.params.id, req.usuario.id],
+      );
+
+      if (existente.rows.length === 0) {
+        await client.query('ROLLBACK');
+        transacaoIniciada = false;
+        await limparNovaFoto();
+
+        return res.status(404).json({
+          mensagem: 'Trabalho não encontrado para este profissional.',
+        });
+      }
+
+      const trabalhoAnterior = existente.rows[0];
+      const fotoUrl = req.file
+        ? `${(process.env.PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '')}/uploads/${req.file.filename}`
+        : trabalhoAnterior.foto_url;
+
+      const atualizado = await client.query(
+        `
+          UPDATE trabalho_realizado
+          SET titulo = $1, descricao = $2, foto_url = $3
+          WHERE id = $4
+          RETURNING id, profissional_id, titulo, foto_url, descricao, criado_em;
+        `,
+        [titulo, descricao, fotoUrl, trabalhoAnterior.id],
+      );
+
+      await client.query('COMMIT');
+      transacaoIniciada = false;
+
+      if (req.file && fotoUrl !== trabalhoAnterior.foto_url) {
+        await removerFotoLocal(trabalhoAnterior.foto_url);
+      }
+
+      return res.status(200).json({
+        mensagem: 'Trabalho atualizado com sucesso.',
+        trabalho: atualizado.rows[0],
+      });
+    } catch (erro) {
+      if (client && transacaoIniciada) {
+        await client.query('ROLLBACK').catch(() => {});
+      }
+
+      await limparNovaFoto();
+
+      console.error('Erro ao atualizar trabalho:', erro.message);
+
+      return res.status(500).json({
+        mensagem: 'Erro ao atualizar o trabalho.',
+      });
+    } finally {
+      if (client) client.release();
+    }
+  },
+);
+
+// Exclui um trabalho pertencente ao profissional autenticado.
+router.delete(
+  '/trabalhos/:id',
+  autenticar,
+  async (req, res) => {
+    if (req.usuario.papel !== 'profissional') {
+      return res.status(403).json({
+        mensagem: 'Acesso permitido somente a profissionais.',
+      });
+    }
+
+    if (!/^[1-9]\d*$/.test(req.params.id)) {
+      return res.status(400).json({
+        mensagem: 'O ID do trabalho deve ser um número positivo.',
+      });
+    }
+
+    let client;
+    let transacaoIniciada = false;
+
+    try {
+      client = await pool.connect();
+      await client.query('BEGIN');
+      transacaoIniciada = true;
+
+      const existente = await client.query(
+        `
+          SELECT t.id, t.foto_url
+          FROM trabalho_realizado t
+          INNER JOIN profissional p ON p.id = t.profissional_id
+          WHERE t.id = $1 AND p.usuario_id = $2
+          FOR UPDATE OF t;
+        `,
+        [req.params.id, req.usuario.id],
+      );
+
+      if (existente.rows.length === 0) {
+        await client.query('ROLLBACK');
+        transacaoIniciada = false;
+
+        return res.status(404).json({
+          mensagem: 'Trabalho não encontrado para este profissional.',
+        });
+      }
+
+      await client.query(
+        'DELETE FROM trabalho_realizado WHERE id = $1;',
+        [existente.rows[0].id],
+      );
+
+      await client.query('COMMIT');
+      transacaoIniciada = false;
+
+      await removerFotoLocal(existente.rows[0].foto_url);
+
+      return res.status(200).json({
+        mensagem: 'Trabalho excluído com sucesso.',
+      });
+    } catch (erro) {
+      if (client && transacaoIniciada) {
+        await client.query('ROLLBACK').catch(() => {});
+      }
+
+      console.error('Erro ao excluir trabalho:', erro.message);
+
+      return res.status(500).json({
+        mensagem: 'Erro ao excluir o trabalho.',
+      });
+    } finally {
+      if (client) client.release();
+    }
+  },
+);
 // Rota inicial da API
 router.get('/', (req, res) => {
   res.json({
