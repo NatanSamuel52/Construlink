@@ -1,76 +1,66 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CardProfissionalResultado.css';
 
+const iconesServicos = {
+  Elétricas: '⚡',
+  Hidráulicos: '💧',
+  'Pintura Residencial': '🖌️',
+  'Montagem de móveis': '🛠️',
+  Alvenaria: '🧱',
+};
+
 function CardProfissionalResultado({
-    id,
-    nome,
-    descricao,
-    foto_perfil_url,
-    servicos
+  id,
+  nome,
+  descricao,
+  foto_perfil_url,
+  servicos,
 }) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [erroFoto, setErroFoto] = useState(false);
 
-    function abrirPerfil() {
-        navigate(`/perfil-profissional/${id}`);
-    }
+  const exibirFoto = foto_perfil_url && !erroFoto;
 
-    return (
-        <article className="card-profissional-resultado">
+  function abrirPerfil() {
+    navigate(`/perfil-profissional/${id}`);
+  }
 
-            <div className="foto-profissional-resultado">
+  return (
+    <article className='card-profissional-resultado'>
+      <div className='foto-profissional-resultado'>
+        {exibirFoto ? (
+          <img
+            src={foto_perfil_url}
+            alt={`Foto de ${nome}`}
+            onError={() => setErroFoto(true)}
+          />
+        ) : (
+          <div className='foto-placeholder-resultado'>Foto do profissional</div>
+        )}
+      </div>
 
-                {foto_perfil_url ? (
-                    <img
-                        src={foto_perfil_url}
-                        alt={`Foto de ${nome}`}
-                    />
-                ) : (
-                    <div className="foto-placeholder-resultado">
-                        Foto do profissional
-                    </div>
-                )}
+      <div className='conteudo-profissional-resultado'>
+        <h3>{nome}</h3>
 
-            </div>
+        <p className='descricao-profissional-resultado'>{descricao}</p>
 
-            <div className="conteudo-profissional-resultado">
+        <div className='servicos-profissional-resultado'>
+          <span className='titulo-servicos'>Serviços:</span>
 
-                <h3>
-                    {nome}
-                </h3>
+          {servicos.map((servico) => (
+            <span key={servico.id} className='servico-resultado'>
+              {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
+            </span>
+          ))}
+        </div>
+      </div>
 
-                <p className="descricao-profissional-resultado">
-                    {descricao}
-                </p>
-
-                <div className="servicos-profissional-resultado">
-
-                    <span className="titulo-servicos">
-                        Serviços:
-                    </span>
-
-                    {servicos.map((servico) => (
-                        <span
-                            key={servico.id}
-                            className="servico-resultado"
-                        >
-                            {servico.nome}
-                        </span>
-                    ))}
-
-                </div>
-
-            </div>
-
-            <div className="acao-profissional-resultado">
-
-                <button onClick={abrirPerfil}>
-                    Ver perfil
-                </button>
-
-            </div>
-
-        </article>
-    );
+      <div className='acao-profissional-resultado'>
+        <button onClick={abrirPerfil}>Ver perfil</button>
+      </div>
+    </article>
+  );
 }
 
 export default CardProfissionalResultado;

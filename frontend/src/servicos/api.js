@@ -78,14 +78,26 @@ export async function buscarMeuPerfilProfissional(token) {
   return dados;
 }
 
-export async function atualizarMeuPerfilProfissional(token, dadosPerfil) {
+export async function atualizarMeuPerfilProfissional(
+  token,
+  dadosPerfil,
+  arquivoFoto = null,
+) {
+  const corpo = arquivoFoto ? new FormData() : dadosPerfil;
+
+  if (arquivoFoto) {
+    corpo.append('nome', dadosPerfil.nome);
+    corpo.append('descricao', dadosPerfil.descricao ?? '');
+    corpo.append('foto', arquivoFoto);
+  }
+
   const resposta = await fetch(`${API_URL}/meu-perfil-profissional`, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
+      ...(arquivoFoto ? {} : { 'Content-Type': 'application/json' }),
     },
-    body: JSON.stringify(dadosPerfil),
+    body: arquivoFoto ? corpo : JSON.stringify(corpo),
   });
 
   const dados = await resposta.json();
