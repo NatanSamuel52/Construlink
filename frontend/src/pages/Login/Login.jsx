@@ -50,7 +50,11 @@ export default function Login({ onLoginSucesso, onNavegar }) {
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        setErros({ geral: dados.mensagem || 'Credenciais inválidas. Verifique seu e-mail e senha.' });
+        setErros({
+          geral:
+            dados.mensagem ||
+            'Credenciais inválidas. Verifique seu e-mail e senha.',
+        });
         return;
       }
 
@@ -62,104 +66,89 @@ export default function Login({ onLoginSucesso, onNavegar }) {
       }
     } catch (erro) {
       console.error('Erro na requisição de login:', erro);
-      setErros({ geral: 'Não foi possível conectar ao servidor. Verifique se o backend está em execução.' });
+      setErros({
+        geral:
+          'Não foi possível conectar ao servidor. Verifique se o backend está em execução.',
+      });
     } finally {
       setCarregando(false);
     }
   }
 
-  function preencherContaTeste(emailTeste, senhaTeste) {
-    setEmail(emailTeste);
-    setSenha(senhaTeste);
-    setErros({});
-  }
-
   return (
-    <div className="login-tela">
-      <main className="login-conteudo">
-        <form className="login-card" onSubmit={handleSubmit} noValidate>
-          <div className="login-card__cabecalho">
-            <h1 className="login-card__titulo">Entrar na sua conta</h1>
-            <p className="login-card__subtitulo">
-              Acesse a plataforma Construlink para gerenciar seus serviços ou entrar em contato.
+    <div className='login-tela'>
+      <main className='login-conteudo'>
+        <form className='login-card' onSubmit={handleSubmit} noValidate>
+          <div className='login-card__cabecalho'>
+            <h1 className='login-card__titulo'>Entrar na sua conta</h1>
+            <p className='login-card__subtitulo'>
+              Acesse a plataforma Construlink para gerenciar seus serviços ou
+              entrar em contato.
             </p>
           </div>
 
           {erros.geral && (
-            <div className="login-alerta" role="alert">
-              <span className="login-alerta__icone">⚠️</span>
+            <div className='login-alerta' role='alert'>
+              <span className='login-alerta__icone'>⚠️</span>
               <span>{erros.geral}</span>
             </div>
           )}
 
-          <div className="login-campo">
-            <label htmlFor="email" className="login-campo__label">
+          <div className='login-campo'>
+            <label htmlFor='email' className='login-campo__label'>
               E-mail
             </label>
             <input
-              id="email"
-              type="email"
+              id='email'
+              type='email'
               className={`login-campo__input ${erros.email ? 'login-campo__input--erro' : ''}`}
-              placeholder="seu@email.com"
+              placeholder='seu@email.com'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
+              autoComplete='email'
               disabled={carregando}
             />
-            {erros.email && <span className="login-campo__mensagem-erro">{erros.email}</span>}
+            {erros.email && (
+              <span className='login-campo__mensagem-erro'>{erros.email}</span>
+            )}
           </div>
 
-          <div className="login-campo">
-            <label htmlFor="senha" className="login-campo__label">
+          <div className='login-campo'>
+            <label htmlFor='senha' className='login-campo__label'>
               Senha
             </label>
             <input
-              id="senha"
-              type="password"
+              id='senha'
+              type='password'
               className={`login-campo__input ${erros.senha ? 'login-campo__input--erro' : ''}`}
-              placeholder="••••••••"
+              placeholder='••••••••'
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              autoComplete="current-password"
+              autoComplete='current-password'
               disabled={carregando}
             />
-            {erros.senha && <span className="login-campo__mensagem-erro">{erros.senha}</span>}
+            {erros.senha && (
+              <span className='login-campo__mensagem-erro'>{erros.senha}</span>
+            )}
           </div>
 
-          <button type="submit" className="login-btn-enviar" disabled={carregando}>
+          <button
+            type='submit'
+            className='login-btn-enviar'
+            disabled={carregando}
+          >
             {carregando ? 'Validando credenciais...' : 'Entrar'}
           </button>
 
-          <div className="login-rodape-card">
+          <div className='login-rodape-card'>
             <span>Não possui conta? </span>
             <button
-              type="button"
-              className="login-link-cadastro"
+              type='button'
+              className='login-link-cadastro'
               onClick={() => onNavegar && onNavegar('cadastro')}
             >
               Cadastre-se
             </button>
-          </div>
-
-          {/* Atalhos para testes da avaliação */}
-          <div className="login-teste-atalhos">
-            <span className="login-teste-atalhos__titulo">Acesso rápido para testes (FEMF):</span>
-            <div className="login-teste-atalhos__botoes">
-              <button
-                type="button"
-                className="login-teste-btn"
-                onClick={() => preencherContaTeste('ana.silva.teste@construlink.local', '123456')}
-              >
-                👤 Cliente (Ana)
-              </button>
-              <button
-                type="button"
-                className="login-teste-btn"
-                onClick={() => preencherContaTeste('carlos.oliveira.teste@construlink.local', '123456')}
-              >
-                🔨 Profissional (Carlos)
-              </button>
-            </div>
           </div>
         </form>
       </main>

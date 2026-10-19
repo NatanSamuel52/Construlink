@@ -38,7 +38,7 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
             className='cabecalho__link cabecalho__link--ativo'
             onClick={() => onNavegar && onNavegar('home')}
           >
-            Início
+            Home
           </button>
 
           <button
@@ -46,7 +46,7 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
             className='cabecalho__link'
             onClick={() => onNavegar && onNavegar('sobre')}
           >
-            Sobre
+            Sobre Nós
           </button>
 
           <button
