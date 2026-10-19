@@ -96,3 +96,73 @@ export async function atualizarMeuPerfilProfissional(token, dadosPerfil) {
 
   return dados;
 }
+
+export async function iniciarConversa(token, { profissional_id, servico_id }) {
+  const resposta = await fetch(`${API_URL}/conversas`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ profissional_id, servico_id }),
+  });
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    throw new Error(dados.mensagem || 'Erro ao iniciar conversa');
+  }
+
+  return dados.conversa;
+}
+
+export async function buscarConversa(token, conversaId) {
+  const resposta = await fetch(`${API_URL}/conversas/${conversaId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    throw new Error(dados.mensagem || 'Erro ao carregar detalhes da conversa');
+  }
+
+  return dados;
+}
+
+export async function buscarMensagens(token, conversaId) {
+  const resposta = await fetch(`${API_URL}/conversas/${conversaId}/mensagens`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    throw new Error(dados.mensagem || 'Erro ao carregar mensagens');
+  }
+
+  return dados;
+}
+
+export async function enviarMensagem(token, conversaId, conteudo) {
+  const resposta = await fetch(`${API_URL}/conversas/${conversaId}/mensagens`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ conteudo }),
+  });
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    throw new Error(dados.mensagem || 'Erro ao enviar mensagem');
+  }
+
+  return dados;
+}
