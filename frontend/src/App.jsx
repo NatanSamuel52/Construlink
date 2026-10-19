@@ -148,7 +148,7 @@ function App() {
       return;
     }
 
-    navigate('/painel');
+    navigate('/');
   }
 
   function handleLogout() {
