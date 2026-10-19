@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CardProfissionalResultado.css';
 
+const iconesServicos = {
+  Elétricas: '⚡',
+  Hidráulicos: '💧',
+  'Pintura Residencial': '🖌️',
+  'Montagem de móveis': '🛠️',
+  Alvenaria: '🧱',
+};
+
 function CardProfissionalResultado({
   id,
   nome,
@@ -42,7 +50,7 @@ function CardProfissionalResultado({
 
           {servicos.map((servico) => (
             <span key={servico.id} className='servico-resultado'>
-              {servico.nome}
+              {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
             </span>
           ))}
         </div>
