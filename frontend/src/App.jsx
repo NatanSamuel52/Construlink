@@ -200,6 +200,19 @@ function App() {
       return;
     }
 
+    if (destino === 'meu-perfil-profissional') {
+      if (usuario?.papel !== 'profissional') {
+        setAlertaProtegido(
+          'Acesso restrito: somente profissionais autenticados podem acessar o próprio perfil.',
+        );
+        navigate('/login');
+        return;
+      }
+
+      navigate('/meu-perfil-profissional');
+      return;
+    }
+
     if (destino === 'resultados') {
       navigate('/resultados');
       return;
