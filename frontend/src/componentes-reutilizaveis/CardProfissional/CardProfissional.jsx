@@ -1,6 +1,15 @@
+import { useNavigate } from 'react-router-dom';
 import './CardProfissional.css';
 
-function CardProfissional({ nome, descricao, foto_perfil_url, servicos }) {
+function CardProfissional({ id, nome, descricao, foto_perfil_url, servicos }) {
+    const navigate = useNavigate();
+
+    function abrirPerfil() {
+        if (id) {
+            navigate(`/perfil-profissional/${id}`);
+        }
+    }
+
     return (
         <div className="card-profissional">
 
@@ -23,13 +32,13 @@ function CardProfissional({ nome, descricao, foto_perfil_url, servicos }) {
                     {descricao}
                 </p>
                 <div className="servicos-profissional">
-                    {servicos.map((servico) => (
+                    {servicos && servicos.map((servico) => (
                         <span key={servico.id} className="servico">
                             {servico.nome}
                         </span>
                     ))}
                 </div>
-                <button>
+                <button type="button" onClick={abrirPerfil}>
                     Ver perfil
                 </button>
 
@@ -38,4 +47,5 @@ function CardProfissional({ nome, descricao, foto_perfil_url, servicos }) {
         </div>
     );
 }
+
 export default CardProfissional;
