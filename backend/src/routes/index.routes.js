@@ -115,7 +115,8 @@ router.get('/profissionais/:id/trabalhos', async (req, res) => {
           id,
           titulo,
           foto_url,
-          descricao
+          descricao,
+          criado_em
         FROM trabalho_realizado
         WHERE profissional_id = $1
         ORDER BY id;
