@@ -38,6 +38,7 @@ CREATE TABLE trabalho_realizado (
     titulo VARCHAR(150) NOT NULL,
     foto_url TEXT NOT NULL,
     descricao TEXT,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_trabalho_profissional
         FOREIGN KEY (profissional_id)
         REFERENCES profissional(id)
