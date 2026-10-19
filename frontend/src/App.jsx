@@ -12,6 +12,7 @@ import PerfilProfissional from './pages/PerfilProfissional/PerfilProfissional.js
 
 import { obterSessao, limparSessao } from './utils/auth';
 import CadastroTrabalho from './pages/CadastroTrabalho/CadastroTrabalho.jsx';
+import Contato from './pages/Contato/Contato.jsx';
 
 import './App.css';
 
@@ -191,6 +192,8 @@ function App() {
           <Route path='/resultados' element={<ResultadoDaPesquisa />} />
 
           <Route path='/perfil-profissional/:id' element={<PerfilPublico />} />
+
+          <Route path='/contato/:id' element={<Contato />} />
 
           <Route
             path='/meu-perfil-profissional'

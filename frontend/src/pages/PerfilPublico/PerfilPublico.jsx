@@ -97,6 +97,10 @@ function PerfilPublico() {
     };
   }, [id]);
 
+  function irParaContato() {
+    navigate(`/contato/${id}`);
+  }
+
   function voltarParaResultados() {
     navigate(-1);
   }
@@ -170,7 +174,7 @@ function PerfilPublico() {
             </div>
 
             <div className='acao-contato'>
-              <button type='button' disabled>
+              <button type='button' onClick={irParaContato}>
                 💬 Entrar em contato
               </button>
             </div>
@@ -264,7 +268,7 @@ function PerfilPublico() {
                 Entre em contato com este profissional e envie sua mensagem.
               </p>
 
-              <button type='button' disabled>
+              <button type='button' onClick={irParaContato}>
                 Entrar em contato
               </button>
             </div>

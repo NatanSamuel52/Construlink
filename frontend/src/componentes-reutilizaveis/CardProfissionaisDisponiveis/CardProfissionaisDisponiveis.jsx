@@ -104,6 +104,7 @@ function ProfissionaisDisponiveis() {
 
                         <CardProfissional
                             key={profissional.id}
+                            id={profissional.id}
                             nome={profissional.nome}
                             descricao={profissional.descricao}
                             foto_perfil_url={
