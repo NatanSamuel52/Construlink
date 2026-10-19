@@ -578,7 +578,7 @@ router.post('/login', async (req, res) => {
         sub: String(usuario.id),
         papel: usuario.papel,
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'construlink_jwt_secret_dev_2026',
       { expiresIn: '2h' },
     );
 
