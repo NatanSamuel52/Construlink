@@ -106,6 +106,14 @@ function App() {
     setUsuario(sessao);
     setAlertaProtegido(null);
 
+    // Se houver uma rota de retorno guardada no redirect (ex: /contato/:id)
+    const params = new URLSearchParams(window.location.search);
+    const redirectUrl = params.get('redirect');
+    if (redirectUrl) {
+      navigate(redirectUrl);
+      return;
+    }
+
     if (sessao.papel === 'profissional') {
       navigate('/meu-perfil-profissional');
       return;

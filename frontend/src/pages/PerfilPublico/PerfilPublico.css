@@ -473,3 +473,18 @@
         padding: 14px;
     }
 }
+.perfil-publico .servico-perfil {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.perfil-publico .servico-perfil:hover {
+    background-color: #1a476f;
+}
+
+.perfil-publico .servico-perfil.selecionado {
+    background-color: #1685F7;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    box-shadow: 0 0 8px rgba(22, 133, 247, 0.4);
+}

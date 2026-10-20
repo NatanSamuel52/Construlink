@@ -951,9 +951,9 @@ router.post('/conversas', autenticar, async (req, res) => {
       clienteId = clienteResultado.rows[0].id;
     }
 
-    // 2. Verificar se o profissional existe
+    // 2. Verificar se o profissional existe e identificar dados
     const profResultado = await pool.query(
-      `SELECT p.id, u.nome, u.foto_perfil_url, p.descricao
+      `SELECT p.id, p.usuario_id, u.nome, u.foto_perfil_url, p.descricao
        FROM profissional p
        INNER JOIN usuario u ON u.id = p.usuario_id
        WHERE p.id = $1;`,
@@ -966,9 +966,30 @@ router.post('/conversas', autenticar, async (req, res) => {
       });
     }
 
-    // 3. Determinar o serviço (se não informado, pega o primeiro oferecido pelo profissional)
+    const profissional = profResultado.rows[0];
+
+    // Impedir que o usuário inicie conversa com seu próprio perfil profissional
+    if (profissional.usuario_id === req.usuario.id) {
+      return res.status(400).json({
+        mensagem: 'Você não pode iniciar uma conversa com seu próprio perfil.',
+      });
+    }
+
+    // 3. Determinar e associar o serviço à conversa (SCRUM-324)
     let servicoIdFinal = servico_id;
-    if (!servicoIdFinal) {
+    if (servicoIdFinal) {
+      // Validar se o serviço informado realmente é oferecido pelo profissional
+      const ofertaValida = await pool.query(
+        'SELECT id FROM oferta_servico WHERE profissional_id = $1 AND servico_id = $2;',
+        [profissional_id, servicoIdFinal],
+      );
+      if (ofertaValida.rows.length === 0) {
+        return res.status(400).json({
+          mensagem: 'O serviço selecionado não é oferecido por este profissional.',
+        });
+      }
+    } else {
+      // Se não especificado, seleciona o primeiro serviço oferecido pelo profissional
       const primeiroServico = await pool.query(
         'SELECT servico_id FROM oferta_servico WHERE profissional_id = $1 LIMIT 1;',
         [profissional_id],
@@ -976,15 +997,9 @@ router.post('/conversas', autenticar, async (req, res) => {
       if (primeiroServico.rows.length > 0) {
         servicoIdFinal = primeiroServico.rows[0].servico_id;
       } else {
-        // Se ainda não tiver oferta, pega o primeiro serviço cadastrado no sistema
-        const servicoPadrao = await pool.query('SELECT id FROM servico LIMIT 1;');
-        if (servicoPadrao.rows.length > 0) {
-          servicoIdFinal = servicoPadrao.rows[0].id;
-        } else {
-          return res.status(400).json({
-            mensagem: 'Nenhum serviço disponível para iniciar o contato.',
-          });
-        }
+        return res.status(400).json({
+          mensagem: 'Este profissional ainda não possui serviços cadastrados para contato.',
+        });
       }
     }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { API_URL } from '../../config/api';
+import { obterSessao } from '../../utils/auth';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 
 import './PerfilPublico.css';
@@ -12,6 +13,7 @@ function PerfilPublico() {
   const [profissional, setProfissional] = useState(null);
   const [servicos, setServicos] = useState([]);
   const [trabalhos, setTrabalhos] = useState([]);
+  const [servicoSelecionadoId, setServicoSelecionadoId] = useState(null);
 
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
@@ -98,7 +100,17 @@ function PerfilPublico() {
   }, [id]);
 
   function irParaContato() {
-    navigate(`/contato/${id}`);
+    const usuarioLogado = obterSessao();
+    const urlDestino = servicoSelecionadoId
+      ? `/contato/${id}?servicoId=${servicoSelecionadoId}`
+      : `/contato/${id}`;
+
+    if (!usuarioLogado) {
+      navigate(`/login?redirect=${encodeURIComponent(urlDestino)}`);
+      return;
+    }
+
+    navigate(urlDestino);
   }
 
   function voltarParaResultados() {
@@ -162,11 +174,21 @@ function PerfilPublico() {
 
               <div className='servicos-perfil'>
                 {servicos.length > 0 ? (
-                  servicos.map((servico) => (
-                    <span key={servico.id} className='servico-perfil'>
-                      {servico.nome}
-                    </span>
-                  ))
+                  servicos.map((servico) => {
+                    const selecionado = servicoSelecionadoId === servico.id;
+                    return (
+                      <span
+                        key={servico.id}
+                        className={`servico-perfil ${selecionado ? 'selecionado' : ''}`}
+                        onClick={() =>
+                          setServicoSelecionadoId(selecionado ? null : servico.id)
+                        }
+                        title="Clique para selecionar este serviço para o contato"
+                      >
+                        {servico.nome} {selecionado ? '✓' : ''}
+                      </span>
+                    );
+                  })
                 ) : (
                   <p>Este profissional não possui serviços cadastrados.</p>
                 )}
