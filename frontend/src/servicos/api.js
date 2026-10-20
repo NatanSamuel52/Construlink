@@ -1,4 +1,3 @@
-
 import { API_URL } from '../config/api';
 
 export async function buscarServicos() {
@@ -224,6 +223,22 @@ export async function enviarMensagem(token, conversaId, conteudo) {
 
   if (!resposta.ok) {
     throw new Error(dados.mensagem || 'Erro ao enviar mensagem');
+  }
+
+  return dados;
+}
+
+export async function buscarMinhasConversas(token) {
+  const resposta = await fetch(`${API_URL}/conversas`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    throw new Error(dados.mensagem || 'Erro ao consultar conversas');
   }
 
   return dados;
