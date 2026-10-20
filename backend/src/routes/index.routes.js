@@ -862,7 +862,7 @@ router.post('/login', async (req, res) => {
         sub: String(usuario.id),
         papel: usuario.papel,
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'construlink_jwt_secret_dev_2026',
       { expiresIn: '2h' },
     );
 
@@ -1198,6 +1198,312 @@ router.post('/ofertas-servico', autenticar, async (req, res) => {
 
     return res.status(500).json({
       mensagem: 'Erro ao cadastrar oferta de serviço.',
+    });
+  }
+});
+
+
+// ============================================================================
+// ROTAS DE COMUNICAÇÃO: CONVERSA E MENSAGENS (SCRUM-348 / SCRUM-278)
+// ============================================================================
+
+// Inicia ou recupera uma conversa entre cliente e profissional sobre um serviço
+router.post('/conversas', autenticar, async (req, res) => {
+  const { profissional_id, servico_id } = req.body;
+
+  if (!profissional_id) {
+    return res.status(400).json({
+      mensagem: 'O ID do profissional é obrigatório.',
+    });
+  }
+
+  try {
+    // 1. Obter ou registrar o cliente correspondente ao usuário autenticado
+    let clienteResultado = await pool.query(
+      'SELECT id FROM cliente WHERE usuario_id = $1;',
+      [req.usuario.id],
+    );
+
+    let clienteId;
+    if (clienteResultado.rows.length === 0) {
+      const novoCliente = await pool.query(
+        'INSERT INTO cliente (usuario_id) VALUES ($1) RETURNING id;',
+        [req.usuario.id],
+      );
+      clienteId = novoCliente.rows[0].id;
+    } else {
+      clienteId = clienteResultado.rows[0].id;
+    }
+
+    // 2. Verificar se o profissional existe e identificar dados
+    const profResultado = await pool.query(
+      `SELECT p.id, p.usuario_id, u.nome, u.foto_perfil_url, p.descricao
+       FROM profissional p
+       INNER JOIN usuario u ON u.id = p.usuario_id
+       WHERE p.id = $1;`,
+      [profissional_id],
+    );
+
+    if (profResultado.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Profissional não encontrado.',
+      });
+    }
+
+    const profissional = profResultado.rows[0];
+
+    // Impedir que o usuário inicie conversa com seu próprio perfil profissional
+    if (profissional.usuario_id === req.usuario.id) {
+      return res.status(400).json({
+        mensagem: 'Você não pode iniciar uma conversa com seu próprio perfil.',
+      });
+    }
+
+    // 3. Determinar e associar o serviço à conversa (SCRUM-324)
+    let servicoIdFinal = servico_id;
+    if (servicoIdFinal) {
+      // Validar se o serviço informado realmente é oferecido pelo profissional
+      const ofertaValida = await pool.query(
+        'SELECT id FROM oferta_servico WHERE profissional_id = $1 AND servico_id = $2;',
+        [profissional_id, servicoIdFinal],
+      );
+      if (ofertaValida.rows.length === 0) {
+        return res.status(400).json({
+          mensagem: 'O serviço selecionado não é oferecido por este profissional.',
+        });
+      }
+    } else {
+      // Se não especificado, seleciona o primeiro serviço oferecido pelo profissional
+      const primeiroServico = await pool.query(
+        'SELECT servico_id FROM oferta_servico WHERE profissional_id = $1 LIMIT 1;',
+        [profissional_id],
+      );
+      if (primeiroServico.rows.length > 0) {
+        servicoIdFinal = primeiroServico.rows[0].servico_id;
+      } else {
+        return res.status(400).json({
+          mensagem: 'Este profissional ainda não possui serviços cadastrados para contato.',
+        });
+      }
+    }
+
+    // 4. Verificar se já existe conversa entre este cliente e profissional para o serviço
+    const conversaExistente = await pool.query(
+      `SELECT c.id, c.servico_id, c.cliente_id, c.profissional_id, c.criado_em,
+              s.nome AS servico_nome,
+              u.nome AS profissional_nome, u.foto_perfil_url AS profissional_foto_url
+       FROM conversa c
+       INNER JOIN servico s ON s.id = c.servico_id
+       INNER JOIN profissional p ON p.id = c.profissional_id
+       INNER JOIN usuario u ON u.id = p.usuario_id
+       WHERE c.cliente_id = $1 AND c.profissional_id = $2 AND c.servico_id = $3;`,
+      [clienteId, profissional_id, servicoIdFinal],
+    );
+
+    if (conversaExistente.rows.length > 0) {
+      return res.status(200).json({
+        mensagem: 'Conversa recuperada com sucesso.',
+        conversa: conversaExistente.rows[0],
+      });
+    }
+
+    // 5. Se não existir, criar a conversa no PostgreSQL
+    const novaConversa = await pool.query(
+      `INSERT INTO conversa (servico_id, cliente_id, profissional_id)
+       VALUES ($1, $2, $3)
+       RETURNING id, servico_id, cliente_id, profissional_id, criado_em;`,
+      [servicoIdFinal, clienteId, profissional_id],
+    );
+
+    const dadosServico = await pool.query('SELECT nome FROM servico WHERE id = $1;', [servicoIdFinal]);
+
+    return res.status(201).json({
+      mensagem: 'Conversa iniciada com sucesso.',
+      conversa: {
+        ...novaConversa.rows[0],
+        servico_nome: dadosServico.rows[0]?.nome || 'Serviço',
+        profissional_nome: profResultado.rows[0].nome,
+        profissional_foto_url: profResultado.rows[0].foto_perfil_url,
+      },
+    });
+  } catch (erro) {
+    console.error('Erro ao iniciar conversa:', erro.message);
+    return res.status(500).json({
+      mensagem: 'Erro interno ao iniciar a conversa.',
+    });
+  }
+});
+
+// Detalhes de uma conversa por ID
+router.get('/conversas/:id', autenticar, async (req, res) => {
+  const conversaId = req.params.id;
+
+  try {
+    const resultado = await pool.query(
+      `SELECT 
+         c.id,
+         c.servico_id,
+         c.cliente_id,
+         c.profissional_id,
+         c.criado_em,
+         s.nome AS servico_nome,
+         u_prof.id AS profissional_usuario_id,
+         u_prof.nome AS profissional_nome,
+         u_prof.foto_perfil_url AS profissional_foto_url,
+         p.descricao AS profissional_descricao,
+         u_cli.id AS cliente_usuario_id,
+         u_cli.nome AS cliente_nome,
+         u_cli.foto_perfil_url AS cliente_foto_url
+       FROM conversa c
+       INNER JOIN servico s ON s.id = c.servico_id
+       INNER JOIN profissional p ON p.id = c.profissional_id
+       INNER JOIN usuario u_prof ON u_prof.id = p.usuario_id
+       INNER JOIN cliente cli ON cli.id = c.cliente_id
+       INNER JOIN usuario u_cli ON u_cli.id = cli.usuario_id
+       WHERE c.id = $1;`,
+      [conversaId],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Conversa não encontrada.',
+      });
+    }
+
+    const conversa = resultado.rows[0];
+
+    // Verifica se o usuário autenticado participa da conversa
+    const eParticipante =
+      req.usuario.id === conversa.cliente_usuario_id ||
+      req.usuario.id === conversa.profissional_usuario_id;
+
+    if (!eParticipante) {
+      return res.status(403).json({
+        mensagem: 'Acesso negado a esta conversa.',
+      });
+    }
+
+    return res.status(200).json(conversa);
+  } catch (erro) {
+    console.error('Erro ao buscar conversa:', erro.message);
+    return res.status(500).json({
+      mensagem: 'Erro ao consultar a conversa.',
+    });
+  }
+});
+
+// Lista mensagens de uma conversa em ordem cronológica
+router.get('/conversas/:id/mensagens', autenticar, async (req, res) => {
+  const conversaId = req.params.id;
+
+  try {
+    // 1. Verificar se a conversa existe e se o usuário tem permissão
+    const conversa = await pool.query(
+      `SELECT c.id, cli.usuario_id AS cliente_uid, p.usuario_id AS prof_uid
+       FROM conversa c
+       INNER JOIN cliente cli ON cli.id = c.cliente_id
+       INNER JOIN profissional p ON p.id = c.profissional_id
+       WHERE c.id = $1;`,
+      [conversaId],
+    );
+
+    if (conversa.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Conversa não encontrada.',
+      });
+    }
+
+    const { cliente_uid, prof_uid } = conversa.rows[0];
+    if (req.usuario.id !== cliente_uid && req.usuario.id !== prof_uid) {
+      return res.status(403).json({
+        mensagem: 'Acesso negado às mensagens desta conversa.',
+      });
+    }
+
+    // 2. Buscar as mensagens
+    const mensagens = await pool.query(
+      `SELECT 
+         m.id,
+         m.conversa_id,
+         m.remetente_usuario_id,
+         m.conteudo,
+         m.enviada_em,
+         u.nome AS remetente_nome,
+         u.foto_perfil_url AS remetente_foto_url
+       FROM mensagem m
+       INNER JOIN usuario u ON u.id = m.remetente_usuario_id
+       WHERE m.conversa_id = $1
+       ORDER BY m.enviada_em ASC;`,
+      [conversaId],
+    );
+
+    return res.status(200).json(mensagens.rows);
+  } catch (erro) {
+    console.error('Erro ao buscar mensagens:', erro.message);
+    return res.status(500).json({
+      mensagem: 'Erro ao consultar as mensagens da conversa.',
+    });
+  }
+});
+
+// Envia uma nova mensagem na conversa
+router.post('/conversas/:id/mensagens', autenticar, async (req, res) => {
+  const conversaId = req.params.id;
+  const { conteudo } = req.body;
+
+  if (!conteudo || !conteudo.trim()) {
+    return res.status(400).json({
+      mensagem: 'O conteúdo da mensagem não pode estar vazio.',
+    });
+  }
+
+  try {
+    // Verificar se a conversa existe e se o usuário participa
+    const conversa = await pool.query(
+      `SELECT c.id, cli.usuario_id AS cliente_uid, p.usuario_id AS prof_uid
+       FROM conversa c
+       INNER JOIN cliente cli ON cli.id = c.cliente_id
+       INNER JOIN profissional p ON p.id = c.profissional_id
+       WHERE c.id = $1;`,
+      [conversaId],
+    );
+
+    if (conversa.rows.length === 0) {
+      return res.status(404).json({
+        mensagem: 'Conversa não encontrada.',
+      });
+    }
+
+    const { cliente_uid, prof_uid } = conversa.rows[0];
+    if (req.usuario.id !== cliente_uid && req.usuario.id !== prof_uid) {
+      return res.status(403).json({
+        mensagem: 'Você não pode enviar mensagens nesta conversa.',
+      });
+    }
+
+    // Inserir a mensagem no PostgreSQL
+    const novaMensagem = await pool.query(
+      `INSERT INTO mensagem (conversa_id, remetente_usuario_id, conteudo)
+       VALUES ($1, $2, $3)
+       RETURNING id, conversa_id, remetente_usuario_id, conteudo, enviada_em;`,
+      [conversaId, req.usuario.id, conteudo.trim()],
+    );
+
+    // Buscar dados do remetente para retorno imediato
+    const usuarioRemetente = await pool.query(
+      'SELECT nome, foto_perfil_url FROM usuario WHERE id = $1;',
+      [req.usuario.id],
+    );
+
+    return res.status(201).json({
+      ...novaMensagem.rows[0],
+      remetente_nome: usuarioRemetente.rows[0]?.nome,
+      remetente_foto_url: usuarioRemetente.rows[0]?.foto_perfil_url,
+    });
+  } catch (erro) {
+    console.error('Erro ao enviar mensagem:', erro.message);
+    return res.status(500).json({
+      mensagem: 'Erro interno ao salvar mensagem.',
     });
   }
 });

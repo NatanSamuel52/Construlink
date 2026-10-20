@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import CardProfissional from '../CardProfissional/CardProfissional.jsx';
 import iconeProfissionais from '../../assets/icone-profissionais.png';
@@ -34,11 +35,6 @@ function ProfissionaisDisponiveis() {
       });
   }, []);
 
-  /*
-   * Movimento automático do carrossel.
-   *
-   * A cada 3 segundos avançamos um card.
-   */
   useEffect(() => {
     if (profissionais.length <= 3) {
       return;
@@ -60,7 +56,10 @@ function ProfissionaisDisponiveis() {
   }, [profissionais]);
 
   return (
-    <section id='profissionais-disponiveis' className='profissionais-home'>
+    <section
+      id='profissionais-disponiveis'
+      className='profissionais-home'
+    >
       <div className='titulo-profissionais'>
         <img
           src={iconeProfissionais}

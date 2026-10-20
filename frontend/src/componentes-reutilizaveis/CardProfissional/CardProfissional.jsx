@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CardProfissional.css';
@@ -15,6 +16,12 @@ function CardProfissional({ id, nome, descricao, foto_perfil_url, servicos }) {
   const [erroFoto, setErroFoto] = useState(false);
 
   const exibirFoto = foto_perfil_url && !erroFoto;
+
+  function abrirPerfil() {
+    if (id) {
+      navigate(`/perfil-profissional/${id}`);
+    }
+  }
 
   return (
     <div className='card-profissional'>
@@ -34,17 +41,14 @@ function CardProfissional({ id, nome, descricao, foto_perfil_url, servicos }) {
         <p className='descricao'>{descricao}</p>
 
         <div className='servicos-profissional'>
-          {servicos.map((servico) => (
+          {(servicos || []).map((servico) => (
             <span key={servico.id} className='servico'>
               {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
             </span>
           ))}
         </div>
 
-        <button
-          type='button'
-          onClick={() => navigate(`/perfil-profissional/${id}`)}
-        >
+        <button type='button' onClick={abrirPerfil}>
           Ver perfil
         </button>
       </div>

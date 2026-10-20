@@ -12,7 +12,7 @@ function autenticar(req, res, next) {
   const token = cabecalho.slice(7);
 
   try {
-    const dadosToken = jwt.verify(token, process.env.JWT_SECRET);
+    const dadosToken = jwt.verify(token, process.env.JWT_SECRET || 'construlink_jwt_secret_dev_2026');
 
     req.usuario = {
       id: dadosToken.sub,

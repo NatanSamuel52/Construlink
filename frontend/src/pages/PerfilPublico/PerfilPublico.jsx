@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { API_URL } from '../../config/api';
+import { obterSessao } from '../../utils/auth';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 
 import './PerfilPublico.css';
@@ -20,6 +21,7 @@ function PerfilPublico() {
   const [profissional, setProfissional] = useState(null);
   const [servicos, setServicos] = useState([]);
   const [trabalhos, setTrabalhos] = useState([]);
+  const [servicoSelecionadoId, setServicoSelecionadoId] = useState(null);
 
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
@@ -105,6 +107,20 @@ function PerfilPublico() {
     };
   }, [id]);
 
+  function irParaContato() {
+    const usuarioLogado = obterSessao();
+    const urlDestino = servicoSelecionadoId
+      ? `/contato/${id}?servicoId=${servicoSelecionadoId}`
+      : `/contato/${id}`;
+
+    if (!usuarioLogado) {
+      navigate(`/login?redirect=${encodeURIComponent(urlDestino)}`);
+      return;
+    }
+
+    navigate(urlDestino);
+  }
+
   function voltarParaResultados() {
     navigate(-1);
   }
@@ -165,20 +181,34 @@ function PerfilPublico() {
               <h2>Serviços oferecidos</h2>
 
               <div className='servicos-perfil'>
-                {servicos.length > 0 ? (
-                  servicos.map((servico) => (
-                    <span key={servico.id} className='servico-perfil'>
-                      {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
-                    </span>
-                  ))
-                ) : (
-                  <p>Este profissional não possui serviços cadastrados.</p>
-                )}
+                
+{servicos.length > 0 ? (
+  servicos.map((servico) => {
+    const selecionado = servicoSelecionadoId === servico.id;
+
+    return (
+      <span
+        key={servico.id}
+        className={`servico-perfil ${selecionado ? 'selecionado' : ''}`}
+        onClick={() =>
+          setServicoSelecionadoId(selecionado ? null : servico.id)
+        }
+        title='Clique para selecionar este serviço para o contato'
+      >
+        {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
+        {selecionado ? ' ✓' : ''}
+      </span>
+    );
+  })
+) : (
+  <p>Este profissional não possui serviços cadastrados.</p>
+)}
+
               </div>
             </div>
 
             <div className='acao-contato'>
-              <button type='button' disabled>
+              <button type='button' onClick={irParaContato}>
                 💬 Entrar em contato
               </button>
             </div>
@@ -292,7 +322,7 @@ function PerfilPublico() {
                 Entre em contato com este profissional e envie sua mensagem.
               </p>
 
-              <button type='button' disabled>
+              <button type='button' onClick={irParaContato}>
                 Entrar em contato
               </button>
             </div>

@@ -12,6 +12,7 @@ import PerfilProfissional from './pages/PerfilProfissional/PerfilProfissional.js
 
 import { obterSessao, limparSessao } from './utils/auth';
 import CadastroTrabalho from './pages/CadastroTrabalho/CadastroTrabalho.jsx';
+import Contato from './pages/Contato/Contato.jsx';
 
 import './App.css';
 
@@ -143,6 +144,14 @@ function App() {
     setUsuario(sessao);
     setAlertaProtegido(null);
 
+    // Se houver uma rota de retorno guardada no redirect (ex: /contato/:id)
+    const params = new URLSearchParams(window.location.search);
+    const redirectUrl = params.get('redirect');
+    if (redirectUrl) {
+      navigate(redirectUrl);
+      return;
+    }
+
     if (sessao.papel === 'profissional') {
       navigate('/meu-perfil-profissional');
       return;
@@ -253,6 +262,8 @@ function App() {
           <Route path='/resultados' element={<ResultadoDaPesquisa />} />
 
           <Route path='/perfil-profissional/:id' element={<PerfilPublico />} />
+
+          <Route path='/contato/:id' element={<Contato />} />
 
           <Route
             path='/meu-perfil-profissional'
