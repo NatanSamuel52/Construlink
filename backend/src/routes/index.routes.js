@@ -1356,14 +1356,14 @@ router.get('/conversas', autenticar, async (req, res) => {
            SELECT m.conteudo
            FROM mensagem m
            WHERE m.conversa_id = c.id
-           ORDER BY m.enviada_em DESC
+           ORDER BY m.enviada_em DESC, m.id DESC
            LIMIT 1
          ) AS ultima_mensagem,
          (
            SELECT m.enviada_em
            FROM mensagem m
            WHERE m.conversa_id = c.id
-           ORDER BY m.enviada_em DESC
+           ORDER BY m.enviada_em DESC, m.id DESC
            LIMIT 1
          ) AS ultima_mensagem_em
        FROM conversa c
@@ -1378,7 +1378,7 @@ router.get('/conversas', autenticar, async (req, res) => {
            SELECT m.enviada_em
            FROM mensagem m
            WHERE m.conversa_id = c.id
-           ORDER BY m.enviada_em DESC
+           ORDER BY m.enviada_em DESC, m.id DESC
            LIMIT 1
          ),
          c.criado_em
@@ -1493,7 +1493,7 @@ router.get('/conversas/:id/mensagens', autenticar, async (req, res) => {
        FROM mensagem m
        INNER JOIN usuario u ON u.id = m.remetente_usuario_id
        WHERE m.conversa_id = $1
-       ORDER BY m.enviada_em ASC;`,
+       ORDER BY m.enviada_em ASC, m.id ASC;`,
       [conversaId],
     );
 
@@ -1511,7 +1511,7 @@ router.post('/conversas/:id/mensagens', autenticar, async (req, res) => {
   const conversaId = req.params.id;
   const { conteudo } = req.body;
 
-  if (!conteudo || !conteudo.trim()) {
+  if (typeof conteudo !== 'string' || !conteudo.trim()) {
     return res.status(400).json({
       mensagem: 'O conteúdo da mensagem não pode estar vazio.',
     });
