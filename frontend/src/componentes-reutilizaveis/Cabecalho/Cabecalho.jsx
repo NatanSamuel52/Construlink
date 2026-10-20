@@ -17,150 +17,143 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
   }
 
   return (
-    <header className="cabecalho">
-      <div className="cabecalho__container">
-
+    <header className='cabecalho'>
+      <div className='cabecalho__container'>
         <div
-          className="cabecalho__marca"
+          className='cabecalho__marca'
           onClick={() => onNavegar && onNavegar('home')}
-          role="button"
+          role='button'
           tabIndex={0}
         >
           <img
             src={logo}
-            alt="Logo Construlink"
-            className="cabecalho__logo-imagem"
+            alt='Logo Construlink'
+            className='cabecalho__logo-imagem'
           />
         </div>
 
-        <nav className="cabecalho__nav">
-
+        <nav className='cabecalho__nav'>
           <button
-            type="button"
-            className="cabecalho__link cabecalho__link--ativo"
+            type='button'
+            className='cabecalho__link cabecalho__link--ativo'
             onClick={() => onNavegar && onNavegar('home')}
           >
-            Início
+            Home
           </button>
 
           <button
-            type="button"
-            className="cabecalho__link"
+            type='button'
+            className='cabecalho__link'
+            onClick={() => onNavegar && onNavegar('sobre')}
           >
-            Sobre
+            Sobre Nós
           </button>
 
           <button
-            type="button"
-            className="cabecalho__link"
+            type='button'
+            className='cabecalho__link'
+            onClick={() => onNavegar && onNavegar('como-funciona')}
           >
             Como funciona❔
           </button>
-
         </nav>
-
-        <div className="cabecalho__acoes">
-
+        {usuario?.papel === 'profissional' && (
+          <button
+            type='button'
+            className='cabecalho__link'
+            onClick={() => onNavegar && onNavegar('meu-perfil-profissional')}
+          >
+            Meu perfil
+          </button>
+        )}
+        <div className='cabecalho__acoes'>
           {usuario ? (
-            <div className="cabecalho__usuario">
-
-              <div className="cabecalho__avatar">
+            <div className='cabecalho__usuario'>
+              <div className='cabecalho__avatar'>
                 {usuario.foto_perfil_url ? (
                   <img
                     src={usuario.foto_perfil_url}
                     alt={usuario.nome}
-                    className="cabecalho__avatar-img"
+                    className='cabecalho__avatar-img'
                   />
                 ) : (
-                  <span className="cabecalho__avatar-letra">
-                    {usuario.nome
-                      ? usuario.nome.charAt(0).toUpperCase()
-                      : 'U'}
+                  <span className='cabecalho__avatar-letra'>
+                    {usuario.nome ? usuario.nome.charAt(0).toUpperCase() : 'U'}
                   </span>
                 )}
               </div>
 
-              <div className="cabecalho__info">
-                <span className="cabecalho__nome">
+              <div className='cabecalho__info'>
+                <span className='cabecalho__nome'>
                   {usuario.nome || usuario.email}
                 </span>
 
-                <span className="cabecalho__papel">
+                <span className='cabecalho__papel'>
                   {usuario.papel || 'Usuário'}
                 </span>
               </div>
 
               <button
-                type="button"
-                className="cabecalho__btn-sair"
+                type='button'
+                className='cabecalho__btn-sair'
                 onClick={() => setModalSair(true)}
-                title="Encerrar sessão"
+                title='Encerrar sessão'
               >
                 Sair
               </button>
-
             </div>
           ) : (
-            <div className="cabecalho__botoes-auth">
-
+            <div className='cabecalho__botoes-auth'>
               <button
-                type="button"
-                className="cabecalho__btn-entrar"
+                type='button'
+                className='cabecalho__btn-entrar'
                 onClick={() => onNavegar && onNavegar('login')}
               >
                 Entrar
               </button>
 
               <button
-                type="button"
-                className="cabecalho__btn-cadastrar"
+                type='button'
+                className='cabecalho__btn-cadastrar'
                 onClick={() => onNavegar && onNavegar('cadastro')}
               >
                 Cadastrar
               </button>
-
             </div>
           )}
-
         </div>
       </div>
 
       {modalSair && (
         <div
-          className="cabecalho-modal__overlay"
-          role="dialog"
-          aria-modal="true"
+          className='cabecalho-modal__overlay'
+          role='dialog'
+          aria-modal='true'
         >
-          <div className="cabecalho-modal">
+          <div className='cabecalho-modal'>
+            <h3 className='cabecalho-modal__titulo'>Encerrar Sessão</h3>
 
-            <h3 className="cabecalho-modal__titulo">
-              Encerrar Sessão
-            </h3>
-
-            <p className="cabecalho-modal__mensagem">
+            <p className='cabecalho-modal__mensagem'>
               Tem certeza de que deseja sair da sua conta no Construlink?
             </p>
 
-            <div className="cabecalho-modal__acoes">
-
+            <div className='cabecalho-modal__acoes'>
               <button
-                type="button"
-                className="cabecalho-modal__btn-cancelar"
+                type='button'
+                className='cabecalho-modal__btn-cancelar'
                 onClick={() => setModalSair(false)}
               >
                 Cancelar
               </button>
 
               <button
-                type="button"
-                className="cabecalho-modal__btn-confirmar"
+                type='button'
+                className='cabecalho-modal__btn-confirmar'
                 onClick={confirmarSaida}
               >
                 Sim, sair
               </button>
-
             </div>
-
           </div>
         </div>
       )}

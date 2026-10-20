@@ -6,6 +6,14 @@ import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 
 import './PerfilPublico.css';
 
+const iconesServicos = {
+  Elétricas: '⚡',
+  Hidráulicos: '💧',
+  'Pintura Residencial': '🖌️',
+  'Montagem de móveis': '🛠️',
+  Alvenaria: '🧱',
+};
+
 function PerfilPublico() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -173,25 +181,29 @@ function PerfilPublico() {
               <h2>Serviços oferecidos</h2>
 
               <div className='servicos-perfil'>
-                {servicos.length > 0 ? (
-                  servicos.map((servico) => {
-                    const selecionado = servicoSelecionadoId === servico.id;
-                    return (
-                      <span
-                        key={servico.id}
-                        className={`servico-perfil ${selecionado ? 'selecionado' : ''}`}
-                        onClick={() =>
-                          setServicoSelecionadoId(selecionado ? null : servico.id)
-                        }
-                        title="Clique para selecionar este serviço para o contato"
-                      >
-                        {servico.nome} {selecionado ? '✓' : ''}
-                      </span>
-                    );
-                  })
-                ) : (
-                  <p>Este profissional não possui serviços cadastrados.</p>
-                )}
+                
+{servicos.length > 0 ? (
+  servicos.map((servico) => {
+    const selecionado = servicoSelecionadoId === servico.id;
+
+    return (
+      <span
+        key={servico.id}
+        className={`servico-perfil ${selecionado ? 'selecionado' : ''}`}
+        onClick={() =>
+          setServicoSelecionadoId(selecionado ? null : servico.id)
+        }
+        title='Clique para selecionar este serviço para o contato'
+      >
+        {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
+        {selecionado ? ' ✓' : ''}
+      </span>
+    );
+  })
+) : (
+  <p>Este profissional não possui serviços cadastrados.</p>
+)}
+
               </div>
             </div>
 
@@ -229,6 +241,15 @@ function PerfilPublico() {
                     <div className='conteudo-trabalho'>
                       <h3>{trabalho.titulo}</h3>
                       <p>{trabalho.descricao}</p>
+
+                      {trabalho.criado_em && (
+                        <p className='data-trabalho'>
+                          Data:{' '}
+                          {new Date(trabalho.criado_em).toLocaleDateString(
+                            'pt-BR',
+                          )}
+                        </p>
+                      )}
                     </div>
                   </article>
                 ))}
@@ -246,8 +267,19 @@ function PerfilPublico() {
 
           <div className='sobre-conteudo'>
             <div className='informacoes-sobre'>
-              <div className='item-sobre'>
-                <span className='icone-sobre'>👤</span>
+              <div className='item-sobre item-sobre-nome'>
+                {profissional.foto_perfil_url ? (
+                  <img
+                    className='foto-sobre-profissional'
+                    src={profissional.foto_perfil_url}
+                    alt={`Foto de ${profissional.nome}`}
+                    onError={(evento) => {
+                      evento.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span className='icone-sobre'>👤</span>
+                )}
 
                 <div>
                   <strong>Nome</strong>

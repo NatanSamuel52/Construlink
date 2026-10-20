@@ -9,45 +9,136 @@ import {
   buscarServicos,
   buscarServicosDoProfissional,
   atualizarMeuPerfilProfissional,
+  atualizarTrabalho,
+  excluirTrabalho,
 } from '../../servicos/api';
 
 import './PerfilProfissional.css';
 
 export default function PerfilProfissional() {
   const navigate = useNavigate();
-
   const [perfil, setPerfil] = useState(null);
-
   const [servicos, setServicos] = useState([]);
-
   const [trabalhos, setTrabalhos] = useState([]);
+  const [trabalhoEditando, setTrabalhoEditando] = useState(null);
+  const [tituloTrabalho, setTituloTrabalho] = useState('');
+  const [descricaoTrabalho, setDescricaoTrabalho] = useState('');
+  const [fotoTrabalho, setFotoTrabalho] = useState(null);
+  const [salvandoTrabalho, setSalvandoTrabalho] = useState(false);
+  const [mensagemTrabalho, setMensagemTrabalho] = useState('');
+  const [erroTrabalho, setErroTrabalho] = useState('');
+  const [excluindoTrabalhoId, setExcluindoTrabalhoId] = useState(null);
+  const [trabalhoParaExcluir, setTrabalhoParaExcluir] = useState(null);
+
+  function iniciarEdicaoTrabalho(trabalho) {
+    setTrabalhoEditando(trabalho);
+    setTituloTrabalho(trabalho.titulo || '');
+    setDescricaoTrabalho(trabalho.descricao || '');
+    setFotoTrabalho(null);
+    setMensagemTrabalho('');
+    setErroTrabalho('');
+  }
+
+  function cancelarEdicaoTrabalho() {
+    setTrabalhoEditando(null);
+    setTituloTrabalho('');
+    setDescricaoTrabalho('');
+    setFotoTrabalho(null);
+    setMensagemTrabalho('');
+    setErroTrabalho('');
+  }
+
+  async function salvarEdicaoTrabalho(event) {
+    event.preventDefault();
+
+    const sessao = obterSessao();
+
+    if (!sessao?.token || !trabalhoEditando) {
+      setErroTrabalho('Não foi possível identificar a sessão ou o trabalho.');
+      return;
+    }
+
+    setSalvandoTrabalho(true);
+    setMensagemTrabalho('');
+    setErroTrabalho('');
+
+    try {
+      await atualizarTrabalho(
+        sessao.token,
+        trabalhoEditando.id,
+        {
+          titulo: tituloTrabalho.trim(),
+          descricao: descricaoTrabalho.trim(),
+        },
+        fotoTrabalho,
+      );
+
+      const resposta = await fetch(
+        `${API_URL}/profissionais/${perfil.profissional_id}/trabalhos`,
+      );
+
+      if (!resposta.ok) {
+        throw new Error(
+          'Trabalho atualizado, mas não foi possível atualizar a lista.',
+        );
+      }
+
+      setTrabalhos(await resposta.json());
+      cancelarEdicaoTrabalho();
+      setMensagemTrabalho('Trabalho atualizado com sucesso.');
+    } catch (erro) {
+      setErroTrabalho(erro.message || 'Erro ao atualizar trabalho.');
+    } finally {
+      setSalvandoTrabalho(false);
+    }
+  }
+
+  async function confirmarExclusaoTrabalho(trabalho) {
+    const sessao = obterSessao();
+
+    if (!sessao?.token) {
+      setErroTrabalho('Sua sessão expirou. Entre novamente.');
+      return;
+    }
+
+    setExcluindoTrabalhoId(trabalho.id);
+    setMensagemTrabalho('');
+    setErroTrabalho('');
+
+    try {
+      await excluirTrabalho(sessao.token, trabalho.id);
+
+      setTrabalhos((atuais) =>
+        atuais.filter((item) => item.id !== trabalho.id),
+      );
+
+      setTrabalhoParaExcluir(null);
+
+      if (trabalhoEditando?.id === trabalho.id) {
+        cancelarEdicaoTrabalho();
+      }
+
+      setMensagemTrabalho('Trabalho excluído com sucesso.');
+    } catch (erro) {
+      setErroTrabalho(erro.message || 'Erro ao excluir trabalho.');
+    } finally {
+      setExcluindoTrabalhoId(null);
+    }
+  }
 
   const [carregando, setCarregando] = useState(true);
-
   const [erro, setErro] = useState('');
-
   const [cadastrandoServico, setCadastrandoServico] = useState(false);
-
   const [catalogoServicos, setCatalogoServicos] = useState([]);
-
   const [servicoSelecionado, setServicoSelecionado] = useState('');
-
   const [salvandoServico, setSalvandoServico] = useState(false);
-
   const [mensagemServico, setMensagemServico] = useState('');
-
   const [erroServico, setErroServico] = useState('');
-
   const [editando, setEditando] = useState(false);
-
   const [salvando, setSalvando] = useState(false);
-
   const [mensagemFormulario, setMensagemFormulario] = useState('');
-
   const [erroFormulario, setErroFormulario] = useState('');
-
   const [servicoParaRemover, setServicoParaRemover] = useState(null);
-
   const [dadosFormulario, setDadosFormulario] = useState({
     nome: '',
 
@@ -55,6 +146,7 @@ export default function PerfilProfissional() {
 
     descricao: '',
   });
+  const [arquivoFoto, setArquivoFoto] = useState(null);
 
   function atualizarCampo(campo, valor) {
     setDadosFormulario((dadosAtuais) => ({
@@ -162,6 +254,10 @@ export default function PerfilProfissional() {
     setServicoParaRemover(servico);
   }
 
+  function solicitarExclusaoTrabalho(trabalho) {
+    setTrabalhoParaExcluir(trabalho);
+  }
+
   async function removerServico(servicoId) {
     const sessao = obterSessao();
 
@@ -209,6 +305,7 @@ export default function PerfilProfissional() {
   }
 
   function abrirEdicao() {
+    setArquivoFoto(null);
     setDadosFormulario({
       nome: perfil.nome || '',
 
@@ -225,6 +322,7 @@ export default function PerfilProfissional() {
   }
 
   function cancelarEdicao() {
+    setArquivoFoto(null);
     setEditando(false);
 
     setMensagemFormulario('');
@@ -266,14 +364,12 @@ export default function PerfilProfissional() {
     try {
       const perfilAtualizado = await atualizarMeuPerfilProfissional(
         sessao.token,
-
         {
           nome,
-
           foto_perfil_url: dadosFormulario.foto_perfil_url.trim() || null,
-
           descricao: dadosFormulario.descricao.trim() || null,
         },
+        arquivoFoto,
       );
 
       setPerfil((perfilAnterior) => ({
@@ -470,25 +566,27 @@ export default function PerfilProfissional() {
                 </div>
 
                 <div className='perfil-autenticado__campo'>
-                  <label htmlFor='perfil-foto'>URL da foto de perfil</label>
+                  <label htmlFor='perfil-foto'>Foto de perfil</label>
 
                   <input
                     id='perfil-foto'
-                    type='url'
-                    placeholder='https://exemplo.com/foto.jpg'
-                    value={dadosFormulario.foto_perfil_url}
+                    type='file'
+                    accept='image/png,image/jpeg,image/webp'
                     onChange={(evento) =>
-                      atualizarCampo('foto_perfil_url', evento.target.value)
+                      setArquivoFoto(evento.target.files?.[0] || null)
                     }
                     disabled={salvando}
                   />
+
+                  <small>
+                    Selecione uma imagem PNG, JPG ou WEBP de até 5 MB.
+                  </small>
                 </div>
 
                 <div className='perfil-autenticado__campo'>
                   <label htmlFor='perfil-descricao'>
                     Descrição profissional
                   </label>
-
                   <textarea
                     id='perfil-descricao'
                     value={dadosFormulario.descricao}
@@ -657,6 +755,9 @@ export default function PerfilProfissional() {
             </div>
 
             <div className='perfil-autenticado__lista-trabalhos'>
+              {mensagemTrabalho && <p role='status'>{mensagemTrabalho}</p>}
+              {erroTrabalho && <p role='alert'>{erroTrabalho}</p>}
+
               {trabalhos.length > 0 ? (
                 trabalhos.map((trabalho) => (
                   <article
@@ -669,8 +770,29 @@ export default function PerfilProfissional() {
 
                     <div>
                       <h3>{trabalho.titulo}</h3>
-
                       <p>{trabalho.descricao}</p>
+
+                      <button
+                        type='button'
+                        onClick={() => iniciarEdicaoTrabalho(trabalho)}
+                        disabled={
+                          salvandoTrabalho || excluindoTrabalhoId !== null
+                        }
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        type='button'
+                        onClick={() => solicitarExclusaoTrabalho(trabalho)}
+                        disabled={
+                          salvandoTrabalho || excluindoTrabalhoId !== null
+                        }
+                      >
+                        {excluindoTrabalhoId === trabalho.id
+                          ? 'Excluindo...'
+                          : 'Excluir'}
+                      </button>
                     </div>
                   </article>
                 ))
@@ -678,6 +800,69 @@ export default function PerfilProfissional() {
                 <p>Você ainda não possui trabalhos cadastrados.</p>
               )}
             </div>
+
+            {trabalhoEditando && (
+              <form
+                className='perfil-autenticado__formulario'
+                onSubmit={salvarEdicaoTrabalho}
+              >
+                <h3>Editar trabalho</h3>
+
+                <div className='perfil-autenticado__campo'>
+                  <label htmlFor='titulo-trabalho'>Título</label>
+                  <input
+                    id='titulo-trabalho'
+                    type='text'
+                    value={tituloTrabalho}
+                    onChange={(evento) =>
+                      setTituloTrabalho(evento.target.value)
+                    }
+                    maxLength={150}
+                    required
+                    disabled={salvandoTrabalho}
+                  />
+                </div>
+
+                <div className='perfil-autenticado__campo'>
+                  <label htmlFor='descricao-trabalho'>Descrição</label>
+                  <textarea
+                    id='descricao-trabalho'
+                    value={descricaoTrabalho}
+                    onChange={(evento) =>
+                      setDescricaoTrabalho(evento.target.value)
+                    }
+                    maxLength={500}
+                    required
+                    disabled={salvandoTrabalho}
+                  />
+                </div>
+
+                <div className='perfil-autenticado__campo'>
+                  <label htmlFor='foto-trabalho'>Nova foto (opcional)</label>
+                  <input
+                    id='foto-trabalho'
+                    type='file'
+                    accept='image/png,image/jpeg,image/webp'
+                    onChange={(evento) =>
+                      setFotoTrabalho(evento.target.files?.[0] || null)
+                    }
+                    disabled={salvandoTrabalho}
+                  />
+                </div>
+
+                <button type='submit' disabled={salvandoTrabalho}>
+                  {salvandoTrabalho ? 'Salvando...' : 'Salvar alterações'}
+                </button>
+
+                <button
+                  type='button'
+                  onClick={cancelarEdicaoTrabalho}
+                  disabled={salvandoTrabalho}
+                >
+                  Cancelar
+                </button>
+              </form>
+            )}
           </section>
         </div>
       </main>
@@ -726,6 +911,56 @@ export default function PerfilProfissional() {
                 onClick={() => removerServico(servicoParaRemover.id)}
               >
                 Sim, remover
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {trabalhoParaExcluir && (
+        <div
+          className='perfil-autenticado__modal-overlay'
+          onClick={() => setTrabalhoParaExcluir(null)}
+        >
+          <section
+            className='perfil-autenticado__modal'
+            role='alertdialog'
+            aria-modal='true'
+            aria-labelledby='titulo-modal-exclusao-trabalho'
+            aria-describedby='descricao-modal-exclusao-trabalho'
+            onClick={(evento) => evento.stopPropagation()}
+          >
+            <div className='perfil-autenticado__modal-icone'>
+              <span aria-hidden='true'>!</span>
+            </div>
+
+            <h2 id='titulo-modal-exclusao-trabalho'>Excluir trabalho?</h2>
+
+            <p id='descricao-modal-exclusao-trabalho'>
+              Deseja realmente excluir{' '}
+              <strong>{trabalhoParaExcluir.titulo}</strong> dos seus trabalhos
+              realizados?
+            </p>
+
+            <div className='perfil-autenticado__modal-acoes'>
+              <button
+                type='button'
+                className='perfil-autenticado__botao-secundario'
+                onClick={() => setTrabalhoParaExcluir(null)}
+                disabled={excluindoTrabalhoId !== null}
+              >
+                Cancelar
+              </button>
+
+              <button
+                type='button'
+                className='perfil-autenticado__botao-remover'
+                onClick={() => confirmarExclusaoTrabalho(trabalhoParaExcluir)}
+                disabled={excluindoTrabalhoId !== null}
+              >
+                {excluindoTrabalhoId === trabalhoParaExcluir.id
+                  ? 'Excluindo...'
+                  : 'Sim, excluir'}
               </button>
             </div>
           </section>

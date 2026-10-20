@@ -574,3 +574,228 @@
     flex-direction: column-reverse;
   }
 }
+
+/* Alinhamento dos botões de cada trabalho */
+
+.perfil-autenticado__trabalho > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+
+.perfil-autenticado__trabalho > div h3,
+.perfil-autenticado__trabalho > div p {
+  width: 100%;
+}
+
+.perfil-autenticado__trabalho > div button {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.perfil-autenticado__trabalho > div button:first-of-type {
+  margin-top: 12px;
+}
+
+.perfil-autenticado__trabalho > div button + button {
+  margin-top: 8px;
+  margin-left: 2px;
+}
+
+/* Mantém os cartões com a mesma estrutura vertical */
+.perfil-autenticado__trabalho {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* O conteúdo ocupa o espaço disponível */
+
+.perfil-autenticado__trabalho > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+
+.perfil-autenticado__trabalho > div button:first-of-type {
+  margin-top: auto;
+}
+
+.perfil-autenticado__trabalho > div button + button {
+  margin-top: 0;
+  margin-left: 10px;
+}
+
+/* Mantém os botões juntos na parte inferior */
+.perfil-autenticado__trabalho > div button {
+  align-self: flex-start;
+}
+
+.perfil-autenticado__trabalho > div button:first-of-type {
+  margin-top: auto;
+}
+
+.perfil-autenticado__trabalho > div button + button {
+  margin-top: 8px;
+}
+
+.perfil-autenticado__trabalho .perfil-autenticado__acoes-trabalho {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.perfil-autenticado__trabalho .perfil-autenticado__acoes-trabalho button {
+  margin: 0;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.perfil-autenticado__trabalho > div > button {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 10px 0 0;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.perfil-autenticado__trabalho > div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.perfil-autenticado__trabalho > div h3,
+.perfil-autenticado__trabalho > div p {
+  flex-basis: 100%;
+}
+
+.perfil-autenticado__trabalho > div button {
+  margin: 0;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.perfil-autenticado__trabalho {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.perfil-autenticado__trabalho > div {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-content: start;
+  column-gap: 0px;
+  row-gap: 0;
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+}
+
+.perfil-autenticado__trabalho > div h3,
+.perfil-autenticado__trabalho > div p {
+  grid-column: 1 / -1;
+}
+
+.perfil-autenticado__trabalho > div button {
+  align-self: start;
+  margin: 12px 0 0;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.perfil-autenticado__trabalho > div button + button {
+  margin-left: 0;
+}
+
+.perfil-autenticado__trabalho > div button {
+  align-self: start;
+}
+
+.perfil-autenticado__trabalho > div button:first-of-type,
+.perfil-autenticado__trabalho > div button + button {
+  margin-top: auto;
+}
+
+.perfil-autenticado__trabalho > div {
+  grid-template-rows: auto auto 1fr auto;
+}
+.perfil-autenticado__trabalho .perfil-autenticado__acoes-trabalho {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.perfil-autenticado__trabalho .perfil-autenticado__acoes-trabalho button {
+  margin: 0;
+  padding: 6px 2px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.perfil-autenticado__trabalho > div button {
+  display: inline-block;
+  width: auto;
+  margin: 8px 8px 0 0;
+  padding: 8px 12px;
+  border: 1px solid #087fbd;
+  border-radius: 6px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.perfil-autenticado__trabalho > div button:hover {
+  background: #087fbd;
+}
+
+.perfil-autenticado__trabalho > div button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+
+.perfil-autenticado__servico button {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #087fbd;
+  border-radius: 6px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.perfil-autenticado__servico button:hover {
+  background: #087fbd;
+}

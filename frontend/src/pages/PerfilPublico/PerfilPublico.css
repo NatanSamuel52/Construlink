@@ -262,6 +262,15 @@
     font-size: 16px;
 }
 
+.perfil-publico .foto-sobre-profissional {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
 .perfil-publico .item-sobre strong {
     display: block;
 
@@ -442,6 +451,14 @@
     line-height: 1.5;
     overflow-wrap: anywhere;
 }
+
+
+.perfil-publico .conteudo-trabalho .data-trabalho {
+    margin-top: 10px;
+    color: #8fa7b5;
+    font-size: 12px;
+}
+
 
 .perfil-publico .lista-trabalhos:has(.mensagem-sem-trabalhos) {
     display: flex;
