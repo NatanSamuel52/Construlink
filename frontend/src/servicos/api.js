@@ -108,3 +108,52 @@ export async function atualizarMeuPerfilProfissional(
 
   return dados;
 }
+
+export async function atualizarTrabalho(
+  token,
+  id,
+  dadosTrabalho,
+  arquivoFoto = null,
+) {
+  const corpo = arquivoFoto ? new FormData() : dadosTrabalho;
+
+  if (arquivoFoto) {
+    corpo.append('titulo', dadosTrabalho.titulo);
+    corpo.append('descricao', dadosTrabalho.descricao ?? '');
+    corpo.append('foto', arquivoFoto);
+  }
+
+  const resposta = await fetch(`${API_URL}/trabalhos/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(arquivoFoto ? {} : { 'Content-Type': 'application/json' }),
+    },
+    body: arquivoFoto ? corpo : JSON.stringify(corpo),
+  });
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    throw new Error(dados.mensagem || 'Erro ao atualizar trabalho');
+  }
+
+  return dados;
+}
+
+export async function excluirTrabalho(token, id) {
+  const resposta = await fetch(`${API_URL}/trabalhos/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    throw new Error(dados.mensagem || 'Erro ao excluir trabalho');
+  }
+
+  return dados;
+}

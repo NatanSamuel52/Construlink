@@ -148,7 +148,7 @@ function App() {
       return;
     }
 
-    navigate('/painel');
+    navigate('/');
   }
 
   function handleLogout() {
@@ -197,6 +197,19 @@ function App() {
 
     if (destino === 'painel') {
       navigate('/painel');
+      return;
+    }
+
+    if (destino === 'meu-perfil-profissional') {
+      if (usuario?.papel !== 'profissional') {
+        setAlertaProtegido(
+          'Acesso restrito: somente profissionais autenticados podem acessar o próprio perfil.',
+        );
+        navigate('/login');
+        return;
+      }
+
+      navigate('/meu-perfil-profissional');
       return;
     }
 

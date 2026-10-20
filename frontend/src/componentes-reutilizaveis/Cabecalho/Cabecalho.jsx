@@ -57,7 +57,15 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
             Como funciona❔
           </button>
         </nav>
-
+        {usuario?.papel === 'profissional' && (
+          <button
+            type='button'
+            className='cabecalho__link'
+            onClick={() => onNavegar && onNavegar('meu-perfil-profissional')}
+          >
+            Meu perfil
+          </button>
+        )}
         <div className='cabecalho__acoes'>
           {usuario ? (
             <div className='cabecalho__usuario'>
