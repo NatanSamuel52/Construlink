@@ -1,528 +1,135 @@
-# Guia de Preparação do Ambiente — Construlink
+# Preparação da entrega e apresentação — Construlink V1.0
 
-Este documento apresenta os passos para preparar a máquina de desenvolvimento antes de iniciar a implementação das próximas tarefas do Construlink.
+Este guia cobre a configuração local, inicialização dos serviços e demonstração dos fluxos funcionais da V1.0.
 
-O objetivo é garantir que o ambiente esteja funcionando corretamente antes do início das novas Sprints e da implementação das telas.
-
----
-
-## 1. Pré-requisitos
-
-Antes de começar, a máquina deve possuir:
+## Requisitos
 
 - Git;
-- Node.js;
-- npm;
-- Docker;
-- Docker Compose;
-- PostgreSQL executado através do Docker.
+- Docker Desktop com Docker Compose;
+- Navegador atualizado.
 
-O projeto utiliza:
+A execução completa usa Docker para iniciar o PostgreSQL, a API e o frontend. Node.js e npm são necessários apenas para executar lint, build ou testes fora dos containers.
 
-- React + Vite no frontend;
-- Node.js + Express no backend;
-- PostgreSQL 16 no banco de dados;
-- Docker Compose para execução do PostgreSQL.
+## Instalação
 
----
+Clone o repositório e entre na pasta:
 
-## 2. Clonar o repositório
-
-Abra o terminal e escolha uma pasta onde o projeto será armazenado.
-
-Execute:
-
-```bash
-git clone <URL_DO_REPOSITORIO>
+```powershell
+git clone https://github.com/NatanSamuel52/Contrulink.git
+Set-Location Contrulink
 ```
 
-Entre na pasta do projeto:
+Crie o arquivo de configuração local sem versionar credenciais:
 
-```bash
-cd Contrulink
+```powershell
+Copy-Item .env.example .env
 ```
 
-Verifique o repositório:
+Edite `.env` e substitua `POSTGRES_PASSWORD` e `JWT_SECRET` por valores próprios. Mantenha também estas URLs locais:
 
-```bash
-git status
+```dotenv
+VITE_API_URL=http://localhost:3000/api
+PUBLIC_API_URL=http://localhost:3000
 ```
 
----
+Se `.env` já existir, preserve os valores locais e apenas confira se as duas URLs estão definidas. Não compartilhe nem envie esse arquivo ao Git.
 
-## 3. Verificar a estrutura do projeto
+## Iniciar e conferir a aplicação
 
-A estrutura principal esperada é:
+Na raiz do repositório, execute:
 
-```text
-Contrulink/
-├── backend/
-├── database/
-├── frontend/
-├── compose.yaml
-├── ACORDOS.md
-├── .gitignore
-└── README.md
-```
-
-Os arquivos importantes para o ambiente são:
-
-```text
-compose.yaml
-database/schema.sql
-database/seed.sql
-backend/
-frontend/
-```
-
----
-
-## 4. Configuração do ambiente
-
-O projeto utiliza variáveis de ambiente para a configuração da conexão com o banco de dados.
-
-O arquivo `.env` é utilizado localmente e não deve ser enviado para o GitHub.
-
-Antes de iniciar o backend, é necessário garantir que o ambiente local esteja configurado de acordo com a configuração utilizada pelo projeto.
-
-> Não adicionar informações sensíveis ao repositório.
-
----
-
-## 5. Iniciar o PostgreSQL com Docker
-
-Na raiz do projeto, execute:
-
-```bash
-docker compose up -d
-```
-
-Verifique os serviços:
-
-```bash
-docker compose config --services
-```
-
-O serviço esperado é:
-
-```text
-db
-```
-
-Agora verifique o container:
-
-```bash
+```powershell
+docker compose up --build -d
 docker compose ps
 ```
 
-O container esperado é:
+Espere os serviços `db`, `backend` e `frontend` aparecerem como `healthy` ou `running`. O banco e a API possuem verificações de saúde; o frontend aguarda a API ficar disponível.
 
-```text
-construlink-postgres
+Endereços locais:
+
+- Aplicação: `http://localhost:5173`
+- API: `http://localhost:3000/api/`
+- PostgreSQL: `localhost:5432`
+
+Confirme as respostas da API e do frontend:
+
+```powershell
+Invoke-WebRequest http://localhost:3000/api/ -UseBasicParsing
+Invoke-WebRequest http://localhost:3000/api/servicos -UseBasicParsing
+Invoke-WebRequest http://localhost:3000/api/profissionais -UseBasicParsing
+Invoke-WebRequest http://localhost:5173 -UseBasicParsing
 ```
 
-O PostgreSQL deve aparecer como ativo e saudável.
+As três rotas da API devem responder com HTTP 200, e a página web deve abrir no navegador.
 
----
+### Banco em uma instalação nova ou já existente
 
-## 6. Banco de dados
+Em um volume PostgreSQL novo, o Compose cria as tabelas e carrega os dados iniciais de `database/schema.sql` e `database/seed.sql`. A migração idempotente `database/ajusta-mensagens-nao-lidas.sql` também é disponibilizada ao container.
 
-O projeto possui dois arquivos relacionados à estrutura e aos dados do banco:
+Os scripts de inicialização do PostgreSQL não são repetidos em um volume existente. Para aplicar a migração de leitura de mensagens nesse caso:
 
-```text
-database/schema.sql
-database/seed.sql
+```powershell
+docker compose exec db psql -U construlink_user -d construlink -f /docker-entrypoint-initdb.d/03-ajusta-mensagens-nao-lidas.sql
 ```
 
-### `schema.sql`
+Se os valores de usuário ou banco no seu `.env` forem diferentes, ajuste `-U` e `-d` para os valores configurados. Não use `docker compose down -v` para atualizar o banco: a opção `-v` apaga o volume e os dados locais.
 
-Contém a estrutura do banco de dados.
+O esquema em `database/schema.sql` contém as entidades de usuário, cliente, profissional, serviço, oferta de serviço, trabalho realizado, conversa e mensagem. A tabela auxiliar `conversa_leitura` dá suporte ao indicador de mensagens não lidas. Compare o esquema com a cópia oficial do MER V1.0 antes da aprovação final, caso ela tenha alterações que não estejam refletidas nesses arquivos.
 
-Atualmente existem as seguintes tabelas:
+## Roteiro de demonstração
 
-```text
-usuario
-cliente
-profissional
-trabalho_realizado
-servico
-oferta_servico
-conversa
-mensagem
+Faça a demonstração com duas contas que possam ser cadastradas pela própria aplicação: uma de cliente e outra de profissional. Use endereços de e-mail de teste e não reutilize credenciais pessoais.
+
+1. **Apresentar a página inicial:** mostrar categorias e a pesquisa de serviços.
+2. **Pesquisar um serviço:** testar termos como `pintura` e `montagem`; abrir um resultado e consultar o perfil, os serviços oferecidos e os trabalhos realizados.
+3. **Cadastrar o cliente:** sair da sessão, criar uma conta de cliente e entrar nela.
+4. **Iniciar uma conversa:** no perfil de um profissional, escolher um serviço e iniciar a conversa.
+5. **Responder como profissional:** sair da conta do cliente, entrar ou cadastrar a conta profissional e abrir a conversa recebida.
+6. **Trocar mensagens:** enviar respostas nas duas contas, confirmar a ordem cronológica e verificar o indicador de mensagem não lida antes de abrir a conversa.
+7. **Mostrar o perfil profissional:** editar os dados do perfil e, se houver tempo, adicionar uma foto ou um trabalho realizado.
+8. **Encerrar:** voltar à pesquisa e apresentar a página “Sobre Nós”.
+
+O arquivo `database/seed.sql` inclui profissionais fictícios para apresentar os resultados de pesquisa; as senhas de exemplo do seed não são credenciais de login. Cadastre as duas contas usadas no fluxo de conversa durante a preparação ou a demonstração.
+
+## Checklist final
+
+- [ ] Docker Desktop iniciado e sem erros.
+- [ ] `.env` local configurado; não incluir credenciais em capturas ou no Git.
+- [ ] `db`, `backend` e `frontend` ativos em `docker compose ps`.
+- [ ] API, serviços, profissionais e página inicial respondendo.
+- [ ] Catálogo de serviços visível e pesquisa por `pintura` e `montagem` funcionando.
+- [ ] Cadastro e login de cliente verificados.
+- [ ] Cadastro/login de profissional e edição de perfil verificados.
+- [ ] Conversa iniciada pelo cliente e resposta enviada pelo profissional.
+- [ ] Indicador de mensagem não lida e histórico cronológico verificados.
+- [ ] MER oficial comparado com `database/schema.sql`.
+- [ ] Roteiro e navegador preparados antes da apresentação.
+
+## Verificações de desenvolvimento
+
+Para executar validações locais, use terminais separados:
+
+```powershell
+Set-Location backend
+npm ci
+npm test
 ```
 
-### `seed.sql`
-
-Contém dados fictícios utilizados durante o desenvolvimento e os testes.
-
-Entre os dados existentes estão profissionais, serviços e trabalhos realizados.
-
----
-
-## 7. Conferir o banco
-
-O ambiente atual utiliza o banco:
-
-```text
-construlink
+```powershell
+Set-Location frontend
+npm ci
+npm run lint
+npm run build
 ```
 
-O PostgreSQL utilizado pelo projeto é:
+Os testes automatizados do backend utilizam o banco configurado para a aplicação. Faça-os antes da apresentação e confira o resultado; eles podem criar registros de teste no banco local.
 
-```text
-PostgreSQL 16
+## Encerrar os serviços
+
+Para parar os containers sem apagar o banco:
+
+```powershell
+docker compose down
 ```
 
-O container utilizado é:
-
-```text
-construlink-postgres
-```
-
-A porta utilizada pelo PostgreSQL é:
-
-```text
-5432
-```
-
-Antes de iniciar o desenvolvimento das telas, é importante confirmar que o PostgreSQL está funcionando corretamente.
-
----
-
-## 8. Preparar o Backend
-
-Abra um terminal separado.
-
-Entre na pasta:
-
-```bash
-cd backend
-```
-
-Instale as dependências:
-
-```bash
-npm install
-```
-
-Depois inicie o backend:
-
-```bash
-npm start
-```
-
-O servidor deve ser iniciado na porta:
-
-```text
-3000
-```
-
-A API estará disponível em:
-
-```text
-http://localhost:3000
-```
-
----
-
-## 9. Testar o Backend
-
-Com o backend em execução, abra outro terminal e teste a API.
-
-### Teste principal
-
-```bash
-curl http://127.0.0.1:3000/api/
-```
-
-O resultado esperado é:
-
-```json
-{
-  "mensagem": "API do Construlink funcionando!"
-}
-```
-
----
-
-### Testar serviços
-
-```bash
-curl http://127.0.0.1:3000/api/servicos
-```
-
-O endpoint deve retornar os serviços cadastrados.
-
----
-
-### Testar profissionais
-
-```bash
-curl http://127.0.0.1:3000/api/profissionais
-```
-
-O endpoint deve retornar os profissionais cadastrados.
-
----
-
-### Testar um profissional específico
-
-```bash
-curl http://127.0.0.1:3000/api/profissionais/2
-```
-
----
-
-### Testar trabalhos realizados
-
-```bash
-curl http://127.0.0.1:3000/api/profissionais/2/trabalhos
-```
-
----
-
-### Testar serviços de um profissional
-
-```bash
-curl http://127.0.0.1:3000/api/profissionais/2/servicos
-```
-
----
-
-### Testar profissional inexistente
-
-```bash
-curl http://127.0.0.1:3000/api/profissionais/999
-```
-
-O resultado esperado é:
-
-```json
-{
-  "mensagem": "Profissional não encontrado."
-}
-```
-
----
-
-## 10. Preparar o Frontend
-
-Abra outro terminal.
-
-Na raiz do projeto, entre na pasta:
-
-```bash
-cd frontend
-```
-
-Instale as dependências:
-
-```bash
-npm install
-```
-
-Depois execute:
-
-```bash
-npm run dev
-```
-
-O Vite exibirá no terminal o endereço local utilizado para acessar o frontend.
-
----
-
-## 11. Executar o ambiente completo
-
-Durante o desenvolvimento, a estrutura esperada é:
-
-```text
-Terminal 1
-    |
-    └── Docker / PostgreSQL
-
-Terminal 2
-    |
-    └── Backend / Node.js + Express
-
-Terminal 3
-    |
-    └── Frontend / React + Vite
-```
-
-O fluxo geral é:
-
-```text
-Docker
-   |
-   v
-PostgreSQL
-   |
-   v
-Backend / API
-   |
-   v
-Frontend
-```
-
----
-
-## 12. Verificação antes de começar as tarefas das telas
-
-Antes de iniciar a implementação das novas tarefas, confirmar:
-
-- [ ] Repositório clonado corretamente;
-- [ ] Git funcionando;
-- [ ] Docker funcionando;
-- [ ] Container `construlink-postgres` funcionando;
-- [ ] PostgreSQL saudável;
-- [ ] Banco `construlink` disponível;
-- [ ] Dependências do backend instaladas;
-- [ ] Backend iniciado na porta 3000;
-- [ ] Endpoint `/api/` funcionando;
-- [ ] Endpoint `/api/servicos` funcionando;
-- [ ] Endpoint `/api/profissionais` funcionando;
-- [ ] Dependências do frontend instaladas;
-- [ ] Frontend iniciado pelo Vite.
-
----
-
-## 13. Antes de implementar uma nova tarefa
-
-Depois que o ambiente estiver funcionando, não iniciar diretamente a implementação.
-
-Primeiro:
-
-1. Verificar a tarefa correspondente no Jira.
-2. Conferir o objetivo da tarefa.
-3. Conferir os critérios de aceitação.
-4. Conferir as dependências da tarefa.
-5. Verificar se existe uma branch definida para a tarefa.
-6. Criar ou utilizar a branch correspondente.
-7. Atualizar a branch conforme o fluxo definido pela equipe.
-8. Implementar somente o que estiver definido na tarefa.
-9. Testar a funcionalidade.
-10. Fazer o commit.
-11. Enviar a branch para o GitHub.
-12. Criar o Pull Request.
-13. Solicitar revisão.
-
----
-
-## 14. Convenção de commits
-
-Os commits devem seguir o padrão utilizado pelo projeto:
-
-```text
-tipo(SCRUM-XXX): descrição curta
-```
-
-Exemplo:
-
-```text
-feat(SCRUM-265): integra conexão com PostgreSQL
-```
-
-Tipos utilizados no projeto incluem:
-
-```text
-feat
-fix
-chore
-docs
-refactor
-test
-```
-
----
-
-## 15. Regra importante para as próximas telas
-
-A implementação das telas deve considerar a estrutura existente do projeto.
-
-Não criar uma estrutura paralela de banco, backend ou frontend sem verificar primeiro o que já existe.
-
-Antes de implementar uma nova funcionalidade:
-
-```text
-Jira
-  ↓
-Requisitos da tarefa
-  ↓
-Dependências
-  ↓
-Estrutura existente
-  ↓
-Implementação
-  ↓
-Teste
-  ↓
-Commit
-  ↓
-Pull Request
-  ↓
-Review
-```
-
-O objetivo é manter a continuidade entre as Sprints e evitar que uma nova implementação fique desconectada do que já foi desenvolvido.
-
----
-
-## 16. Ambiente pronto
-
-A máquina pode ser considerada pronta para iniciar as próximas tarefas quando:
-
-```text
-Docker
-   ↓
-PostgreSQL
-   ↓
-Banco Construlink
-   ↓
-Backend
-   ↓
-API funcionando
-   ↓
-Frontend funcionando
-   ↓
-Ambiente pronto para desenvolvimento
-```
-
-A partir desse ponto, o desenvolvimento das telas deve seguir as tarefas e critérios definidos no Jira.
-
----
-
-## 17. Referências do projeto
-
-Arquivos principais:
-
-```text
-README.md
-ACORDOS.md
-compose.yaml
-database/schema.sql
-database/seed.sql
-backend/
-frontend/
-```
-
-Ferramentas utilizadas:
-
-```text
-Git
-GitHub
-Docker
-Node.js
-React
-PostgreSQL
-Jira
-```
-
----
-
-## Conclusão
-
-Este guia deve ser utilizado para preparar o ambiente de desenvolvimento antes do início das próximas tarefas do Construlink.
-
-O objetivo é garantir que todos os integrantes trabalhem sobre o mesmo projeto, utilizando a mesma estrutura de backend, frontend e banco de dados.
-
-Depois que todas as verificações forem concluídas, o ambiente estará preparado para iniciar a implementação das próximas funcionalidades e telas definidas nas Sprints.
+Para voltar a apresentar, execute `docker compose up -d` na raiz do projeto.
