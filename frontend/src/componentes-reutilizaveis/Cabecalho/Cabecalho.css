@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 .cabecalho {
   width: 100%;
   background: #031725;
@@ -20,6 +18,9 @@
 }
 
 .cabecalho__marca {
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -63,6 +64,26 @@
 
 .cabecalho__link:hover {
   color: #f2f3f5;
+}
+
+.cabecalho__link--ativo {
+  background: rgba(22, 133, 247, 0.12);
+  color: #f2f3f5;
+}
+
+.cabecalho__link--mensagens {
+  position: relative;
+}
+
+.cabecalho__mensagens-nao-lidas {
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #031725;
+  border-radius: 50%;
+  background: #22c55e;
 }
 
 .cabecalho__acoes {
@@ -251,6 +272,7 @@
 
 @media (max-width: 640px) {
   .cabecalho__container {
+    flex-wrap: wrap;
     gap: 0.5rem;
     padding: 0.65rem 1rem;
   }
@@ -265,7 +287,17 @@
   }
 
   .cabecalho__nav {
-    display: none;
+    order: 3;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 0.25rem;
+    margin: 0;
+  }
+
+  .cabecalho__nav .cabecalho__link {
+    padding: 0.45rem;
+    font-size: 0.78rem;
   }
 
   .cabecalho__container > .cabecalho__link {

@@ -1,11 +1,49 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { obterSessao, limparSessao } from '../../utils/auth';
+import { buscarConversasNaoLidas } from '../../servicos/api';
 import './Cabecalho.css';
 import logo from './logo-construlink.svg';
 
 export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
   const usuario = usuarioAtivo || obterSessao();
   const [modalSair, setModalSair] = useState(false);
+  const [temMensagensNaoLidas, setTemMensagensNaoLidas] = useState(false);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (!usuario?.token) {
+      return undefined;
+    }
+
+    let ativo = true;
+
+    async function verificarMensagensNaoLidas() {
+      try {
+        const temNaoLidas = await buscarConversasNaoLidas(usuario.token);
+
+        if (ativo) {
+          setTemMensagensNaoLidas(temNaoLidas);
+        }
+      } catch (erro) {
+        if (ativo) {
+          console.error('Erro ao verificar mensagens não lidas:', erro);
+        }
+      }
+    }
+
+    verificarMensagensNaoLidas();
+    const intervalo = window.setInterval(verificarMensagensNaoLidas, 15000);
+
+    return () => {
+      ativo = false;
+      window.clearInterval(intervalo);
+    };
+  }, [pathname, usuario?.token]);
+
+  function classeLink(caminho) {
+    return `cabecalho__link${pathname === caminho ? ' cabecalho__link--ativo' : ''}`;
+  }
 
   function confirmarSaida() {
     limparSessao();
@@ -19,23 +57,24 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
   return (
     <header className='cabecalho'>
       <div className='cabecalho__container'>
-        <div
+        <button
+          type='button'
           className='cabecalho__marca'
           onClick={() => onNavegar && onNavegar('home')}
-          role='button'
-          tabIndex={0}
+          aria-label='Ir para a página inicial'
         >
           <img
             src={logo}
             alt='Logo Construlink'
             className='cabecalho__logo-imagem'
           />
-        </div>
+        </button>
 
         <nav className='cabecalho__nav'>
           <button
             type='button'
-            className='cabecalho__link cabecalho__link--ativo'
+            className={classeLink('/')}
+            aria-current={pathname === '/' ? 'page' : undefined}
             onClick={() => onNavegar && onNavegar('home')}
           >
             Home
@@ -43,7 +82,8 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
 
           <button
             type='button'
-            className='cabecalho__link'
+            className={classeLink('/sobre')}
+            aria-current={pathname === '/sobre' ? 'page' : undefined}
             onClick={() => onNavegar && onNavegar('sobre')}
           >
             Sobre Nós
@@ -51,10 +91,11 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
 
           <button
             type='button'
-            className='cabecalho__link'
+            className={classeLink('/como-funciona')}
+            aria-current={pathname === '/como-funciona' ? 'page' : undefined}
             onClick={() => onNavegar && onNavegar('como-funciona')}
           >
-            Como funciona❔
+            Como funciona
           </button>
         </nav>
         {usuario?.papel === 'profissional' && (
@@ -72,8 +113,15 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
               type='button'
               className='cabecalho__link cabecalho__link--mensagens'
               onClick={() => onNavegar && onNavegar('mensagens')}
+              aria-label={`Mensagens${temMensagensNaoLidas ? ', há mensagens não lidas' : ''}`}
             >
               Mensagens
+              {temMensagensNaoLidas && (
+                <span
+                  className='cabecalho__mensagens-nao-lidas'
+                  aria-hidden='true'
+                />
+              )}
             </button>
           )}
           {usuario ? (

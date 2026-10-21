@@ -115,8 +115,7 @@ router.get('/profissionais/:id/trabalhos', async (req, res) => {
           id,
           titulo,
           foto_url,
-          descricao,
-          criado_em
+          descricao
         FROM trabalho_realizado
         WHERE profissional_id = $1
         ORDER BY id;
@@ -403,8 +402,11 @@ router.put(
       });
     }
 
+    const apiPublica = (
+      process.env.PUBLIC_API_URL || 'http://localhost:3000'
+    ).replace(/\/+$/, '');
     const fotoPerfilUrl = req.file
-      ? `${process.env.PUBLIC_API_URL || 'http://localhost:3000'}/uploads/${req.file.filename}`
+      ? `${apiPublica}/uploads/${req.file.filename}`
       : typeof req.body.foto_perfil_url === 'string'
         ? req.body.foto_perfil_url.trim() || null
         : req.body.foto_perfil_url;
@@ -681,7 +683,7 @@ router.put(
           UPDATE trabalho_realizado
           SET titulo = $1, descricao = $2, foto_url = $3
           WHERE id = $4
-          RETURNING id, profissional_id, titulo, foto_url, descricao, criado_em;
+          RETURNING id, profissional_id, titulo, foto_url, descricao;
         `,
         [titulo, descricao, fotoUrl, trabalhoAnterior.id],
       );
@@ -1090,7 +1092,10 @@ router.post(
       }
 
       const profissionalId = perfil.rows[0].id;
-      const fotoUrl = `${process.env.PUBLIC_API_URL}/uploads/${req.file.filename}`;
+      const apiPublica = (
+        process.env.PUBLIC_API_URL || 'http://localhost:3000'
+      ).replace(/\/+$/, '');
+      const fotoUrl = `${apiPublica}/uploads/${req.file.filename}`;
 
       const resultado = await pool.query(
         `INSERT INTO trabalho_realizado
@@ -1365,7 +1370,16 @@ router.get('/conversas', autenticar, async (req, res) => {
            WHERE m.conversa_id = c.id
            ORDER BY m.enviada_em DESC, m.id DESC
            LIMIT 1
-         ) AS ultima_mensagem_em
+         ) AS ultima_mensagem_em,
+         (
+           SELECT COUNT(*)
+           FROM mensagem m
+           LEFT JOIN conversa_leitura cl
+             ON cl.conversa_id = c.id AND cl.usuario_id = $1
+           WHERE m.conversa_id = c.id
+             AND m.remetente_usuario_id <> $1
+             AND m.id > COALESCE(cl.ultima_mensagem_lida_id, 0)
+         )::INTEGER AS mensagens_nao_lidas
        FROM conversa c
        INNER JOIN servico s ON s.id = c.servico_id
        INNER JOIN cliente cli ON cli.id = c.cliente_id
@@ -1479,6 +1493,20 @@ router.get('/conversas/:id/mensagens', autenticar, async (req, res) => {
         mensagem: 'Acesso negado às mensagens desta conversa.',
       });
     }
+
+    await pool.query(
+      `INSERT INTO conversa_leitura
+         (conversa_id, usuario_id, ultima_mensagem_lida_id)
+       SELECT $1, $2, COALESCE(MAX(id), 0)
+       FROM mensagem
+       WHERE conversa_id = $1
+       ON CONFLICT (conversa_id, usuario_id) DO UPDATE
+       SET ultima_mensagem_lida_id = GREATEST(
+         conversa_leitura.ultima_mensagem_lida_id,
+         EXCLUDED.ultima_mensagem_lida_id
+       );`,
+      [conversaId, req.usuario.id],
+    );
 
     // 2. Buscar as mensagens
     const mensagens = await pool.query(

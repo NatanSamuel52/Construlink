@@ -141,6 +141,11 @@ export default function MinhasConversas() {
                     <span className='mensagens-item-conteudo'>
                       <span className='mensagens-item-topo'>
                         <strong>{outraPessoa.nome || 'Contato'}</strong>
+                        {Number(conversa.mensagens_nao_lidas) > 0 && (
+                          <span className='mensagens-item-nao-lidas'>
+                            Nova mensagem
+                          </span>
+                        )}
                         <time>
                           {formatarData(
                             conversa.ultima_mensagem_em || conversa.criado_em,

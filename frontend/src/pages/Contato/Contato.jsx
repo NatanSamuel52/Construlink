@@ -52,7 +52,8 @@ export default function Contato() {
   const [carregando, setCarregando] = useState(() => Boolean(token));
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState('');
-  const fimMensagensRef = useRef(null);
+  const mensagensListaRef = useRef(null);
+  const seguirNovasMensagensRef = useRef(true);
 
   useEffect(() => {
     if (!token) {
@@ -113,7 +114,20 @@ export default function Contato() {
       try {
         const mensagensAtualizadas = await buscarMensagens(token, conversa.id);
         if (ativo) {
-          setMensagens(mensagensAtualizadas);
+          setMensagens((atuais) => {
+            const semAlteracoes =
+              atuais.length === mensagensAtualizadas.length &&
+              atuais.every(
+                (mensagem, indice) =>
+                  String(mensagem.id) ===
+                    String(mensagensAtualizadas[indice]?.id) &&
+                  mensagem.conteudo === mensagensAtualizadas[indice]?.conteudo &&
+                  mensagem.enviada_em ===
+                    mensagensAtualizadas[indice]?.enviada_em,
+              );
+
+            return semAlteracoes ? atuais : mensagensAtualizadas;
+          });
           setErro('');
         }
       } catch (erroConsulta) {
@@ -135,8 +149,25 @@ export default function Contato() {
   }, [conversa?.id, token]);
 
   useEffect(() => {
-    fimMensagensRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const lista = mensagensListaRef.current;
+
+    if (lista && seguirNovasMensagensRef.current) {
+      lista.scrollTo({
+        top: lista.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }, [mensagens]);
+
+  function atualizarPosicaoRolagem() {
+    const lista = mensagensListaRef.current;
+
+    if (lista) {
+      const distanciaDoFim =
+        lista.scrollHeight - lista.scrollTop - lista.clientHeight;
+      seguirNovasMensagensRef.current = distanciaDoFim < 80;
+    }
+  }
 
   async function handleEnviar(evento) {
     evento.preventDefault();
@@ -156,6 +187,7 @@ export default function Contato() {
         conteudo,
       );
 
+      seguirNovasMensagensRef.current = true;
       setMensagens((atuais) => {
         if (
           atuais.some(
@@ -302,7 +334,9 @@ export default function Contato() {
                 </header>
 
                 <div
+                  ref={mensagensListaRef}
                   className='contato-mensagens-lista'
+                  onScroll={atualizarPosicaoRolagem}
                   aria-live='polite'
                   aria-relevant='additions text'
                 >
@@ -370,7 +404,6 @@ export default function Contato() {
                       );
                     })
                   )}
-                  <div ref={fimMensagensRef} />
                 </div>
 
                 <form className='contato-form-envio' onSubmit={handleEnviar}>
