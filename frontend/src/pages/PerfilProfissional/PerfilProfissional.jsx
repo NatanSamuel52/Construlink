@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
-import { obterSessao } from '../../utils/auth';
+import { obterSessao, salvarSessao } from '../../utils/auth';
 import { API_URL } from '../../config/api';
 
 import {
@@ -147,6 +147,15 @@ export default function PerfilProfissional() {
     descricao: '',
   });
   const [arquivoFoto, setArquivoFoto] = useState(null);
+  const [previsualizacaoFoto, setPrevisualizacaoFoto] = useState('');
+
+  useEffect(() => {
+    return () => {
+      if (previsualizacaoFoto) {
+        URL.revokeObjectURL(previsualizacaoFoto);
+      }
+    };
+  }, [previsualizacaoFoto]);
 
   function atualizarCampo(campo, valor) {
     setDadosFormulario((dadosAtuais) => ({
@@ -323,11 +332,42 @@ export default function PerfilProfissional() {
 
   function cancelarEdicao() {
     setArquivoFoto(null);
+    setPrevisualizacaoFoto('');
     setEditando(false);
 
     setMensagemFormulario('');
 
     setErroFormulario('');
+  }
+
+  function selecionarFotoPerfil(evento) {
+    const arquivo = evento.target.files?.[0];
+
+    if (!arquivo) {
+      setArquivoFoto(null);
+      setPrevisualizacaoFoto('');
+      return;
+    }
+
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(arquivo.type)) {
+      setErroFormulario('Selecione uma imagem PNG, JPG ou WEBP.');
+      evento.target.value = '';
+      setArquivoFoto(null);
+      setPrevisualizacaoFoto('');
+      return;
+    }
+
+    if (arquivo.size > 5 * 1024 * 1024) {
+      setErroFormulario('A imagem deve ter no máximo 5 MB.');
+      evento.target.value = '';
+      setArquivoFoto(null);
+      setPrevisualizacaoFoto('');
+      return;
+    }
+
+    setErroFormulario('');
+    setArquivoFoto(arquivo);
+    setPrevisualizacaoFoto(URL.createObjectURL(arquivo));
   }
 
   async function salvarEdicao(evento) {
@@ -377,6 +417,14 @@ export default function PerfilProfissional() {
 
         ...perfilAtualizado,
       }));
+      salvarSessao({
+        ...sessao,
+        nome: perfilAtualizado.nome,
+        foto_perfil_url: perfilAtualizado.foto_perfil_url,
+      });
+      window.dispatchEvent(new Event('contrulink:sessao-atualizada'));
+      setArquivoFoto(null);
+      setPrevisualizacaoFoto('');
 
       setMensagemFormulario('Perfil atualizado com sucesso.');
 
@@ -408,31 +456,63 @@ export default function PerfilProfissional() {
         setCarregando(true);
 
         setErro('');
+        setErroTrabalho('');
 
         const dadosPerfil = await buscarMeuPerfilProfissional(sessao.token);
 
-        const [respostaServicos, respostaTrabalhos] = await Promise.all([
+        const [resultadoServicos, resultadoTrabalhos] =
+          await Promise.allSettled([
           buscarServicosDoProfissional(dadosPerfil.profissional_id),
-
           fetch(
             `${API_URL}/profissionais/${dadosPerfil.profissional_id}/trabalhos`,
-
             { signal: controlador.signal },
           ),
         ]);
 
-        if (!respostaTrabalhos.ok) {
-          throw new Error('Não foi possível carregar os trabalhos realizados.');
+        if (resultadoServicos.status === 'rejected') {
+          throw resultadoServicos.reason;
         }
-
-        const dadosTrabalhos = await respostaTrabalhos.json();
 
         if (!controlador.signal.aborted) {
           setPerfil(dadosPerfil);
+          setServicos(resultadoServicos.value);
+        }
 
-          setServicos(respostaServicos);
+        try {
+          if (resultadoTrabalhos.status === 'rejected') {
+            throw resultadoTrabalhos.reason;
+          }
 
-          setTrabalhos(dadosTrabalhos);
+          const respostaTrabalhos = resultadoTrabalhos.value;
+
+          if (!respostaTrabalhos.ok) {
+            const dadosErro = await respostaTrabalhos.json();
+            throw new Error(
+              dadosErro.mensagem ||
+                'Não foi possível carregar os trabalhos realizados.',
+            );
+          }
+
+          const dadosTrabalhos = await respostaTrabalhos.json();
+
+          if (!controlador.signal.aborted) {
+            setTrabalhos(dadosTrabalhos);
+          }
+        } catch (erroTrabalhos) {
+          if (
+            erroTrabalhos.name !== 'AbortError' &&
+            !controlador.signal.aborted
+          ) {
+            console.error(
+              'Erro ao carregar trabalhos do profissional:',
+              erroTrabalhos,
+            );
+            setTrabalhos([]);
+            setErroTrabalho(
+              erroTrabalhos.message ||
+                'Não foi possível carregar os trabalhos realizados.',
+            );
+          }
         }
       } catch (erroConsulta) {
         if (erroConsulta.name !== 'AbortError') {
@@ -568,18 +648,30 @@ export default function PerfilProfissional() {
                 <div className='perfil-autenticado__campo'>
                   <label htmlFor='perfil-foto'>Foto de perfil</label>
 
+                  <div className='perfil-autenticado__foto-edicao'>
+                    {previsualizacaoFoto || perfil.foto_perfil_url ? (
+                      <img
+                        src={
+                          previsualizacaoFoto || perfil.foto_perfil_url
+                        }
+                        alt='Prévia da foto de perfil'
+                      />
+                    ) : (
+                      <span>{perfil.nome?.charAt(0).toUpperCase() || 'P'}</span>
+                    )}
+                  </div>
+
                   <input
                     id='perfil-foto'
                     type='file'
                     accept='image/png,image/jpeg,image/webp'
-                    onChange={(evento) =>
-                      setArquivoFoto(evento.target.files?.[0] || null)
-                    }
+                    onChange={selecionarFotoPerfil}
                     disabled={salvando}
                   />
 
                   <small>
-                    Selecione uma imagem PNG, JPG ou WEBP de até 5 MB.
+                    Escolha uma imagem PNG, JPG ou WEBP de até 5 MB. A prévia
+                    aparece antes de salvar.
                   </small>
                 </div>
 
@@ -797,7 +889,9 @@ export default function PerfilProfissional() {
                   </article>
                 ))
               ) : (
-                <p>Você ainda não possui trabalhos cadastrados.</p>
+                !erroTrabalho && (
+                  <p>Você ainda não possui trabalhos cadastrados.</p>
+                )
               )}
             </div>
 
