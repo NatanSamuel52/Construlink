@@ -145,3 +145,6 @@ vite.config.ts.timestamp-*
 
 # Backup local do banco de dados
 construlink_teste_backup.sql
+
+# Arquivos enviados durante o uso local da aplicação
+backend/uploads/
