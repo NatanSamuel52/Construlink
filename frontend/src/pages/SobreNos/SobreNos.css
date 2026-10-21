@@ -111,7 +111,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 390px;
+  min-height: 460px;
   overflow: hidden;
   border: 1px solid #2c4360;
   border-radius: 18px;
@@ -177,7 +177,7 @@
 
 .sobre-visual-texto {
   position: absolute;
-  top: 185px;
+  top: 165px;
   left: 11%;
   display: flex;
   flex-direction: column;
@@ -516,7 +516,7 @@
   }
 
   .sobre-destaque-visual {
-    min-height: 350px;
+    min-height: 410px;
   }
 
   .sobre-proposito,
@@ -556,10 +556,11 @@
   }
 
   .sobre-destaque-visual {
-    min-height: 330px;
+    min-height: 400px;
   }
 
   .sobre-visual-texto {
+    top: 150px;
     left: 8%;
   }
 
