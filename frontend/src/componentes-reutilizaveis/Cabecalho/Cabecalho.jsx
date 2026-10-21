@@ -67,6 +67,15 @@ export default function Cabecalho({ onNavegar, usuarioAtivo, onLogout }) {
           </button>
         )}
         <div className='cabecalho__acoes'>
+          {usuario && (
+            <button
+              type='button'
+              className='cabecalho__link cabecalho__link--mensagens'
+              onClick={() => onNavegar && onNavegar('mensagens')}
+            >
+              Mensagens
+            </button>
+          )}
           {usuario ? (
             <div className='cabecalho__usuario'>
               <div className='cabecalho__avatar'>

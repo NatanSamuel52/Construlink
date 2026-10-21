@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom';
 import SobreNos from './pages/SobreNos/SobreNos.jsx';
 import Cabecalho from './componentes-reutilizaveis/Cabecalho/Cabecalho';
 import Login from './pages/Login/Login';
@@ -13,6 +19,7 @@ import PerfilProfissional from './pages/PerfilProfissional/PerfilProfissional.js
 import { obterSessao, limparSessao } from './utils/auth';
 import CadastroTrabalho from './pages/CadastroTrabalho/CadastroTrabalho.jsx';
 import Contato from './pages/Contato/Contato.jsx';
+import MinhasConversas from './pages/Contato/MinhasConversas.jsx';
 
 import './App.css';
 
@@ -91,12 +98,8 @@ function Painel({ usuario, onLogout, onNavegar }) {
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [usuario, setUsuario] = useState(obterSessao());
+  const [usuario, setUsuario] = useState(() => obterSessao());
   const [alertaProtegido, setAlertaProtegido] = useState(null);
-
-  useEffect(() => {
-    setUsuario(obterSessao());
-  }, []);
 
   useEffect(() => {
     if (location.pathname !== '/') {
@@ -204,6 +207,15 @@ function App() {
       return;
     }
 
+    if (destino === 'mensagens') {
+      navigate(
+        usuario
+          ? '/mensagens'
+          : `/login?redirect=${encodeURIComponent('/mensagens')}`,
+      );
+      return;
+    }
+
     if (destino === 'painel') {
       navigate('/painel');
       return;
@@ -264,6 +276,19 @@ function App() {
           <Route path='/perfil-profissional/:id' element={<PerfilPublico />} />
 
           <Route path='/contato/:id' element={<Contato />} />
+          <Route
+            path='/mensagens'
+            element={
+              usuario ? (
+                <MinhasConversas />
+              ) : (
+                <Navigate
+                  to={`/login?redirect=${encodeURIComponent('/mensagens')}`}
+                  replace
+                />
+              )
+            }
+          />
 
           <Route
             path='/meu-perfil-profissional'

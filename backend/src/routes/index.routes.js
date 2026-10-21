@@ -1335,6 +1335,66 @@ router.post('/conversas', autenticar, async (req, res) => {
 });
 
 // Detalhes de uma conversa por ID
+// Lista todas as conversas do usuário autenticado (como cliente ou como profissional) - SCRUM-331
+router.get('/conversas', autenticar, async (req, res) => {
+  try {
+    const resultado = await pool.query(
+      `SELECT 
+         c.id,
+         c.servico_id,
+         c.cliente_id,
+         c.profissional_id,
+         c.criado_em,
+         s.nome AS servico_nome,
+         u_cli.id AS cliente_usuario_id,
+         u_cli.nome AS cliente_nome,
+         u_cli.foto_perfil_url AS cliente_foto_url,
+         u_prof.id AS profissional_usuario_id,
+         u_prof.nome AS profissional_nome,
+         u_prof.foto_perfil_url AS profissional_foto_url,
+         (
+           SELECT m.conteudo
+           FROM mensagem m
+           WHERE m.conversa_id = c.id
+           ORDER BY m.enviada_em DESC, m.id DESC
+           LIMIT 1
+         ) AS ultima_mensagem,
+         (
+           SELECT m.enviada_em
+           FROM mensagem m
+           WHERE m.conversa_id = c.id
+           ORDER BY m.enviada_em DESC, m.id DESC
+           LIMIT 1
+         ) AS ultima_mensagem_em
+       FROM conversa c
+       INNER JOIN servico s ON s.id = c.servico_id
+       INNER JOIN cliente cli ON cli.id = c.cliente_id
+       INNER JOIN usuario u_cli ON u_cli.id = cli.usuario_id
+       INNER JOIN profissional p ON p.id = c.profissional_id
+       INNER JOIN usuario u_prof ON u_prof.id = p.usuario_id
+       WHERE u_cli.id = $1 OR u_prof.id = $1
+       ORDER BY COALESCE(
+         (
+           SELECT m.enviada_em
+           FROM mensagem m
+           WHERE m.conversa_id = c.id
+           ORDER BY m.enviada_em DESC, m.id DESC
+           LIMIT 1
+         ),
+         c.criado_em
+       ) DESC;`,
+      [req.usuario.id],
+    );
+
+    return res.status(200).json(resultado.rows);
+  } catch (erro) {
+    console.error('Erro ao listar conversas do usuario:', erro.message);
+    return res.status(500).json({
+      mensagem: 'Erro ao consultar conversas.',
+    });
+  }
+});
+
 router.get('/conversas/:id', autenticar, async (req, res) => {
   const conversaId = req.params.id;
 
@@ -1433,7 +1493,7 @@ router.get('/conversas/:id/mensagens', autenticar, async (req, res) => {
        FROM mensagem m
        INNER JOIN usuario u ON u.id = m.remetente_usuario_id
        WHERE m.conversa_id = $1
-       ORDER BY m.enviada_em ASC;`,
+       ORDER BY m.enviada_em ASC, m.id ASC;`,
       [conversaId],
     );
 
@@ -1451,7 +1511,7 @@ router.post('/conversas/:id/mensagens', autenticar, async (req, res) => {
   const conversaId = req.params.id;
   const { conteudo } = req.body;
 
-  if (!conteudo || !conteudo.trim()) {
+  if (typeof conteudo !== 'string' || !conteudo.trim()) {
     return res.status(400).json({
       mensagem: 'O conteúdo da mensagem não pode estar vazio.',
     });

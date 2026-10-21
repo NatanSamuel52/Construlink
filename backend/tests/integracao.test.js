@@ -122,7 +122,40 @@ async function rodarTestesIntegracao() {
     const conversaId = resConversa.data.conversa.id;
     checar(!!conversaId, 'ID da conversa gerado pelo banco relacional');
 
-    // 5. Enviar mensagem na conversa
+    // 5. Validar o acesso e o conteúdo das mensagens
+    const resHistoricoSemToken = await requisicao(
+      'GET',
+      `/api/conversas/${conversaId}/mensagens`,
+    );
+    checar(resHistoricoSemToken.status === 401, 'Historico exige autenticacao');
+
+    const resEnvioSemToken = await requisicao(
+      'POST',
+      `/api/conversas/${conversaId}/mensagens`,
+      { conteudo: 'Mensagem sem autenticação' },
+    );
+    checar(resEnvioSemToken.status === 401, 'Envio exige autenticacao');
+
+    const resMensagemVazia = await requisicao(
+      'POST',
+      `/api/conversas/${conversaId}/mensagens`,
+      { conteudo: '   ' },
+      token,
+    );
+    checar(resMensagemVazia.status === 400, 'Mensagem vazia e rejeitada');
+
+    const resMensagemTipoInvalido = await requisicao(
+      'POST',
+      `/api/conversas/${conversaId}/mensagens`,
+      { conteudo: 123 },
+      token,
+    );
+    checar(
+      resMensagemTipoInvalido.status === 400,
+      'Conteudo que nao e texto e rejeitado',
+    );
+
+    // 6. Enviar mensagem na conversa
     const textoMensagem = 'Ola, gostaria de solicitar um orcamento para reforma!';
     const resMensagem = await requisicao(
       'POST',
@@ -132,8 +165,23 @@ async function rodarTestesIntegracao() {
     );
     checar(resMensagem.status === 201, 'Mensagem salva com sucesso com status 201');
     checar(resMensagem.data.conteudo === textoMensagem, 'Conteudo da mensagem persistido fielmente');
+    checar(
+      String(resMensagem.data.remetente_usuario_id) ===
+        String(resLogin.data.usuario.id),
+      'Remetente corresponde ao usuario autenticado',
+    );
+    checar(!!resMensagem.data.enviada_em, 'Data e hora da mensagem persistidas');
 
-    // 6. Consultar mensagens da conversa e validar persistencia
+    const segundaMensagem = 'Tenho disponibilidade para conversar esta semana.';
+    const resSegundaMensagem = await requisicao(
+      'POST',
+      `/api/conversas/${conversaId}/mensagens`,
+      { conteudo: segundaMensagem },
+      token,
+    );
+    checar(resSegundaMensagem.status === 201, 'Segunda mensagem salva com sucesso');
+
+    // 7. Consultar mensagens da conversa e validar persistencia e ordem
     const resListaMsgs = await requisicao(
       'GET',
       `/api/conversas/${conversaId}/mensagens`,
@@ -145,6 +193,56 @@ async function rodarTestesIntegracao() {
     checar(
       resListaMsgs.data.some((m) => m.conteudo === textoMensagem),
       'Mensagem enviada consta no historico cronologico',
+    );
+    const indicePrimeira = resListaMsgs.data.findIndex(
+      (m) => String(m.id) === String(resMensagem.data.id),
+    );
+    const indiceSegunda = resListaMsgs.data.findIndex(
+      (m) => String(m.id) === String(resSegundaMensagem.data.id),
+    );
+    checar(
+      indicePrimeira >= 0 && indicePrimeira < indiceSegunda,
+      'Mensagens aparecem na ordem em que foram enviadas',
+    );
+
+    const emailOutroCliente = `cliente.outro.${Date.now()}@construlink.local`;
+    const resCadastroOutroCliente = await requisicao('POST', '/api/cadastro', {
+      nome: 'Outro Cliente',
+      email: emailOutroCliente,
+      senha: 'senhaSegura123',
+      papel: 'cliente',
+    });
+    checar(
+      resCadastroOutroCliente.status === 201,
+      'Segundo cliente criado para validar permissao',
+    );
+    const resLoginOutroCliente = await requisicao('POST', '/api/login', {
+      email: emailOutroCliente,
+      senha: 'senhaSegura123',
+    });
+    const tokenOutroCliente = resLoginOutroCliente.data.token;
+    checar(!!tokenOutroCliente, 'Segundo cliente autenticado');
+
+    const resHistoricoNaoParticipante = await requisicao(
+      'GET',
+      `/api/conversas/${conversaId}/mensagens`,
+      null,
+      tokenOutroCliente,
+    );
+    checar(
+      resHistoricoNaoParticipante.status === 403,
+      'Usuario que nao participa nao consulta as mensagens',
+    );
+
+    const resEnvioNaoParticipante = await requisicao(
+      'POST',
+      `/api/conversas/${conversaId}/mensagens`,
+      { conteudo: 'Mensagem de outro usuário' },
+      tokenOutroCliente,
+    );
+    checar(
+      resEnvioNaoParticipante.status === 403,
+      'Usuario que nao participa nao envia mensagens',
     );
 
     console.log('\nTodos os fluxos ponta a ponta da V1.0 foram validados com sucesso!');

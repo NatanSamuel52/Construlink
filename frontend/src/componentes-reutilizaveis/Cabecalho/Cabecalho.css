@@ -2,8 +2,8 @@
 
 .cabecalho {
   width: 100%;
-  background: #0c0d10;
-  border-bottom: 1px solid #1f2128;
+  background: #031725;
+  border-bottom: 1px solid #12354a;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -23,6 +23,13 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+.cabecalho__logo-imagem {
+  display: block;
+  width: 230px;
+  max-width: 100%;
+  height: auto;
   user-select: none;
 }
 
@@ -50,6 +57,7 @@
   cursor: pointer;
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
+  white-space: nowrap;
   transition: color 0.15s ease;
 }
 
@@ -242,7 +250,53 @@
 }
 
 @media (max-width: 640px) {
+  .cabecalho__container {
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+  }
+
+  .cabecalho__marca {
+    width: 135px;
+    flex: 0 1 135px;
+  }
+
+  .cabecalho__logo-imagem {
+    width: 135px;
+  }
+
   .cabecalho__nav {
     display: none;
+  }
+
+  .cabecalho__container > .cabecalho__link {
+    display: none;
+  }
+
+  .cabecalho__acoes {
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .cabecalho__link--mensagens {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .cabecalho__usuario {
+    gap: 0.4rem;
+  }
+
+  .cabecalho__avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .cabecalho__info {
+    display: none;
+  }
+
+  .cabecalho__btn-sair {
+    margin-left: 0;
+    padding: 0.4rem 0.55rem;
   }
 }
