@@ -36,7 +36,7 @@ export default function Cadastro({
     if (!email.trim()) {
       novosErros.email = 'Informe seu e-mail.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      novosErros.email = 'Formato de e-mail invalido.';
+      novosErros.email = 'Formato de e-mail inválido.';
     }
 
     if (!senha) {
@@ -48,7 +48,7 @@ export default function Cadastro({
     if (!confirmarSenha) {
       novosErros.confirmarSenha = 'Confirme sua senha.';
     } else if (senha !== confirmarSenha) {
-      novosErros.confirmarSenha = 'As senhas nao coincidem.';
+      novosErros.confirmarSenha = 'As senhas não coincidem.';
     }
 
     return novosErros;
@@ -86,7 +86,7 @@ export default function Cadastro({
         return;
       }
 
-      // Cadastro concluido com sucesso
+      // Cadastro concluído com sucesso
       setNomeRegistrado(dados.usuario.nome);
       setCadastroConcluido(true);
 
@@ -94,10 +94,10 @@ export default function Cadastro({
         onCadastroSucesso(dados.usuario);
       }
     } catch (erro) {
-      console.error('Erro na requisicao de cadastro:', erro);
+      console.error('Erro na requisição de cadastro:', erro);
       setErros({
         geral:
-          'Nao foi possivel conectar ao servidor. Verifique se o backend esta em execucao.',
+          'Não foi possível conectar ao servidor. Verifique se o backend está em execução.',
       });
     } finally {
       setCarregando(false);
@@ -117,7 +117,7 @@ export default function Cadastro({
                 Bem-vindo(a), <strong>{nomeRegistrado}</strong>! Sua conta foi
                 criada com sucesso.
                 <br />
-                Agora faca login para acessar a plataforma.
+                Agora faça login para acessar a plataforma.
               </p>
               <button
                 type='button'
@@ -142,7 +142,7 @@ export default function Cadastro({
             <h1 className='cadastro-card__titulo'>Criar sua conta</h1>
             <p className='cadastro-card__subtitulo'>
               Junte-se ao Construlink e conecte-se a profissionais ou clientes
-              da sua regiao.
+              da sua região.
             </p>
           </div>
 
@@ -154,7 +154,7 @@ export default function Cadastro({
             </div>
           )}
 
-          {/* Selecao de papel - SCRUM-294 */}
+          {/* Seleção de papel - SCRUM-294 */}
           <div className='cadastro-papel'>
             <span className='cadastro-papel__label'>Tipo de conta</span>
             <div className='cadastro-papel__opcoes'>
@@ -170,7 +170,7 @@ export default function Cadastro({
                 <span className='cadastro-papel__icone'>👤</span>
                 <span className='cadastro-papel__nome'>Cliente</span>
                 <span className='cadastro-papel__descricao'>
-                  Busco profissionais para servicos
+                  Busco profissionais para serviços
                 </span>
               </button>
               <button
@@ -185,7 +185,7 @@ export default function Cadastro({
                 <span className='cadastro-papel__icone'>🔨</span>
                 <span className='cadastro-papel__nome'>Profissional</span>
                 <span className='cadastro-papel__descricao'>
-                  Oferto servicos de reforma
+                  Oferto serviços de reforma
                 </span>
               </button>
             </div>
@@ -267,7 +267,7 @@ export default function Cadastro({
               id='cadastro-senha'
               type='password'
               className={`cadastro-campo__input ${erros.senha ? 'cadastro-campo__input--erro' : ''}`}
-              placeholder='Minimo 6 caracteres'
+              placeholder='Mínimo 6 caracteres'
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               autoComplete='new-password'
@@ -315,7 +315,7 @@ export default function Cadastro({
           </button>
 
           <div className='cadastro-rodape-card'>
-            <span>Ja possui conta? </span>
+            <span>Já possui conta? </span>
             <button
               type='button'
               id='btn-ir-login'
