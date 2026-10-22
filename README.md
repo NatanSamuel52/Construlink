@@ -219,18 +219,18 @@ O arquivo `seed.sql` contém dados fictícios para utilização durante o desenv
 
 Entre os dados existentes estão profissionais, serviços oferecidos e trabalhos realizados.
 
-Os dados atuais incluem profissionais como:
+Em um banco novo, o seed cria os mesmos 12 perfis públicos de demonstração, com
+12 trabalhos realizados, 18 ofertas de serviço, fotos locais e as cinco
+categorias do catálogo. Esses registros são fictícios e servem para apresentar
+pesquisas, perfis e portfólios. As contas desses perfis não têm senha válida e
+não podem ser usadas para entrar no sistema. Contas pessoais, conversas e
+mensagens locais não são copiadas para o seed.
 
-- Carlos Oliveira;
-- Mariana Costa;
-- Rafael Santos.
-
-Também existem serviços fictícios relacionados a:
-
-- Pintura residencial;
-- Instalação elétrica;
-- Reparos hidráulicos;
-- Montagem de móveis.
+O seed só é executado automaticamente quando o volume PostgreSQL é criado pela
+primeira vez. Em um volume já existente, atualizar `database/seed.sql` não
+substitui nem atualiza os dados locais. Consulte
+[GUIA-PREPARACAO-AMBIENTE.md](GUIA-PREPARACAO-AMBIENTE.md) para iniciar uma
+instalação nova sem apagar os dados de um banco existente.
 
 ---
 
@@ -282,6 +282,8 @@ O resultado esperado é:
 
 ```text
 db
+backend
+frontend
 ```
 
 ### Verificar o container
@@ -292,7 +294,8 @@ Execute:
 docker compose ps
 ```
 
-O PostgreSQL deve aparecer como ativo e saudável.
+Os três serviços do projeto devem aparecer ativos; `db` e `backend` também
+informam o estado de saúde.
 
 ---
 

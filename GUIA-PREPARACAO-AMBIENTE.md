@@ -64,9 +64,13 @@ As três rotas da API devem responder com HTTP 200, e a página web deve abrir n
 
 ### Banco em uma instalação nova ou já existente
 
-Em um volume PostgreSQL novo, o Compose cria as tabelas e carrega os dados iniciais de `database/schema.sql` e `database/seed.sql`. A migração idempotente `database/ajusta-mensagens-nao-lidas.sql` também é disponibilizada ao container.
+Em um volume PostgreSQL novo, o Compose cria as tabelas e carrega os dados de `database/schema.sql` e `database/seed.sql`. A base de demonstração fica com os mesmos 12 perfis públicos, 12 trabalhos realizados, 18 ofertas, cinco serviços e fotos que acompanham o repositório. Os dados servem para mostrar pesquisa, perfis e portfólios.
 
-Os scripts de inicialização do PostgreSQL não são repetidos em um volume existente. Para aplicar a migração de leitura de mensagens nesse caso:
+As contas dos perfis de demonstração não têm senha válida. O seed não inclui contas pessoais, clientes, conversas ou mensagens locais. Para demonstrar o fluxo de conversa, crie contas de teste próprias na aplicação e inicie uma conversa entre elas.
+
+Os scripts de inicialização do PostgreSQL não são repetidos em um volume existente. Por isso, um volume novo recebe os dados de demonstração versionados, mas atualizar `database/seed.sql` não substitui nem sincroniza registros em um banco já utilizado. Preserve o volume existente se quiser manter os dados locais; para comparar a apresentação em uma instalação limpa, use uma cópia/clonagem nova do projeto e um volume PostgreSQL novo. Não use `docker compose down -v` na instalação atual, pois isso apaga o banco local.
+
+Para aplicar a migração de leitura de mensagens em um volume existente:
 
 ```powershell
 docker compose exec db psql -U construlink_user -d construlink -f /docker-entrypoint-initdb.d/03-ajusta-mensagens-nao-lidas.sql
@@ -89,7 +93,7 @@ Faça a demonstração com duas contas que possam ser cadastradas pela própria 
 7. **Mostrar o perfil profissional:** editar os dados do perfil e, se houver tempo, adicionar uma foto ou um trabalho realizado.
 8. **Encerrar:** voltar à pesquisa e apresentar a página “Sobre Nós”.
 
-O arquivo `database/seed.sql` inclui profissionais fictícios para apresentar os resultados de pesquisa; as senhas de exemplo do seed não são credenciais de login. Cadastre as duas contas usadas no fluxo de conversa durante a preparação ou a demonstração.
+O arquivo `database/seed.sql` inclui os perfis e portfólios fictícios usados na apresentação. As senhas de demonstração não são credenciais de login. Cadastre as duas contas de teste usadas no fluxo de conversa durante a preparação ou a demonstração.
 
 ## Checklist final
 
