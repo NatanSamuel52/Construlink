@@ -1,0 +1,334 @@
+.cabecalho {
+  width: 100%;
+  background: #031725;
+  border-bottom: 1px solid #12354a;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: 'Inter', sans-serif;
+}
+
+.cabecalho__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.cabecalho__marca {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.cabecalho__logo-imagem {
+  display: block;
+  width: 230px;
+  max-width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.cabecalho__logo {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #3b82f6;
+  letter-spacing: -0.02em;
+}
+
+.cabecalho__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
+.cabecalho__link {
+  background: transparent;
+  border: none;
+  color: #9aa0aa;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.cabecalho__link:hover {
+  color: #f2f3f5;
+}
+
+.cabecalho__link--ativo {
+  background: rgba(22, 133, 247, 0.12);
+  color: #f2f3f5;
+}
+
+.cabecalho__link--mensagens {
+  position: relative;
+}
+
+.cabecalho__mensagens-nao-lidas {
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #031725;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.cabecalho__acoes {
+  display: flex;
+  align-items: center;
+}
+
+.cabecalho__botoes-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cabecalho__btn-entrar {
+  background: transparent;
+  border: 1px solid #2a2d35;
+  color: #f2f3f5;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cabecalho__btn-entrar:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.cabecalho__btn-cadastrar {
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cabecalho__btn-cadastrar:hover {
+  background: #2563eb;
+}
+
+.cabecalho__usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.cabecalho__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cabecalho__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cabecalho__avatar-letra {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.cabecalho__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cabecalho__nome {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f2f3f5;
+  line-height: 1.2;
+}
+
+.cabecalho__papel {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #3b82f6;
+  text-transform: capitalize;
+}
+
+.cabecalho__btn-sair {
+  background: transparent;
+  border: 1px solid #2a2d35;
+  color: #9aa0aa;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.cabecalho__btn-sair:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Modal de confirmação */
+.cabecalho-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(2px);
+}
+
+.cabecalho-modal {
+  background: #16181d;
+  border: 1px solid #24262e;
+  border-radius: 14px;
+  padding: 1.75rem;
+  max-width: 22rem;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.cabecalho-modal__titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f2f3f5;
+  margin: 0 0 0.5rem;
+}
+
+.cabecalho-modal__mensagem {
+  font-size: 0.85rem;
+  color: #9aa0aa;
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+.cabecalho-modal__acoes {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.cabecalho-modal__btn-cancelar {
+  background: transparent;
+  border: 1px solid #2a2d35;
+  color: #f2f3f5;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cabecalho-modal__btn-cancelar:hover {
+  background: #1f2128;
+}
+
+.cabecalho-modal__btn-confirmar {
+  background: #ef4444;
+  border: none;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cabecalho-modal__btn-confirmar:hover {
+  background: #dc2626;
+}
+
+@media (max-width: 640px) {
+  .cabecalho__container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+  }
+
+  .cabecalho__marca {
+    width: 135px;
+    flex: 0 1 135px;
+  }
+
+  .cabecalho__logo-imagem {
+    width: 135px;
+  }
+
+  .cabecalho__nav {
+    order: 3;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 0.25rem;
+    margin: 0;
+  }
+
+  .cabecalho__nav .cabecalho__link {
+    padding: 0.45rem;
+    font-size: 0.78rem;
+  }
+
+  .cabecalho__container > .cabecalho__link {
+    display: none;
+  }
+
+  .cabecalho__acoes {
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .cabecalho__link--mensagens {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .cabecalho__usuario {
+    gap: 0.4rem;
+  }
+
+  .cabecalho__avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .cabecalho__info {
+    display: none;
+  }
+
+  .cabecalho__btn-sair {
+    margin-left: 0;
+    padding: 0.4rem 0.55rem;
+  }
+}

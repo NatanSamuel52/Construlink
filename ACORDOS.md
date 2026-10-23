@@ -18,7 +18,7 @@ Os dois somos desenvolvedores também, então na prática todo mundo puxa task e
 
 ## Quando um item tá pronto de verdade (Definition of Done)
 
-- código já foi pro main (merge)
+- código já foi integrado na `develop` por meio de PR aprovado
 - tem teste automatizado (isso vale a partir da sprint 3)
 - pipeline passando (a partir da sprint 5)
 - outro da equipe revisou e aprovou o PR
@@ -28,11 +28,13 @@ Os dois somos desenvolvedores também, então na prática todo mundo puxa task e
 ## Branch
 
 Usamos esse padrão:
-- `main` - só código funcionando
+- `main` - código estável e funcionando
+- `develop` - integração das entregas
 - `feature/nome-da-feature` - pra features novas
 - `fix/nome-do-bug` - pra correções
 
-Ninguém commita direto na main, sempre por PR.
+Toda branch de trabalho deve ser criada a partir da `develop`, nunca da `main`.
+Não fazemos commits diretos na `develop` nem na `main`; as alterações chegam à `develop` por PR.
 
 ## Commit
 
@@ -46,7 +48,8 @@ docs: atualiza readme
 
 ## PR
 
-- precisa de aprovação de um do outro antes de dar merge
+- deve ter a `develop` como branch de destino
+- precisa da aprovação de outro integrante da equipe e do Prof. Robson antes do merge
 - quem abriu não aprova o próprio PR
 - escrever no PR o que foi feito e como testar
 

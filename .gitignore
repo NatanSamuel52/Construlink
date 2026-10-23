@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+.vs/
+
+# Backup local do banco de dados
+construlink_teste_backup.sql
+
+# Arquivos enviados durante o uso local da aplicação
+backend/uploads/

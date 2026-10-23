@@ -1,0 +1,593 @@
+.pagina-contato,
+.pagina-mensagens {
+  min-height: 100vh;
+  padding: 30px 3% 56px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(90deg, rgb(3 19 31 / 96%), rgb(3 19 31 / 84%)),
+    url('../Home/BarraPesquisaTelaHome/fundoHome.png') center / cover fixed;
+  color: #f5f8fc;
+}
+
+.contato-container,
+.mensagens-container {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+}
+
+.contato-voltar,
+.mensagens-voltar {
+  margin: 0 0 20px;
+  padding: 8px 6px;
+  border: 0;
+  background: transparent;
+  color: #38bdf8;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.contato-voltar:hover,
+.mensagens-voltar:hover {
+  color: #8bd8ff;
+}
+
+.contato-layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.48fr) minmax(0, 1fr);
+  min-height: min(760px, calc(100vh - 180px));
+  overflow: hidden;
+  border: 1px solid rgb(31 105 142 / 55%);
+  border-radius: 12px;
+  background: rgb(3 24 39 / 82%);
+  box-shadow: 0 18px 55px rgb(0 0 0 / 24%);
+}
+
+.contato-perfil {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 32px 28px;
+  border-right: 1px solid rgb(31 105 142 / 45%);
+}
+
+.contato-foto-perfil {
+  width: min(190px, 70%);
+  aspect-ratio: 1;
+  margin: 0 auto 18px;
+  border: 2px solid rgb(22 133 247 / 65%);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.contato-avatar-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d3856;
+  color: #8dc9ff;
+  font-weight: 700;
+}
+
+.contato-perfil h1 {
+  margin: 0 0 4px;
+  font-size: clamp(22px, 2.1vw, 29px);
+}
+
+.contato-perfil-tipo {
+  margin: 0 0 12px;
+  color: #9cc9e6;
+}
+
+.contato-descricao {
+  margin: 0 0 22px;
+  color: #c2d7e5;
+  line-height: 1.6;
+}
+
+.contato-perfil-servico {
+  width: 100%;
+  margin-top: 12px;
+  padding: 20px 0;
+  border-top: 1px solid rgb(31 105 142 / 45%);
+  border-bottom: 1px solid rgb(31 105 142 / 45%);
+}
+
+.contato-perfil-servico h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.contato-perfil-servico span {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #1685f7;
+  border-radius: 7px;
+  color: #a8d8ff;
+}
+
+.contato-perfil-aviso {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  color: #c3d9e8;
+  line-height: 1.6;
+}
+
+.contato-perfil-aviso span {
+  flex: 0 0 auto;
+  color: #71bfff;
+  font-size: 22px;
+}
+
+.contato-perfil-aviso p {
+  margin: 0;
+}
+
+.contato-chat-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 14px;
+  overflow: hidden;
+  border: 1px solid rgb(31 105 142 / 40%);
+  border-radius: 12px;
+  background: rgb(2 23 38 / 76%);
+}
+
+.contato-chat-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgb(31 105 142 / 45%);
+}
+
+.contato-chat-avatar,
+.contato-mensagem-avatar {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  overflow: hidden;
+  border: 1px solid rgb(22 133 247 / 55%);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.contato-chat-cabecalho div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contato-chat-cabecalho strong {
+  font-size: 16px;
+}
+
+.contato-chat-cabecalho span {
+  color: #9cc9e6;
+  font-size: 13px;
+}
+
+.contato-mensagens-lista {
+  flex: 1;
+  min-height: 360px;
+  max-height: 650px;
+  overflow-y: auto;
+  padding: 10px 18px 18px;
+  scroll-behavior: smooth;
+}
+
+.contato-data {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 4px;
+  color: #b8d1e1;
+  font-size: 13px;
+}
+
+.contato-data::before,
+.contato-data::after {
+  height: 1px;
+  flex: 1;
+  background: rgb(122 169 195 / 48%);
+  content: '';
+}
+
+.contato-mensagem-linha {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.contato-mensagem-linha--minha {
+  justify-content: flex-end;
+}
+
+.contato-mensagem-linha--outra {
+  justify-content: flex-start;
+}
+
+.contato-mensagem-avatar {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+}
+
+.contato-mensagem-avatar--minha {
+  border-color: #1685f7;
+  background: #0758c7;
+}
+
+.contato-mensagem {
+  max-width: min(72%, 490px);
+  padding: 12px 15px 8px;
+  border: 1px solid rgb(31 105 142 / 45%);
+  border-radius: 12px;
+  color: #f5f8fc;
+  overflow-wrap: anywhere;
+}
+
+.contato-mensagem p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.contato-mensagem time {
+  display: block;
+  margin-top: 5px;
+  color: #b9d4e5;
+  font-size: 11px;
+  text-align: right;
+}
+
+.contato-mensagem--minha {
+  border-color: #1685f7;
+  border-bottom-right-radius: 3px;
+  background: linear-gradient(140deg, #075fcf, #0649a8);
+}
+
+.contato-mensagem--outra {
+  border-bottom-left-radius: 3px;
+  background: rgb(6 39 60 / 94%);
+}
+
+.contato-vazio,
+.contato-estado,
+.contato-carregando {
+  color: #bdd2e0;
+  text-align: center;
+}
+
+.contato-vazio {
+  max-width: 360px;
+  margin: 120px auto;
+}
+
+.contato-vazio span {
+  color: #1685f7;
+  font-size: 38px;
+}
+
+.contato-form-envio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 14px 14px;
+  padding: 8px 9px 8px 20px;
+  border: 1px solid rgb(31 105 142 / 60%);
+  border-radius: 10px;
+  background: rgb(2 26 43 / 90%);
+}
+
+.contato-input-rotulo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.contato-input-mensagem {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 4px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+}
+
+.contato-input-mensagem::placeholder {
+  color: #a9c8dc;
+}
+
+.contato-input-mensagem:focus-visible {
+  box-shadow: 0 2px 0 #1685f7;
+}
+
+.contato-btn-enviar {
+  display: inline-flex;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: #0874f9;
+  color: white;
+  cursor: pointer;
+}
+
+.contato-btn-enviar:hover:not(:disabled) {
+  background: #1685f7;
+}
+
+.contato-btn-enviar:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.contato-btn-enviar svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.contato-alerta-erro {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid #ef4444;
+  border-radius: 7px;
+  background: rgb(127 29 29 / 35%);
+  color: #fecaca;
+}
+
+.contato-estado {
+  width: min(100% - 32px, 680px);
+  margin: 10vh auto;
+  padding: 48px 28px;
+  border: 1px solid rgb(31 105 142 / 55%);
+  border-radius: 12px;
+  background: rgb(3 24 39 / 88%);
+}
+
+.contato-estado h1 {
+  margin-top: 0;
+}
+
+.contato-estado p {
+  line-height: 1.6;
+}
+
+.contato-estado button,
+.mensagens-recarregar {
+  padding: 12px 22px;
+  border: 1px solid #1685f7;
+  border-radius: 7px;
+  background: #0874f9;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contato-carregando {
+  margin: 120px auto;
+}
+
+.mensagens-titulo {
+  margin: 0 0 8px;
+  font-size: clamp(26px, 4vw, 36px);
+}
+
+.mensagens-introducao {
+  margin: 0 0 26px;
+  color: #b8d1e1;
+}
+
+.mensagens-lista {
+  display: grid;
+  gap: 12px;
+}
+
+.mensagens-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid rgb(31 105 142 / 50%);
+  border-radius: 10px;
+  background: rgb(3 24 39 / 88%);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mensagens-item:hover,
+.mensagens-item:focus-visible {
+  border-color: #1685f7;
+  background: rgb(5 40 65 / 94%);
+}
+
+.mensagens-item-avatar {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  overflow: hidden;
+  border: 1px solid #1685f7;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.mensagens-item-conteudo {
+  min-width: 0;
+  flex: 1;
+}
+
+.mensagens-item-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 5px;
+}
+
+.mensagens-item-nao-lidas {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  color: #86efac;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.mensagens-item-nao-lidas::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  content: '';
+}
+
+.mensagens-item-topo strong {
+  font-size: 16px;
+}
+
+.mensagens-item-topo time,
+.mensagens-item-servico {
+  color: #9cc9e6;
+  font-size: 12px;
+}
+
+.mensagens-item-servico {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.mensagens-item-ultima {
+  display: block;
+  overflow: hidden;
+  color: #c3d9e8;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mensagens-estado {
+  padding: 48px 24px;
+  border: 1px solid rgb(31 105 142 / 50%);
+  border-radius: 10px;
+  background: rgb(3 24 39 / 88%);
+  color: #bdd2e0;
+  text-align: center;
+}
+
+.mensagens-estado p {
+  margin: 0 0 18px;
+}
+
+@media (max-width: 760px) {
+  .pagina-contato,
+  .pagina-mensagens {
+    padding: 20px 16px 36px;
+  }
+
+  .contato-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .contato-perfil {
+    display: grid;
+    grid-template-columns: 86px 1fr;
+    column-gap: 16px;
+    padding: 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(31 105 142 / 45%);
+  }
+
+  .contato-foto-perfil {
+    width: 86px;
+    grid-row: span 2;
+    margin: 0;
+  }
+
+  .contato-perfil h1 {
+    align-self: end;
+  }
+
+  .contato-perfil-tipo {
+    align-self: start;
+  }
+
+  .contato-descricao,
+  .contato-perfil-servico,
+  .contato-perfil-aviso {
+    grid-column: 1 / -1;
+  }
+
+  .contato-perfil-servico {
+    padding: 14px 0;
+  }
+
+  .contato-chat-card {
+    min-height: 520px;
+    margin: 10px;
+  }
+
+  .contato-mensagens-lista {
+    min-height: 340px;
+    padding: 8px 10px 14px;
+  }
+
+  .contato-mensagem {
+    max-width: 78%;
+  }
+}
+
+@media (max-width: 460px) {
+  .contato-chat-card {
+    margin: 6px;
+  }
+
+  .contato-chat-cabecalho {
+    padding: 12px;
+  }
+
+  .contato-form-envio {
+    gap: 8px;
+    margin: 0 8px 8px;
+    padding-left: 12px;
+  }
+
+  .contato-btn-enviar {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
+
+  .mensagens-item {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .mensagens-item-avatar {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
+
+  .mensagens-item-topo {
+    flex-direction: column;
+    gap: 2px;
+  }
+}

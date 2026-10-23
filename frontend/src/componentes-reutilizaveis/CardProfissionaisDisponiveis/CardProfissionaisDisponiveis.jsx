@@ -1,0 +1,70 @@
+
+import { useEffect, useState } from 'react';
+import CardProfissional from '../CardProfissional/CardProfissional.jsx';
+import iconeProfissionais from '../../assets/icone-profissionais.png';
+import {
+  buscarTodosProfissionais,
+  buscarServicosDoProfissional,
+} from '../../servicos/api.js';
+import './CardProfissionaisDisponiveis.css';
+
+function ProfissionaisDisponiveis() {
+  const [profissionais, setProfissionais] = useState([]);
+
+  useEffect(() => {
+    buscarTodosProfissionais()
+      .then(async (profissionais) => {
+        const profissionaisComServicos = await Promise.all(
+          profissionais.map(async (profissional) => {
+            const servicos = await buscarServicosDoProfissional(
+              profissional.id,
+            );
+
+            return {
+              ...profissional,
+              servicos,
+            };
+          }),
+        );
+
+        setProfissionais(profissionaisComServicos);
+      })
+      .catch((erro) => {
+        console.error('Erro ao buscar profissionais:', erro);
+      });
+  }, []);
+
+  return (
+    <section
+      id='profissionais-disponiveis'
+      className='profissionais-home'
+    >
+      <div className='titulo-profissionais'>
+        <img
+          src={iconeProfissionais}
+          alt='Ícone de profissionais'
+          className='icone-profissionais'
+        />
+
+        <h2>Profissionais Disponíveis</h2>
+      </div>
+
+      <p>Encontre profissionais que oferecem o que você precisa.</p>
+
+      <div className='lista-profissionais'>
+        {profissionais.map((profissional) => (
+          <CardProfissional
+            key={profissional.id}
+            id={profissional.id}
+            nome={profissional.nome}
+            descricao={profissional.descricao}
+            foto_perfil_url={profissional.foto_perfil_url}
+            servicos={profissional.servicos}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default ProfissionaisDisponiveis;

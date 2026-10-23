@@ -1,0 +1,507 @@
+.perfil-publico {
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 5% 60px;
+    box-sizing: border-box;
+
+    background-color: #071722;
+    color: #ffffff;
+}
+
+.perfil-publico .voltar-resultados {
+    margin-bottom: 25px;
+    padding: 10px 18px;
+
+    border: 1px solid #1685F7;
+    border-radius: 6px;
+
+    background-color: transparent;
+    color: #1685F7;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.perfil-publico .voltar-resultados:hover {
+    background-color: #1685F7;
+    color: #ffffff;
+}
+
+.perfil-publico .perfil-profissional {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 50px;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    background-color: #0B1C27;
+    border: 1px solid #243B4A;
+    border-radius: 10px;
+}
+
+.perfil-publico .dados-principais {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.perfil-publico .foto-perfil {
+    width: 190px;
+    height: 190px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+    background-color: #172B38;
+}
+
+.perfil-publico .foto-perfil img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.perfil-publico .foto-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #667781;
+
+    font-size: 14px;
+    text-align: center;
+}
+
+.perfil-publico .informacoes-profissional {
+    flex: 1;
+}
+
+.perfil-publico .informacoes-profissional h1 {
+    margin: 0 0 12px;
+
+    color: #ffffff;
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.perfil-publico .informacoes-profissional > p {
+    margin: 0 0 22px;
+
+    color: #B9C9D5;
+
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.perfil-publico .informacoes-profissional h2 {
+    margin: 0 0 12px;
+
+    color: #ffffff;
+
+    font-size: 19px;
+}
+
+.perfil-publico .servicos-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.perfil-publico .servico-perfil {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 5px;
+
+    background-color: #123450;
+    color: #1685F7;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.perfil-publico .acao-contato {
+    width: 190px;
+
+    flex-shrink: 0;
+}
+
+.perfil-publico .acao-contato button,
+.perfil-publico .area-contato button {
+    width: 100%;
+
+    padding: 12px 15px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #1685F7;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.perfil-publico .acao-contato button:hover,
+.perfil-publico .area-contato button:hover {
+    background-color: #0d73dc;
+}
+
+.perfil-publico .trabalhos-realizados {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto 50px;
+}
+
+.perfil-publico .titulo-trabalhos {
+    margin-bottom: 20px;
+}
+
+.perfil-publico .titulo-trabalhos h2,
+.perfil-publico .sobre-profissional h2 {
+    margin: 0 0 8px;
+
+    color: #ffffff;
+
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.perfil-publico .titulo-trabalhos p {
+    margin: 0;
+
+    color: #B9C9D5;
+
+    font-size: 14px;
+}
+
+.perfil-publico .lista-trabalhos {
+    min-height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    border: 1px solid #243B4A;
+    border-radius: 10px;
+
+    background-color: #0B1C27;
+
+    color: #667781;
+
+    font-size: 14px;
+}
+
+.perfil-publico .sobre-profissional {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto 40px;
+}
+
+.perfil-publico .sobre-conteudo {
+    display: flex;
+    gap: 30px;
+}
+
+.perfil-publico .informacoes-sobre {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    background-color: #0B1C27;
+    border: 1px solid #243B4A;
+    border-radius: 10px;
+}
+
+.perfil-publico .item-sobre {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.perfil-publico .icone-sobre {
+    width: 35px;
+    height: 35px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background-color: #123450;
+
+    font-size: 16px;
+}
+
+.perfil-publico .foto-sobre-profissional {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.perfil-publico .item-sobre strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+}
+
+.perfil-publico .item-sobre p {
+    margin: 0;
+
+    color: #B9C9D5;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.perfil-publico .area-contato {
+    width: 300px;
+
+    flex-shrink: 0;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    background-color: #0B1C27;
+    border: 1px solid #243B4A;
+    border-radius: 10px;
+}
+
+.perfil-publico .icone-contato {
+    width: 50px;
+    height: 50px;
+
+    margin-bottom: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background-color: #123450;
+
+    font-size: 22px;
+}
+
+.perfil-publico .area-contato h3 {
+    margin: 0 0 8px;
+
+    color: #ffffff;
+
+    font-size: 18px;
+}
+
+.perfil-publico .area-contato p {
+    margin: 0 0 20px;
+
+    color: #B9C9D5;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.perfil-publico .area-contato button {
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+
+    .perfil-publico .dados-principais {
+        flex-wrap: wrap;
+    }
+
+    .perfil-publico .acao-contato {
+        width: 100%;
+    }
+
+    .perfil-publico .sobre-conteudo {
+        flex-direction: column;
+    }
+
+    .perfil-publico .area-contato {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .perfil-publico {
+        padding: 30px 16px 50px;
+    }
+
+    .perfil-publico .perfil-profissional {
+        padding: 20px;
+    }
+
+    .perfil-publico .dados-principais {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .perfil-publico .foto-perfil {
+        width: 100%;
+        height: 220px;
+    }
+
+    .perfil-publico .informacoes-profissional h1 {
+        font-size: 25px;
+    }
+
+    .perfil-publico .sobre-conteudo {
+        gap: 15px;
+    }
+
+    .perfil-publico .informacoes-sobre,
+    .perfil-publico .area-contato {
+        padding: 20px;
+    }
+}
+
+/* SCRUM-272: exibição dos trabalhos realizados */
+
+.perfil-publico .lista-trabalhos:has(.grade-trabalhos) {
+    display: block;
+    padding: 0;
+}
+
+.perfil-publico .grade-trabalhos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.perfil-publico .card-trabalho {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #243B4A;
+    border-radius: 8px;
+    background-color: #071722;
+}
+
+.perfil-publico .card-trabalho > img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background-color: #172B38;
+}
+
+.perfil-publico .conteudo-trabalho {
+    padding: 16px;
+}
+
+.perfil-publico .conteudo-trabalho h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 17px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.perfil-publico .conteudo-trabalho p {
+    margin: 0;
+    color: #B9C9D5;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+
+.perfil-publico .conteudo-trabalho .data-trabalho {
+    margin-top: 10px;
+    color: #8fa7b5;
+    font-size: 12px;
+}
+
+
+.perfil-publico .lista-trabalhos:has(.mensagem-sem-trabalhos) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfil-publico .mensagem-sem-trabalhos {
+    margin: 0;
+    padding: 35px 20px;
+    color: #B9C9D5;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.perfil-publico .mensagem-sem-trabalhos[role="alert"] {
+    color: #FCA5A5;
+}
+
+@media (max-width: 600px) {
+    .perfil-publico .grade-trabalhos {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+        padding: 12px;
+    }
+
+    .perfil-publico .conteudo-trabalho {
+        padding: 14px;
+    }
+}
+.perfil-publico .servico-perfil {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.perfil-publico .servico-perfil:hover {
+    background-color: #1a476f;
+}
+
+.perfil-publico .servico-perfil.selecionado {
+    background-color: #1685F7;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    box-shadow: 0 0 8px rgba(22, 133, 247, 0.4);
+}
