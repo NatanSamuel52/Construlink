@@ -243,3 +243,9 @@ export async function buscarMinhasConversas(token) {
 
   return dados;
 }
+
+export async function buscarConversasNaoLidas(token) {
+  const conversas = await buscarMinhasConversas(token);
+
+  return conversas.some((conversa) => Number(conversa.mensagens_nao_lidas) > 0);
+}

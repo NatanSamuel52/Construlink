@@ -6,15 +6,18 @@ import {
   FaCommentDots,
   FaShieldAlt,
   FaUsers,
-  FaCheckCircle,
+  FaImage,
   FaWrench,
 } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ComoFunciona.css';
 import { buscarQuantidadeProfissionais } from '../../servicos/api.js';
 
 function ComoFunciona() {
-  const [quantidade, setQuantidade] = useState(0);
+  const navigate = useNavigate();
+  const [quantidade, setQuantidade] = useState(null);
+  const [carregandoQuantidade, setCarregandoQuantidade] = useState(true);
 
   useEffect(() => {
     buscarQuantidadeProfissionais()
@@ -23,6 +26,9 @@ function ComoFunciona() {
       })
       .catch((erro) => {
         console.error('Erro ao buscar quantidade de profissionais:', erro);
+      })
+      .finally(() => {
+        setCarregandoQuantidade(false);
       });
   }, []);
 
@@ -109,19 +115,25 @@ function ComoFunciona() {
           </span>
 
           <div>
-            <strong>+{quantidade}</strong>
+            <strong>
+              {carregandoQuantidade
+                ? '...'
+                : quantidade === null
+                  ? '—'
+                  : `+${quantidade}`}
+            </strong>
             <p>Profissionais cadastrados</p>
           </div>
         </div>
 
         <div className='informacao'>
           <span className='icone-informacao'>
-            <FaCheckCircle />
+            <FaImage />
           </span>
 
           <div>
-            <strong>0</strong>
-            <p>Serviços realizados</p>
+            <strong>Trabalhos realizados</strong>
+            <p>Veja exemplos nos perfis profissionais.</p>
           </div>
         </div>
 
@@ -137,7 +149,12 @@ function ComoFunciona() {
         </div>
 
         <div className='cadastro-home'>
-          <button>Cadastre-se agora →</button>
+          <button
+            type='button'
+            onClick={() => navigate('/cadastro')}
+          >
+            Cadastre-se agora →
+          </button>
           <p>É gratuito e leva menos de 2 minutos.</p>
         </div>
       </div>

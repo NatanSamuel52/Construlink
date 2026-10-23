@@ -107,12 +107,56 @@ async function rodarTestesIntegracao() {
     checar(!!resLogin.data.token, 'Token JWT retornado');
     const token = resLogin.data.token;
 
+    const emailProfissional = `profissional.integracao.${Date.now()}@construlink.local`;
+    const resCadastroProfissional = await requisicao(
+      'POST',
+      '/api/cadastro',
+      {
+        nome: 'Profissional Integracao Teste',
+        email: emailProfissional,
+        senha: 'senhaSegura123',
+        papel: 'profissional',
+      },
+    );
+    checar(
+      resCadastroProfissional.status === 201,
+      'Profissional criado para validar mensagens recebidas',
+    );
+    const resLoginProfissional = await requisicao('POST', '/api/login', {
+      email: emailProfissional,
+      senha: 'senhaSegura123',
+    });
+    const tokenProfissional = resLoginProfissional.data.token;
+    checar(!!tokenProfissional, 'Profissional autenticado para responder');
+    const resMeuPerfilProfissional = await requisicao(
+      'GET',
+      '/api/meu-perfil-profissional',
+      null,
+      tokenProfissional,
+    );
+    checar(
+      resMeuPerfilProfissional.status === 200,
+      'Perfil do profissional de teste carregado',
+    );
+    const profissionalId = resMeuPerfilProfissional.data.profissional_id;
+    const servicoId = resServicos.data[0].id;
+    const resOfertaProfissional = await requisicao(
+      'POST',
+      '/api/ofertas-servico',
+      { servico_id: servicoId },
+      tokenProfissional,
+    );
+    checar(
+      resOfertaProfissional.status === 201,
+      'Serviço associado ao profissional de teste',
+    );
+
     // 4. Iniciar conversa com o profissional sobre um servico
     console.log('\n[Fluxo 3] Comunicacao: Conversa e Mensagens:');
     const resConversa = await requisicao(
       'POST',
       '/api/conversas',
-      { profissional_id: primeiroProfissional.id },
+      { profissional_id: profissionalId, servico_id: servicoId },
       token,
     );
     checar(
@@ -203,6 +247,51 @@ async function rodarTestesIntegracao() {
     checar(
       indicePrimeira >= 0 && indicePrimeira < indiceSegunda,
       'Mensagens aparecem na ordem em que foram enviadas',
+    );
+
+    const respostaProfissional = await requisicao(
+      'POST',
+      `/api/conversas/${conversaId}/mensagens`,
+      { conteudo: 'Recebi sua solicitação e vou analisar.' },
+      tokenProfissional,
+    );
+    checar(
+      respostaProfissional.status === 201,
+      'Profissional respondeu na conversa',
+    );
+
+    const resConversasNaoLidas = await requisicao(
+      'GET',
+      '/api/conversas',
+      null,
+      token,
+    );
+    const conversaNaoLida = resConversasNaoLidas.data.find(
+      (item) => String(item.id) === String(conversaId),
+    );
+    checar(
+      Number(conversaNaoLida?.mensagens_nao_lidas) === 1,
+      'Mensagem recebida aparece como nao lida para o cliente',
+    );
+
+    await requisicao(
+      'GET',
+      `/api/conversas/${conversaId}/mensagens`,
+      null,
+      token,
+    );
+    const resConversasLidas = await requisicao(
+      'GET',
+      '/api/conversas',
+      null,
+      token,
+    );
+    const conversaLida = resConversasLidas.data.find(
+      (item) => String(item.id) === String(conversaId),
+    );
+    checar(
+      Number(conversaLida?.mensagens_nao_lidas) === 0,
+      'Abertura da conversa limpa o indicador de nao lidas',
     );
 
     const emailOutroCliente = `cliente.outro.${Date.now()}@construlink.local`;

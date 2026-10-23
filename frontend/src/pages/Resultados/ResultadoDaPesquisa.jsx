@@ -1,161 +1,139 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-
-import { buscarProfissionais,buscarServicosDoProfissional} from '../../servicos/api';
+import {
+  buscarProfissionais,
+  buscarServicosDoProfissional,
+} from '../../servicos/api';
 import Rodape from '../../componentes-reutilizaveis/Rodape/Rodape.jsx';
 import BarraPesquisa from '../../componentes-reutilizaveis/BarraPesquisa/BarraPesquisa.jsx';
 import fundoResultados from '../Home/BarraPesquisaTelaHome/fundoHome.png';
-import CardProfissionalResultado
-    from '../../componentes-reutilizaveis/CardProfissionalResultado/CardProfissionalResultado.jsx';
+import CardProfissionalResultado from '../../componentes-reutilizaveis/CardProfissionalResultado/CardProfissionalResultado.jsx';
 import './ResultadoDaPesquisa.css';
 
-
 function ResultadoDaPesquisa() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const servico = searchParams.get('servico')?.trim() || '';
+  const [resultado, setResultado] = useState({
+    servico: '',
+    profissionais: [],
+    erro: '',
+  });
 
-    const navigate = useNavigate();
+  useEffect(() => {
+    let ativo = true;
 
-    const [searchParams] = useSearchParams();
-
-    const servico = searchParams.get('servico');
-
-    const [profissionais, setProfissionais] = useState([]);
-
-    useEffect(() => {
-
-        if (!servico) {
-            return;
-        }
-
-        buscarProfissionais(servico)
-            .then((dados) => {
-
-                console.log(
-                    'PROFISSIONAIS DA API:',
-                    dados
-                );
-
-                return Promise.all(
-                    dados.map((profissional) => {
-
-                        return buscarServicosDoProfissional(
-                            profissional.id
-                        );
-
-                    })
-                )
-                .then((servicosDosProfissionais) => {
-
-                    const profissionaisComServicos =
-                        dados.map(
-                            (profissional, indice) => ({
-                                ...profissional,
-                                servicos:
-                                    servicosDosProfissionais[indice]
-                            })
-                        );
-
-                    setProfissionais(
-                        profissionaisComServicos
-                    );
-
-                });
-
-            })
-            .catch((erro) => {
-
-                console.error(
-                    'Erro ao buscar profissionais:',
-                    erro
-                );
-
-            });
-
-    }, [servico]);
-
-    function realizarBusca(valorInput) {
-
-        const termo = valorInput.trim();
-
-        if (!termo) {
-            return;
-        }
-
-        navigate(
-            `/resultados?servico=${encodeURIComponent(termo)}`
-        );
+    if (!servico) {
+      return () => {
+        ativo = false;
+      };
     }
 
-    return (
-        <>
-            <main className="pagina-resultados">
+    async function carregarResultados() {
+      try {
+        const dados = await buscarProfissionais(servico);
+        const servicosPorProfissional = await Promise.all(
+          dados.map((profissional) =>
+            buscarServicosDoProfissional(profissional.id),
+          ),
+        );
 
-                <section
-                    className="cabecalho-resultados"
-                    style={{
-                        backgroundImage:
-                            `url(${fundoResultados})`
-                    }}
-                >
+        if (ativo) {
+          setResultado({
+            servico,
+            profissionais: dados.map((profissional, indice) => ({
+              ...profissional,
+              servicos: servicosPorProfissional[indice],
+            })),
+            erro: '',
+          });
+        }
+      } catch (erroConsulta) {
+        console.error('Erro ao buscar profissionais:', erroConsulta);
+        if (ativo) {
+          setResultado({
+            servico,
+            profissionais: [],
+            erro: 'Não foi possível carregar os resultados. Tente novamente.',
+          });
+        }
+      }
+    }
 
-                    <h1>
-                        Resultados da{' '}
-                        <span>sua busca</span>
-                    </h1>
+    carregarResultados();
 
-                    <p>
-                        Confira os profissionais que oferecem
-                        o serviço que você procura.
-                    </p>
+    return () => {
+      ativo = false;
+    };
+  }, [servico]);
 
-                    <BarraPesquisa
-                        onBuscar={realizarBusca}
-                    />
+  function realizarBusca(valorInput) {
+    const termo = valorInput.trim();
 
-                    <p className="servico-pesquisado">
+    if (termo) {
+      navigate(`/resultados?servico=${encodeURIComponent(termo)}`);
+    }
+  }
 
-                        Mostrando profissionais que oferecem:{' '}
+  return (
+    <>
+      <main className='pagina-resultados'>
+        <section
+          className='cabecalho-resultados'
+          style={{ backgroundImage: `url(${fundoResultados})` }}
+        >
+          <h1>
+            Resultados da <span>sua busca</span>
+          </h1>
 
-                        <strong>
-                            {servico}
-                        </strong>
+          <p>
+            Confira os profissionais que oferecem o serviço que você procura.
+          </p>
 
-                    </p>
+          <BarraPesquisa onBuscar={realizarBusca} />
 
-                </section>
+          {servico && (
+            <p className='servico-pesquisado'>
+              Mostrando profissionais que oferecem: <strong>{servico}</strong>
+            </p>
+          )}
+        </section>
 
-                <section className="lista-resultados">
+        <section className='lista-resultados' aria-live='polite'>
+          {!servico ? (
+            <p className='estado-resultados'>
+              Pesquise um serviço para encontrar profissionais.
+            </p>
+          ) : resultado.servico !== servico ? (
+            <p className='estado-resultados' role='status'>
+              Buscando profissionais...
+            </p>
+          ) : resultado.erro ? (
+            <p className='estado-resultados' role='alert'>
+              {resultado.erro}
+            </p>
+          ) : resultado.profissionais.length === 0 ? (
+            <p className='estado-resultados'>
+              Nenhum profissional encontrado para este serviço.
+            </p>
+          ) : (
+            resultado.profissionais.map((profissional) => (
+              <CardProfissionalResultado
+                key={profissional.id}
+                id={profissional.id}
+                nome={profissional.nome}
+                descricao={profissional.descricao}
+                foto_perfil_url={profissional.foto_perfil_url}
+                servicos={profissional.servicos}
+              />
+            ))
+          )}
+        </section>
+      </main>
 
-                    {profissionais.map((profissional) => (
-
-                        <CardProfissionalResultado
-                            key={profissional.id}
-
-                            id={profissional.id}
-
-                            nome={profissional.nome}
-
-                            descricao={
-                                profissional.descricao
-                            }
-
-                            foto_perfil_url={
-                                profissional.foto_perfil_url
-                            }
-
-                            servicos={
-                                profissional.servicos
-                            }
-                        />
-
-                    ))}
-
-                </section>
-
-            </main>
-
-            <Rodape />
-        </>
-    );
+      <Rodape />
+    </>
+  );
 }
 
 export default ResultadoDaPesquisa;

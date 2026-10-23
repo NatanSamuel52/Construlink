@@ -2,7 +2,7 @@
 
 Sistema web para conectar clientes a profissionais de serviços para construção, reforma, manutenção e atividades relacionadas.
 
-> **Status:** Em desenvolvimento  
+> **Status:** Versão 1.0 — preparação para apresentação
 > **Versão da documentação:** 1.0
 
 ---
@@ -22,6 +22,7 @@ Sistema web para conectar clientes a profissionais de serviços para construçã
 - [API](#api)
 - [Testes realizados](#testes-realizados)
 - [Execução do projeto](#execução-do-projeto)
+- [Preparação e apresentação](GUIA-PREPARACAO-AMBIENTE.md)
 - [Estado atual](#estado-atual)
 - [Equipe](#equipe)
 
@@ -218,18 +219,18 @@ O arquivo `seed.sql` contém dados fictícios para utilização durante o desenv
 
 Entre os dados existentes estão profissionais, serviços oferecidos e trabalhos realizados.
 
-Os dados atuais incluem profissionais como:
+Em um banco novo, o seed cria os mesmos 12 perfis públicos de demonstração, com
+12 trabalhos realizados, 18 ofertas de serviço, fotos locais e as cinco
+categorias do catálogo. Esses registros são fictícios e servem para apresentar
+pesquisas, perfis e portfólios. As contas desses perfis não têm senha válida e
+não podem ser usadas para entrar no sistema. Contas pessoais, conversas e
+mensagens locais não são copiadas para o seed.
 
-- Carlos Oliveira;
-- Mariana Costa;
-- Rafael Santos.
-
-Também existem serviços fictícios relacionados a:
-
-- Pintura residencial;
-- Instalação elétrica;
-- Reparos hidráulicos;
-- Montagem de móveis.
+O seed só é executado automaticamente quando o volume PostgreSQL é criado pela
+primeira vez. Em um volume já existente, atualizar `database/seed.sql` não
+substitui nem atualiza os dados locais. Consulte
+[GUIA-PREPARACAO-AMBIENTE.md](GUIA-PREPARACAO-AMBIENTE.md) para iniciar uma
+instalação nova sem apagar os dados de um banco existente.
 
 ---
 
@@ -281,6 +282,8 @@ O resultado esperado é:
 
 ```text
 db
+backend
+frontend
 ```
 
 ### Verificar o container
@@ -291,7 +294,8 @@ Execute:
 docker compose ps
 ```
 
-O PostgreSQL deve aparecer como ativo e saudável.
+Os três serviços do projeto devem aparecer ativos; `db` e `backend` também
+informam o estado de saúde.
 
 ---
 
@@ -722,82 +726,19 @@ As branches não devem ser mescladas sem seguir o processo de revisão estabelec
 
 ## Execução do projeto
 
-Para trabalhar no projeto localmente, o fluxo geral é:
+O modo recomendado para executar a versão de apresentação é pelo Docker Compose. Consulte o [guia de preparação e apresentação](GUIA-PREPARACAO-AMBIENTE.md) para configurar o `.env`, iniciar os serviços, conferir a API e seguir o roteiro de demonstração.
 
-### 1. Clonar o repositório
+Na primeira execução:
 
-```bash
-git clone <URL_DO_REPOSITORIO>
-```
-
-### 2. Entrar no projeto
-
-```bash
-cd Contrulink
-```
-
-### 3. Iniciar o PostgreSQL
-
-Na raiz do projeto:
-
-```bash
-docker compose up -d
-```
-
-### 4. Verificar o banco
-
-```bash
-docker compose ps
-```
-
-O container `construlink-postgres` deve estar ativo e saudável.
-
-### 5. Iniciar o backend
-
-Em um terminal:
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-### 6. Iniciar o frontend
-
-Em outro terminal:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-O backend e o frontend devem permanecer em terminais separados durante o desenvolvimento.
+- Copie `.env.example` para `.env` e configure os valores locais.
+- Execute `docker compose up --build -d` na raiz do projeto.
+- Abra `http://localhost:5173` e confirme a API em `http://localhost:3000/api/`.
 
 ---
 
 ## Estado atual
 
-A aplicação encontra-se em desenvolvimento incremental.
-
-Atualmente já estão estruturados:
-
-- Projeto React com Vite;
-- Backend Node.js;
-- Express;
-- Conexão do backend com PostgreSQL;
-- PostgreSQL executando através do Docker;
-- Estrutura do banco de dados;
-- Dados fictícios para desenvolvimento;
-- Rotas da API;
-- Consulta de profissionais;
-- Consulta de serviços;
-- Consulta de trabalhos realizados;
-- Consulta dos serviços oferecidos por profissionais;
-- Consulta individual de profissionais;
-- Tratamento de profissional inexistente.
-
-A integração completa das funcionalidades do frontend com a API continuará sendo desenvolvida conforme a evolução das Sprints.
+O escopo funcional demonstrável da V1.0 inclui cadastro e autenticação de clientes e profissionais, pesquisa de serviços e profissionais, consulta de perfil e trabalhos realizados, edição de perfil profissional e conversas com envio de mensagens entre participantes. O [guia de preparação e apresentação](GUIA-PREPARACAO-AMBIENTE.md) contém as verificações e o roteiro da demonstração.
 
 ---
 
@@ -816,6 +757,8 @@ Os dados fictícios utilizados durante o desenvolvimento estão documentados em:
 ```text
 database/seed.sql
 ```
+
+O esquema inclui as entidades de usuário, cliente, profissional, serviço, oferta de serviço, trabalho realizado, conversa e mensagem. `conversa_leitura` registra o estado de leitura para o indicador de mensagens não lidas. Para bancos já existentes, a migração `database/ajusta-mensagens-nao-lidas.sql` pode ser aplicada sem recriar o volume.
 
 O banco é executado através do container Docker:
 

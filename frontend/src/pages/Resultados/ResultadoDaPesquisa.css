@@ -51,6 +51,16 @@
     box-sizing: border-box;
 }
 
+.lista-resultados > .estado-resultados {
+    margin: 0;
+    padding: 24px;
+    border: 1px solid #243b4a;
+    border-radius: 9px;
+    background-color: #0b1c27;
+    color: #b9c9d5;
+    text-align: center;
+}
+
 @media (max-width: 768px) {
 
     .cabecalho-resultados {

@@ -40,7 +40,7 @@ function Rodape() {
             navigate('/como-funciona');
           }}
         >
-          Como funciona❔
+          Como funciona
         </a>
       </div>
 

@@ -10,7 +10,6 @@ import './CardProfissionaisDisponiveis.css';
 
 function ProfissionaisDisponiveis() {
   const [profissionais, setProfissionais] = useState([]);
-  const [indice, setIndice] = useState(0);
 
   useEffect(() => {
     buscarTodosProfissionais()
@@ -35,26 +34,6 @@ function ProfissionaisDisponiveis() {
       });
   }, []);
 
-  useEffect(() => {
-    if (profissionais.length <= 3) {
-      return;
-    }
-
-    const intervalo = setInterval(() => {
-      setIndice((indiceAtual) => {
-        if (indiceAtual >= profissionais.length - 3) {
-          return 0;
-        }
-
-        return indiceAtual + 1;
-      });
-    }, 3000);
-
-    return () => {
-      clearInterval(intervalo);
-    };
-  }, [profissionais]);
-
   return (
     <section
       id='profissionais-disponiveis'
@@ -72,24 +51,17 @@ function ProfissionaisDisponiveis() {
 
       <p>Encontre profissionais que oferecem o que você precisa.</p>
 
-      <div className='carrossel-profissionais'>
-        <div
-          className='lista-profissionais'
-          style={{
-            transform: `translateX(-${indice * 304}px)`,
-          }}
-        >
-          {profissionais.map((profissional) => (
-            <CardProfissional
-              key={profissional.id}
-              id={profissional.id}
-              nome={profissional.nome}
-              descricao={profissional.descricao}
-              foto_perfil_url={profissional.foto_perfil_url}
-              servicos={profissional.servicos}
-            />
-          ))}
-        </div>
+      <div className='lista-profissionais'>
+        {profissionais.map((profissional) => (
+          <CardProfissional
+            key={profissional.id}
+            id={profissional.id}
+            nome={profissional.nome}
+            descricao={profissional.descricao}
+            foto_perfil_url={profissional.foto_perfil_url}
+            servicos={profissional.servicos}
+          />
+        ))}
       </div>
     </section>
   );

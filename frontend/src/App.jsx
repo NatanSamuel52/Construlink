@@ -25,7 +25,7 @@ import './App.css';
 
 function Painel({ usuario, onLogout, onNavegar }) {
   return (
-    <section className='app-painel'>
+    <main className='app-painel'>
       <div className='app-painel__card'>
         <div className='app-painel__status'>
           <span className='app-badge-sucesso'>✓ Sessão Autenticada</span>
@@ -91,7 +91,7 @@ function Painel({ usuario, onLogout, onNavegar }) {
           </button>
         </div>
       </div>
-    </section>
+    </main>
   );
 }
 
@@ -100,6 +100,21 @@ function App() {
   const location = useLocation();
   const [usuario, setUsuario] = useState(() => obterSessao());
   const [alertaProtegido, setAlertaProtegido] = useState(null);
+
+  useEffect(() => {
+    function atualizarUsuario() {
+      setUsuario(obterSessao());
+    }
+
+    window.addEventListener('contrulink:sessao-atualizada', atualizarUsuario);
+
+    return () => {
+      window.removeEventListener(
+        'contrulink:sessao-atualizada',
+        atualizarUsuario,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     if (location.pathname !== '/') {
@@ -248,7 +263,7 @@ function App() {
         onLogout={handleLogout}
       />
 
-      <main className='app-corpo'>
+      <div className='app-corpo'>
         {alertaProtegido && (
           <div className='app-aviso-protecao' role='alert'>
             <span className='app-aviso-protecao__icone'>🔒</span>
@@ -356,8 +371,9 @@ function App() {
               )
             }
           />
+          <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
-      </main>
+      </div>
     </div>
   );
 }

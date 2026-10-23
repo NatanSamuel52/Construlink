@@ -119,6 +119,27 @@
   object-fit: cover;
 }
 
+.perfil-autenticado__foto-edicao {
+  display: grid;
+  width: 112px;
+  height: 112px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  place-items: center;
+  border: 2px solid var(--perfil-borda);
+  border-radius: 50%;
+  background: #073a57;
+  color: var(--perfil-azul);
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.perfil-autenticado__foto-edicao img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .perfil-autenticado__informacoes {
   min-width: 0;
 }

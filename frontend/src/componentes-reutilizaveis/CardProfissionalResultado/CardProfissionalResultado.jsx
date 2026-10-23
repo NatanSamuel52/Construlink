@@ -48,7 +48,7 @@ function CardProfissionalResultado({
         <div className='servicos-profissional-resultado'>
           <span className='titulo-servicos'>Serviços:</span>
 
-          {servicos.map((servico) => (
+          {(servicos || []).map((servico) => (
             <span key={servico.id} className='servico-resultado'>
               {iconesServicos[servico.nome] || '🛠️'} {servico.nome}
             </span>
@@ -57,7 +57,9 @@ function CardProfissionalResultado({
       </div>
 
       <div className='acao-profissional-resultado'>
-        <button onClick={abrirPerfil}>Ver perfil</button>
+        <button type='button' onClick={abrirPerfil}>
+          Ver perfil
+        </button>
       </div>
     </article>
   );
